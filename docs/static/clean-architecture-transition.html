@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anplexa Clean Architecture Transition Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e14;
+      --bg-secondary: #0d1117;
+      --bg-tertiary: #161b22;
+      --bg-elevated: #1c2128;
+      --border-subtle: #21262d;
+      --border-default: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --accent-purple: #a855f7;
+      --accent-purple-dim: rgba(168, 85, 247, 0.15);
+      --accent-cyan: #00d9ff;
+      --accent-cyan-dim: rgba(0, 217, 255, 0.15);
+      --accent-green: #00ff88;
+      --accent-green-dim: rgba(0, 255, 136, 0.15);
+      --accent-amber: #ffb800;
+      --accent-amber-dim: rgba(255, 184, 0, 0.15);
+      --accent-red: #ff4757;
+      --accent-red-dim: rgba(255, 71, 87, 0.15);
+      --accent-blue: #3b82f6;
+      --accent-blue-dim: rgba(59, 130, 246, 0.15);
+      --glow-purple: 0 0 20px rgba(168, 85, 247, 0.4);
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Space Grotesk', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 20, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 2rem;
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .logo-text {
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .logo-text span {
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-purple);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .main {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3rem 0;
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .compliance-meter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .compliance-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+
+    .compliance-box.before {
+      border-color: var(--accent-red);
+    }
+
+    .compliance-box.after {
+      border-color: var(--accent-green);
+    }
+
+    .compliance-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .compliance-value {
+      font-family: var(--font-mono);
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
+
+    .compliance-box.before .compliance-value {
+      color: var(--accent-red);
+    }
+
+    .compliance-box.after .compliance-value {
+      color: var(--accent-green);
+    }
+
+    .compliance-arrow {
+      font-size: 2rem;
+      color: var(--accent-purple);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--bg-secondary);
+      padding: 0.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 2rem;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .tab.active {
+      background: var(--accent-purple-dim);
+      color: var(--accent-purple);
+    }
+
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .section-icon.purple { background: var(--accent-purple-dim); }
+    .section-icon.cyan { background: var(--accent-cyan-dim); }
+    .section-icon.green { background: var(--accent-green-dim); }
+    .section-icon.amber { background: var(--accent-amber-dim); }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .card:hover {
+      border-color: var(--accent-purple);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .card-content {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .layer-diagram {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .layer-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .layer {
+      padding: 1.25rem 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      position: relative;
+    }
+
+    .layer-domain {
+      background: linear-gradient(135deg, var(--accent-purple-dim), var(--accent-cyan-dim));
+      border: 2px solid var(--accent-purple);
+    }
+
+    .layer-application {
+      background: var(--accent-cyan-dim);
+      border: 2px solid var(--accent-cyan);
+    }
+
+    .layer-infrastructure {
+      background: var(--accent-green-dim);
+      border: 2px solid var(--accent-green);
+    }
+
+    .layer-presentation {
+      background: var(--accent-amber-dim);
+      border: 2px solid var(--accent-amber);
+    }
+
+    .layer-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .layer-desc {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .layer-arrow {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+    }
+
+    .phase-timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .phase-timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent-purple), var(--accent-cyan), var(--accent-green));
+    }
+
+    .phase-item {
+      position: relative;
+      margin-bottom: 2rem;
+      padding-left: 1.5rem;
+    }
+
+    .phase-item::before {
+      content: '';
+      position: absolute;
+      left: -2rem;
+      top: 0.5rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      border: 2px solid var(--bg-primary);
+    }
+
+    .phase-item:nth-child(2)::before { background: var(--accent-cyan); }
+    .phase-item:nth-child(3)::before { background: var(--accent-green); }
+    .phase-item:nth-child(4)::before { background: var(--accent-amber); }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .phase-number {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.875rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      background: var(--accent-purple-dim);
+      color: var(--accent-purple);
+    }
+
+    .phase-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .phase-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    .task-list {
+      list-style: none;
+    }
+
+    .task-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .task-list li:last-child {
+      border-bottom: none;
+    }
+
+    .task-list li::before {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 2px solid var(--border-default);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .code-block {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .code-block pre {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .code-block .comment { color: var(--text-muted); }
+    .code-block .keyword { color: var(--accent-purple); }
+    .code-block .string { color: var(--accent-green); }
+    .code-block .type { color: var(--accent-cyan); }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .comparison-table th {
+      background: var(--bg-tertiary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .comparison-table td {
+      font-size: 0.9rem;
+    }
+
+    .comparison-table tr:hover td {
+      background: var(--bg-tertiary);
+    }
+
+    .metric-before {
+      color: var(--accent-red);
+      font-family: var(--font-mono);
+    }
+
+    .metric-after {
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+    }
+
+    .dependency-rule {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .dependency-rule h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--accent-purple);
+    }
+
+    .dependency-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .dep-box {
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .dep-box.outer {
+      background: var(--accent-amber-dim);
+      border: 1px solid var(--accent-amber);
+      color: var(--accent-amber);
+    }
+
+    .dep-box.inner {
+      background: var(--accent-purple-dim);
+      border: 1px solid var(--accent-purple);
+      color: var(--accent-purple);
+    }
+
+    .dep-arrow {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent-purple);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .file-tree {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.8;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .file-tree .folder { color: var(--accent-cyan); }
+    .file-tree .file { color: var(--text-secondary); }
+    .file-tree .comment { color: var(--text-muted); font-style: italic; }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .badge.domain { background: var(--accent-purple-dim); color: var(--accent-purple); }
+    .badge.application { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
+    .badge.infrastructure { background: var(--accent-green-dim); color: var(--accent-green); }
+    .badge.presentation { background: var(--accent-amber-dim); color: var(--accent-amber); }
+
+    @media (max-width: 768px) {
+      .stats-bar { display: none; }
+      .hero h1 { font-size: 1.75rem; }
+      .compliance-meter { flex-direction: column; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">A</div>
+        <div class="logo-text">Anplexa <span>/ Clean Architecture</span></div>
+      </div>
+      <div class="stats-bar">
+        <div class="stat">
+          <div class="stat-value">4</div>
+          <div class="stat-label">Phases</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Apps</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">35%</div>
+          <div class="stat-label">Current</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">80%+</div>
+          <div class="stat-label">Target</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <a href="user-flows-interactive.html" class="back-link">
+      <span>&larr;</span> Back to User Flows
+    </a>
+
+    <section class="hero">
+      <h1>Clean Architecture Transition Plan</h1>
+      <p>A comprehensive roadmap for transforming the Anplexa platform from a monolithic structure to a layered Clean Architecture, improving testability, maintainability, and scalability.</p>
+
+      <div class="compliance-meter">
+        <div class="compliance-box before">
+          <div class="compliance-label">Current Compliance</div>
+          <div class="compliance-value">35%</div>
+        </div>
+        <div class="compliance-arrow">&rarr;</div>
+        <div class="compliance-box after">
+          <div class="compliance-label">Target Compliance</div>
+          <div class="compliance-value">80%+</div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="layers">Architecture Layers</button>
+      <button class="tab" data-tab="backend">Backend Migration</button>
+      <button class="tab" data-tab="frontend">Frontend Migration</button>
+      <button class="tab" data-tab="phases">Implementation Phases</button>
+      <button class="tab" data-tab="metrics">Success Metrics</button>
+    </nav>
+
+    <!-- Overview Section -->
+    <section id="overview" class="content-section active">
+      <div class="section-header">
+        <div class="section-icon purple">&#128640;</div>
+        <div>
+          <h2 class="section-title">Transition Overview</h2>
+          <p class="section-subtitle">Why Clean Architecture and what it means for Anplexa</p>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon" style="background: var(--accent-red-dim);">&#9888;</div>
+            <h3 class="card-title">Current Problems</h3>
+          </div>
+          <div class="card-content">
+            <ul style="margin-left: 1rem;">
+              <li><strong>Fat Controllers:</strong> authRoutes.ts has 985 lines mixing HTTP, business logic, and data access</li>
+              <li><strong>No Domain Layer:</strong> Business rules scattered across route handlers</li>
+              <li><strong>Untestable:</strong> Cannot unit test business logic in isolation</li>
+              <li><strong>Tight Coupling:</strong> Components directly depend on external frameworks</li>
+              <li><strong>God Components:</strong> ChatInterface.tsx is 949 lines with 12+ useEffect hooks</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon" style="background: var(--accent-green-dim);">&#10003;</div>
+            <h3 class="card-title">Target Benefits</h3>
+          </div>
+          <div class="card-content">
+            <ul style="margin-left: 1rem;">
+              <li><strong>Testability:</strong> Use cases can be unit tested with mocks</li>
+              <li><strong>Maintainability:</strong> Clear separation of concerns</li>
+              <li><strong>Flexibility:</strong> Swap frameworks without changing business logic</li>
+              <li><strong>Scalability:</strong> Team can work on different layers independently</li>
+              <li><strong>Readability:</strong> Smaller, focused components and functions</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon" style="background: var(--accent-cyan-dim);">&#128736;</div>
+            <h3 class="card-title">Apps Affected</h3>
+          </div>
+          <div class="card-content">
+            <p><strong>Backend API</strong> (2-terminal-companion)<br>
+            <span style="color: var(--text-muted);">Express.js + TypeScript + Drizzle ORM</span></p>
+            <br>
+            <p><strong>Companions App</strong> (v0-ai-companion-prototype)<br>
+            <span style="color: var(--text-muted);">Next.js 16 + React 19 + AI SDK v5</span></p>
+            <br>
+            <p><strong>Marketing Funnel</strong> (Funnel-Forge)<br>
+            <span style="color: var(--text-muted);">Vite + React 19 + Express.js</span></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon" style="background: var(--accent-amber-dim);">&#128203;</div>
+            <h3 class="card-title">Key Principles</h3>
+          </div>
+          <div class="card-content">
+            <p><strong>The Dependency Rule:</strong></p>
+            <p style="margin: 0.5rem 0;">Source code dependencies can only point <em>inward</em>. Inner layers know nothing about outer layers.</p>
+            <br>
+            <p><strong>Entities Over Frameworks:</strong></p>
+            <p style="margin: 0.5rem 0;">Business entities should not depend on frameworks. A User entity shouldn't know about Express or React.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dependency-rule">
+        <h3>The Dependency Rule</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Dependencies point inward. Outer layers depend on inner layers, never the reverse.</p>
+        <div class="dependency-diagram">
+          <div class="dep-box outer">Presentation (HTTP)</div>
+          <div class="dep-arrow">&rarr;</div>
+          <div class="dep-box outer">Infrastructure (DB)</div>
+          <div class="dep-arrow">&rarr;</div>
+          <div class="dep-box inner">Application (Use Cases)</div>
+          <div class="dep-arrow">&rarr;</div>
+          <div class="dep-box inner">Domain (Entities)</div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 1rem;">
+          Domain layer has ZERO external dependencies. It defines interfaces that outer layers implement.
+        </p>
+      </div>
+    </section>
+
+    <!-- Layers Section -->
+    <section id="layers" class="content-section">
+      <div class="section-header">
+        <div class="section-icon cyan">&#128193;</div>
+        <div>
+          <h2 class="section-title">Architecture Layers</h2>
+          <p class="section-subtitle">The four concentric layers of Clean Architecture</p>
+        </div>
+      </div>
+
+      <div class="layer-diagram">
+        <div class="layer-stack">
+          <div class="layer layer-presentation">
+            <div class="layer-title">Presentation Layer</div>
+            <div class="layer-desc">HTTP routes, controllers, React components, validators</div>
+          </div>
+          <div class="layer-arrow">&#8595;</div>
+          <div class="layer layer-infrastructure">
+            <div class="layer-title">Infrastructure Layer</div>
+            <div class="layer-desc">Database implementations, external APIs, frameworks</div>
+          </div>
+          <div class="layer-arrow">&#8595;</div>
+          <div class="layer layer-application">
+            <div class="layer-title">Application Layer</div>
+            <div class="layer-desc">Use cases, DTOs, application services</div>
+          </div>
+          <div class="layer-arrow">&#8595;</div>
+          <div class="layer layer-domain">
+            <div class="layer-title">Domain Layer (Core)</div>
+            <div class="layer-desc">Entities, value objects, repository interfaces, domain services</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="badge domain">Domain</span>
+            <h3 class="card-title">Domain Layer</h3>
+          </div>
+          <div class="card-content">
+            <p><strong>Purpose:</strong> Enterprise business rules that would exist even without software.</p>
+            <br>
+            <p><strong>Contains:</strong></p>
+            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+              <li>Entities (User, Conversation, Message)</li>
+              <li>Value Objects (Email, Password, Token)</li>
+              <li>Repository Interfaces (IUserRepository)</li>
+              <li>Domain Services (CreditService)</li>
+              <li>Domain Errors (AuthenticationError)</li>
+            </ul>
+            <br>
+            <p style="color: var(--accent-purple);"><strong>Zero external dependencies!</strong></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="badge application">Application</span>
+            <h3 class="card-title">Application Layer</h3>
+          </div>
+          <div class="card-content">
+            <p><strong>Purpose:</strong> Application-specific business rules. Orchestrates data flow between layers.</p>
+            <br>
+            <p><strong>Contains:</strong></p>
+            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+              <li>Use Cases (LoginUser, SendMessage)</li>
+              <li>DTOs (LoginRequest, LoginResponse)</li>
+              <li>Application Services (TokenService)</li>
+              <li>Port Interfaces (IEmailService)</li>
+            </ul>
+            <br>
+            <p style="color: var(--accent-cyan);">Depends only on Domain layer.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="badge infrastructure">Infrastructure</span>
+            <h3 class="card-title">Infrastructure Layer</h3>
+          </div>
+          <div class="card-content">
+            <p><strong>Purpose:</strong> Implements interfaces defined by inner layers. Contains all framework details.</p>
+            <br>
+            <p><strong>Contains:</strong></p>
+            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+              <li>Repository Implementations (DrizzleUserRepository)</li>
+              <li>External Service Adapters (OllamaGateway)</li>
+              <li>Database Configuration</li>
+              <li>Email Service (SendGrid)</li>
+            </ul>
+            <br>
+            <p style="color: var(--accent-green);">Implements domain interfaces.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="badge presentation">Presentation</span>
+            <h3 class="card-title">Presentation Layer</h3>
+          </div>
+          <div class="card-content">
+            <p><strong>Purpose:</strong> Converts external requests to use case inputs and formats outputs.</p>
+            <br>
+            <p><strong>Contains:</strong></p>
+            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+              <li>HTTP Routes (thin, &lt; 100 lines)</li>
+              <li>Controllers (request/response handling)</li>
+              <li>Validators (Zod schemas)</li>
+              <li>Middleware (auth, rate limiting)</li>
+            </ul>
+            <br>
+            <p style="color: var(--accent-amber);">Calls use cases, handles HTTP concerns only.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Backend Migration Section -->
+    <section id="backend" class="content-section">
+      <div class="section-header">
+        <div class="section-icon green">&#128421;</div>
+        <div>
+          <h2 class="section-title">Backend Migration</h2>
+          <p class="section-subtitle">Transforming the Express.js API to Clean Architecture</p>
+        </div>
+      </div>
+
+      <h3 style="margin: 1.5rem 0 1rem;">Current vs Target Structure</h3>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="badge" style="background: var(--accent-red-dim); color: var(--accent-red);">Before</span>
+            <h3 class="card-title">Current Structure</h3>
+          </div>
+          <div class="file-tree">
+<span class="folder">server/</span>
+  <span class="folder">presentation/routes/</span>
+    <span class="file">authRoutes.ts</span> <span class="comment"># 985 lines!</span>
+    <span class="file">chatRoutes.ts</span> <span class="comment"># 640 lines!</span>
+    <span class="file">stripeRoutes.ts</span> <span class="comment"># 472 lines</span>
+  <span class="folder">infrastructure/</span>
+    <span class="folder">adapters/</span>
+    <span class="folder">database/</span>
+  <span class="folder">shared/</span>
+    <span class="file">schema.ts</span> <span class="comment"># ORM only</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="badge" style="background: var(--accent-green-dim); color: var(--accent-green);">After</span>
+            <h3 class="card-title">Target Structure</h3>
+          </div>
+          <div class="file-tree">
+<span class="folder">server/</span>
+  <span class="folder">domain/</span>
+    <span class="folder">entities/</span> <span class="comment"># User, Conversation</span>
+    <span class="folder">value-objects/</span> <span class="comment"># Email, Token</span>
+    <span class="folder">repositories/</span> <span class="comment"># Interfaces only</span>
+  <span class="folder">application/</span>
+    <span class="folder">use-cases/</span> <span class="comment"># LoginUser, SendMessage</span>
+    <span class="folder">dto/</span> <span class="comment"># Request/Response shapes</span>
+  <span class="folder">infrastructure/</span>
+    <span class="folder">persistence/</span> <span class="comment"># Repository impls</span>
+    <span class="folder">external/</span> <span class="comment"># Ollama, Stripe</span>
+  <span class="folder">presentation/</span>
+    <span class="folder">routes/</span> <span class="comment"># < 100 lines each!</span>
+    <span class="folder">controllers/</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin: 2rem 0 1rem;">Example: LoginUser Use Case Extraction</h3>
+
+      <div class="code-block">
+        <pre><span class="comment">// domain/entities/User.ts</span>
+<span class="keyword">export class</span> <span class="type">User</span> {
+  <span class="keyword">constructor</span>(
+    <span class="keyword">public readonly</span> id: <span class="type">string</span>,
+    <span class="keyword">public readonly</span> email: <span class="type">Email</span>,
+    <span class="keyword">private readonly</span> passwordHash: <span class="type">string</span>
+  ) {}
+
+  <span class="keyword">async</span> validatePassword(password: <span class="type">string</span>): <span class="type">Promise&lt;boolean&gt;</span> {
+    <span class="keyword">return</span> bcrypt.compare(password, <span class="keyword">this</span>.passwordHash);
+  }
+}
+
+<span class="comment">// application/use-cases/auth/LoginUser.ts</span>
+<span class="keyword">export class</span> <span class="type">LoginUser</span> {
+  <span class="keyword">constructor</span>(
+    <span class="keyword">private readonly</span> userRepo: <span class="type">IUserRepository</span>,
+    <span class="keyword">private readonly</span> tokenService: <span class="type">TokenService</span>
+  ) {}
+
+  <span class="keyword">async</span> execute(request: <span class="type">LoginRequest</span>): <span class="type">Promise&lt;LoginResponse&gt;</span> {
+    <span class="keyword">const</span> user = <span class="keyword">await</span> <span class="keyword">this</span>.userRepo.findByEmail(request.email);
+    <span class="keyword">if</span> (!user) <span class="keyword">throw new</span> <span class="type">AuthenticationError</span>(<span class="string">'Invalid credentials'</span>);
+
+    <span class="keyword">const</span> valid = <span class="keyword">await</span> user.validatePassword(request.password);
+    <span class="keyword">if</span> (!valid) <span class="keyword">throw new</span> <span class="type">AuthenticationError</span>(<span class="string">'Invalid credentials'</span>);
+
+    <span class="keyword">return</span> {
+      accessToken: <span class="keyword">this</span>.tokenService.generateAccessToken(user),
+      refreshToken: <span class="keyword">this</span>.tokenService.generateRefreshToken(user),
+      user: { id: user.id, email: user.email.value }
+    };
+  }
+}
+
+<span class="comment">// presentation/routes/authRoutes.ts (now < 100 lines)</span>
+router.post(<span class="string">'/login'</span>,
+  validateRequest(loginSchema),
+  <span class="keyword">async</span> (req, res, next) => {
+    <span class="keyword">try</span> {
+      <span class="keyword">const</span> result = <span class="keyword">await</span> loginUser.execute(req.body);
+      res.json(result);
+    } <span class="keyword">catch</span> (error) {
+      next(error);
+    }
+  }
+);</pre>
+      </div>
+
+      <h3 style="margin: 2rem 0 1rem;">Key Extractions Needed</h3>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Current Location</th>
+            <th>Lines</th>
+            <th>Extract To</th>
+            <th>Target Lines</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>authRoutes.ts (login logic)</td>
+            <td class="metric-before">~150</td>
+            <td>LoginUser use case</td>
+            <td class="metric-after">~50</td>
+          </tr>
+          <tr>
+            <td>authRoutes.ts (register logic)</td>
+            <td class="metric-before">~200</td>
+            <td>RegisterUser use case</td>
+            <td class="metric-after">~60</td>
+          </tr>
+          <tr>
+            <td>chatRoutes.ts (send message)</td>
+            <td class="metric-before">~300</td>
+            <td>SendMessage use case</td>
+            <td class="metric-after">~80</td>
+          </tr>
+          <tr>
+            <td>stripeRoutes.ts (checkout)</td>
+            <td class="metric-before">~150</td>
+            <td>CreateCheckout use case</td>
+            <td class="metric-after">~40</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Frontend Migration Section -->
+    <section id="frontend" class="content-section">
+      <div class="section-header">
+        <div class="section-icon amber">&#128187;</div>
+        <div>
+          <h2 class="section-title">Frontend Migration</h2>
+          <p class="section-subtitle">Decomposing React components and extracting hooks</p>
+        </div>
+      </div>
+
+      <h3 style="margin: 1.5rem 0 1rem;">ChatInterface Decomposition</h3>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <span class="badge" style="background: var(--accent-red-dim); color: var(--accent-red);">Before</span>
+            <h3 class="card-title">God Component</h3>
+          </div>
+          <div class="card-content">
+            <p style="font-family: var(--font-mono); font-size: 1.5rem; color: var(--accent-red); margin-bottom: 1rem;">949 lines</p>
+            <ul style="margin-left: 1rem;">
+              <li>12+ useEffect hooks</li>
+              <li>Message rendering logic</li>
+              <li>Input handling</li>
+              <li>Conversation management</li>
+              <li>Guest mode logic</li>
+              <li>Settings modal</li>
+              <li>Theme handling</li>
+              <li>Scroll management</li>
+              <li>Error handling</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="badge" style="background: var(--accent-green-dim); color: var(--accent-green);">After</span>
+            <h3 class="card-title">Decomposed</h3>
+          </div>
+          <div class="card-content">
+            <p style="font-family: var(--font-mono); font-size: 1.5rem; color: var(--accent-green); margin-bottom: 1rem;">&lt; 200 lines</p>
+            <ul style="margin-left: 1rem;">
+              <li><strong>ChatInterface.tsx</strong> - Orchestrator only</li>
+              <li><strong>MessageList.tsx</strong> - Render messages</li>
+              <li><strong>MessageItem.tsx</strong> - Single message</li>
+              <li><strong>MessageInput.tsx</strong> - Input with send</li>
+              <li><strong>useChat.ts</strong> - Chat state hook</li>
+              <li><strong>useConversation.ts</strong> - CRUD hook</li>
+              <li><strong>useGuestMode.ts</strong> - Guest logic hook</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin: 2rem 0 1rem;">Target Component Structure</h3>
+
+      <div class="file-tree" style="max-width: 600px;">
+<span class="folder">components/</span>
+  <span class="folder">chat/</span>
+    <span class="file">ChatInterface.tsx</span> <span class="comment"># &lt; 200 lines, orchestration</span>
+    <span class="file">MessageList.tsx</span> <span class="comment"># Message rendering</span>
+    <span class="file">MessageItem.tsx</span> <span class="comment"># Single message</span>
+    <span class="file">MessageInput.tsx</span> <span class="comment"># Input component</span>
+    <span class="file">TypingIndicator.tsx</span>
+    <span class="file">ConversationHeader.tsx</span>
+
+<span class="folder">hooks/</span>
+  <span class="file">useChat.ts</span> <span class="comment"># Chat state & operations</span>
+  <span class="file">useConversation.ts</span> <span class="comment"># Conversation CRUD</span>
+  <span class="file">useGuestMode.ts</span> <span class="comment"># Guest mode logic</span>
+  <span class="file">useScrollToBottom.ts</span>
+
+<span class="folder">services/</span>
+  <span class="folder">api/</span>
+    <span class="file">client.ts</span> <span class="comment"># Axios/fetch config</span>
+    <span class="file">auth.ts</span> <span class="comment"># Auth API calls</span>
+    <span class="file">chat.ts</span> <span class="comment"># Chat API calls</span>
+  <span class="folder">storage/</span>
+    <span class="file">conversations.ts</span> <span class="comment"># localStorage</span>
+      </div>
+
+      <h3 style="margin: 2rem 0 1rem;">Auth Context Refactor</h3>
+
+      <div class="card">
+        <div class="card-content">
+          <p><strong>Problem:</strong> Current auth-context.tsx (~300 lines) mixes:</p>
+          <ul style="margin: 0.5rem 0 1rem 1rem;">
+            <li>State management</li>
+            <li>Direct API calls (fetch)</li>
+            <li>Token storage (localStorage)</li>
+            <li>Loading/error states</li>
+          </ul>
+
+          <p><strong>Solution:</strong> Adapter pattern</p>
+          <ul style="margin: 0.5rem 0 0 1rem;">
+            <li><strong>AuthService</strong> - API calls only</li>
+            <li><strong>TokenStorage</strong> - Storage abstraction</li>
+            <li><strong>AuthContext</strong> - State only (&lt; 150 lines)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phases Section -->
+    <section id="phases" class="content-section">
+      <div class="section-header">
+        <div class="section-icon purple">&#128197;</div>
+        <div>
+          <h2 class="section-title">Implementation Phases</h2>
+          <p class="section-subtitle">Step-by-step migration plan</p>
+        </div>
+      </div>
+
+      <div class="phase-timeline">
+        <div class="phase-item">
+          <div class="phase-header">
+            <span class="phase-number">Phase 1</span>
+            <h3 class="phase-title">Foundation Setup</h3>
+          </div>
+          <div class="phase-content">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Create directory structure, base classes, and dependency injection.</p>
+            <ul class="task-list">
+              <li>Create domain/, application/, infrastructure/, presentation/ directories</li>
+              <li>Set up base Error classes (DomainError, ValidationError, AuthenticationError)</li>
+              <li>Configure tsyringe or similar DI container</li>
+              <li>Create repository interfaces (IUserRepository, IConversationRepository)</li>
+              <li>Set up barrel exports (index.ts files)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-item">
+          <div class="phase-header">
+            <span class="phase-number" style="background: var(--accent-cyan-dim); color: var(--accent-cyan);">Phase 2</span>
+            <h3 class="phase-title">Auth Domain Extraction</h3>
+          </div>
+          <div class="phase-content">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Extract authentication logic into use cases.</p>
+            <ul class="task-list">
+              <li>Create User entity with validatePassword method</li>
+              <li>Create Email and Password value objects</li>
+              <li>Extract LoginUser use case from authRoutes.ts</li>
+              <li>Extract RegisterUser use case</li>
+              <li>Extract RefreshToken use case</li>
+              <li>Implement UserRepository with Drizzle</li>
+              <li>Create AuthController (thin controller)</li>
+              <li>Add unit tests for use cases</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-item">
+          <div class="phase-header">
+            <span class="phase-number" style="background: var(--accent-green-dim); color: var(--accent-green);">Phase 3</span>
+            <h3 class="phase-title">Chat Domain Extraction</h3>
+          </div>
+          <div class="phase-content">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Extract chat and conversation logic.</p>
+            <ul class="task-list">
+              <li>Create Conversation and Message entities</li>
+              <li>Extract SendMessage use case with streaming</li>
+              <li>Extract GetConversationHistory use case</li>
+              <li>Create IAIProvider interface for Ollama</li>
+              <li>Implement ConversationRepository</li>
+              <li>Create ChatController</li>
+              <li>Add integration tests for chat flow</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-item">
+          <div class="phase-header">
+            <span class="phase-number" style="background: var(--accent-amber-dim); color: var(--accent-amber);">Phase 4</span>
+            <h3 class="phase-title">Frontend Refactor</h3>
+          </div>
+          <div class="phase-content">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Decompose components and extract hooks.</p>
+            <ul class="task-list">
+              <li>Extract useChat hook from ChatInterface</li>
+              <li>Extract useConversation hook</li>
+              <li>Extract useGuestMode hook</li>
+              <li>Create MessageList and MessageItem components</li>
+              <li>Create MessageInput component</li>
+              <li>Refactor ChatInterface to use new hooks/components</li>
+              <li>Create service layer (authService, chatService)</li>
+              <li>Refactor AuthContext to use adapters</li>
+              <li>Add error boundaries</li>
+              <li>Add unit tests for hooks</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metrics Section -->
+    <section id="metrics" class="content-section">
+      <div class="section-header">
+        <div class="section-icon green">&#128200;</div>
+        <div>
+          <h2 class="section-title">Success Metrics</h2>
+          <p class="section-subtitle">Measurable improvements from the transition</p>
+        </div>
+      </div>
+
+      <h3 style="margin: 1.5rem 0 1rem;">Backend Metrics</h3>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Before</th>
+            <th>After</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>authRoutes.ts lines</td>
+            <td class="metric-before">985</td>
+            <td class="metric-after">&lt; 100</td>
+            <td style="color: var(--accent-green);">-90%</td>
+          </tr>
+          <tr>
+            <td>chatRoutes.ts lines</td>
+            <td class="metric-before">640</td>
+            <td class="metric-after">&lt; 100</td>
+            <td style="color: var(--accent-green);">-85%</td>
+          </tr>
+          <tr>
+            <td>Use case test coverage</td>
+            <td class="metric-before">0%</td>
+            <td class="metric-after">&gt; 90%</td>
+            <td style="color: var(--accent-green);">+90%</td>
+          </tr>
+          <tr>
+            <td>Cyclomatic complexity (avg)</td>
+            <td class="metric-before">High (15+)</td>
+            <td class="metric-after">&lt; 10</td>
+            <td style="color: var(--accent-green);">-33%</td>
+          </tr>
+          <tr>
+            <td>Repository abstraction</td>
+            <td class="metric-before">None</td>
+            <td class="metric-after">Complete</td>
+            <td style="color: var(--accent-green);">&#10003;</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin: 2rem 0 1rem;">Frontend Metrics</h3>
+
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Before</th>
+            <th>After</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ChatInterface.tsx lines</td>
+            <td class="metric-before">949</td>
+            <td class="metric-after">&lt; 200</td>
+            <td style="color: var(--accent-green);">-79%</td>
+          </tr>
+          <tr>
+            <td>Largest component</td>
+            <td class="metric-before">949 lines</td>
+            <td class="metric-after">&lt; 200 lines</td>
+            <td style="color: var(--accent-green);">-79%</td>
+          </tr>
+          <tr>
+            <td>Custom hooks</td>
+            <td class="metric-before">0</td>
+            <td class="metric-after">5+</td>
+            <td style="color: var(--accent-green);">+5</td>
+          </tr>
+          <tr>
+            <td>Service layer</td>
+            <td class="metric-before">None</td>
+            <td class="metric-after">Complete</td>
+            <td style="color: var(--accent-green);">&#10003;</td>
+          </tr>
+          <tr>
+            <td>Test coverage</td>
+            <td class="metric-before">&lt; 10%</td>
+            <td class="metric-after">&gt; 70%</td>
+            <td style="color: var(--accent-green);">+60%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin: 2rem 0 1rem;">Overall Platform Compliance</h3>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Clean Architecture Compliance</h3>
+          </div>
+          <div class="card-content" style="text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 2rem;">
+              <div>
+                <div style="font-family: var(--font-mono); font-size: 3rem; color: var(--accent-red);">35%</div>
+                <div style="color: var(--text-secondary);">Current</div>
+              </div>
+              <div style="font-size: 2rem; color: var(--accent-purple);">&rarr;</div>
+              <div>
+                <div style="font-family: var(--font-mono); font-size: 3rem; color: var(--accent-green);">80%+</div>
+                <div style="color: var(--text-secondary);">Target</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Key Achievements</h3>
+          </div>
+          <div class="card-content">
+            <ul style="margin-left: 1rem;">
+              <li>&#10003; Domain layer with zero external dependencies</li>
+              <li>&#10003; Use cases that can be unit tested in isolation</li>
+              <li>&#10003; Repository pattern for data access</li>
+              <li>&#10003; Thin controllers (&lt; 100 lines)</li>
+              <li>&#10003; Decomposed React components</li>
+              <li>&#10003; Extracted custom hooks</li>
+              <li>&#10003; Service layer for API calls</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Tab navigation
+    const tabs = document.querySelectorAll('.tab');
+    const sections = document.querySelectorAll('.content-section');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetId = tab.dataset.tab;
+
+        tabs.forEach(t => t.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(targetId).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

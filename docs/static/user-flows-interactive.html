@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anplexa User Flows | Interactive Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e14;
+      --bg-secondary: #0d1117;
+      --bg-tertiary: #161b22;
+      --bg-elevated: #1c2128;
+      --border-subtle: #21262d;
+      --border-default: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --accent-cyan: #00d9ff;
+      --accent-cyan-dim: rgba(0, 217, 255, 0.15);
+      --accent-purple: #a855f7;
+      --accent-purple-dim: rgba(168, 85, 247, 0.15);
+      --accent-green: #00ff88;
+      --accent-green-dim: rgba(0, 255, 136, 0.15);
+      --accent-amber: #ffb800;
+      --accent-amber-dim: rgba(255, 184, 0, 0.15);
+      --accent-red: #ff4757;
+      --accent-red-dim: rgba(255, 71, 87, 0.15);
+      --accent-blue: #3b82f6;
+      --accent-blue-dim: rgba(59, 130, 246, 0.15);
+      --glow-cyan: 0 0 20px rgba(0, 217, 255, 0.4);
+      --glow-purple: 0 0 20px rgba(168, 85, 247, 0.4);
+      --glow-green: 0 0 20px rgba(0, 255, 136, 0.4);
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Space Grotesk', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0, 217, 255, 0.08) 0%, transparent 60%);
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 20, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 2rem;
+    }
+
+    .header-inner {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--bg-primary);
+    }
+
+    .logo-text {
+      font-weight: 600;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text span {
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-left: 0.5rem;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4); }
+      50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(0, 255, 136, 0); }
+    }
+
+    .main {
+      position: relative;
+      z-index: 1;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      min-height: calc(100vh - 80px);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+    }
+
+    .nav-section { margin-bottom: 2rem; }
+
+    .nav-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      padding-left: 1rem;
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+    }
+
+    .nav-tab:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .nav-tab.active {
+      background: var(--accent-cyan-dim);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .nav-tab-icon { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+
+    .nav-tab-count {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      color: var(--text-muted);
+    }
+
+    .nav-tab.active .nav-tab-count {
+      background: rgba(0, 217, 255, 0.2);
+      color: var(--accent-cyan);
+    }
+
+    .subflows {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .subflow-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .subflow-item:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .subflow-item.active { color: var(--accent-cyan); }
+
+    .subflow-item::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border-default);
+      transition: all 0.2s ease;
+    }
+
+    .subflow-item.active::before {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .flow-canvas {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      min-height: 500px;
+    }
+
+    .flow-canvas::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, var(--border-subtle) 1px, transparent 0);
+      background-size: 24px 24px;
+      opacity: 0.5;
+    }
+
+    .flow-header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .flow-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .flow-description {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    .flow-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      color: var(--text-secondary);
+    }
+
+    .sequence-diagram {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sequence-actors {
+      display: flex;
+      justify-content: space-around;
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed var(--border-subtle);
+      margin-bottom: 1rem;
+    }
+
+    .sequence-actor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sequence-actor-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .sequence-actor-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .sequence-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg-elevated);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .sequence-step:hover {
+      border-color: var(--border-default);
+      transform: translateX(4px);
+    }
+
+    .sequence-step.active {
+      border-color: var(--accent-cyan);
+      background: var(--accent-cyan-dim);
+    }
+
+    .sequence-step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .sequence-step.active .sequence-step-number {
+      background: var(--accent-cyan);
+      color: var(--bg-primary);
+    }
+
+    .sequence-step-content { flex: 1; }
+
+    .sequence-step-action {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .sequence-step-detail {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .sequence-step-arrow {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .detail-panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .detail-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .detail-title {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .detail-title-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      background: var(--accent-cyan-dim);
+      color: var(--accent-cyan);
+    }
+
+    .detail-tabs { display: flex; gap: 0.25rem; }
+
+    .detail-tab {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      font-family: var(--font-sans);
+    }
+
+    .detail-tab:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .detail-tab.active {
+      background: var(--accent-cyan-dim);
+      color: var(--accent-cyan);
+    }
+
+    .detail-content { padding: 1.5rem; }
+
+    .detail-section { margin-bottom: 1.5rem; }
+    .detail-section:last-child { margin-bottom: 0; }
+
+    .detail-section-title {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .detail-text {
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+
+    .detail-code {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    .detail-code .keyword { color: var(--accent-purple); }
+    .detail-code .string { color: var(--accent-green); }
+
+    .detail-list { list-style: none; }
+
+    .detail-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .detail-list-item:last-child { border-bottom: none; }
+
+    .detail-list-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .detail-list-content { flex: 1; }
+
+    .detail-list-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-list-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .tag.cyan { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
+    .tag.purple { background: var(--accent-purple-dim); color: var(--accent-purple); }
+    .tag.green { background: var(--accent-green-dim); color: var(--accent-green); }
+    .tag.amber { background: var(--accent-amber-dim); color: var(--accent-amber); }
+    .tag.red { background: var(--accent-red-dim); color: var(--accent-red); }
+
+    .state-diagram {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      padding: 2rem 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .state-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      background: var(--bg-elevated);
+      border: 2px solid var(--border-default);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      min-width: 120px;
+    }
+
+    .state-node:hover {
+      transform: scale(1.05);
+      border-color: var(--accent-cyan);
+    }
+
+    .state-icon { font-size: 1.5rem; }
+    .state-label { font-size: 0.8rem; font-weight: 600; }
+    .state-desc { font-size: 0.65rem; color: var(--text-muted); text-align: center; }
+
+    .flow-node-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .flow-node-icon.user { background: var(--accent-blue-dim); color: var(--accent-blue); }
+    .flow-node-icon.frontend { background: var(--accent-purple-dim); color: var(--accent-purple); }
+    .flow-node-icon.api { background: var(--accent-green-dim); color: var(--accent-green); }
+    .flow-node-icon.database { background: var(--accent-amber-dim); color: var(--accent-amber); }
+    .flow-node-icon.external { background: var(--accent-red-dim); color: var(--accent-red); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fadeIn 0.4s ease forwards; }
+    .fade-in-delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .fade-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .fade-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
+    .fade-in-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+    @media (max-width: 1024px) {
+      .main { grid-template-columns: 1fr; }
+      .sidebar { position: relative; top: 0; }
+      .nav-tabs { flex-direction: row; flex-wrap: wrap; }
+      .subflows { display: none; }
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">A</div>
+        <div class="logo-text">Anplexa <span>User Flows</span></div>
+      </div>
+      <div class="header-meta">
+        <a href="clean-architecture-transition.html" style="color: var(--accent-purple); text-decoration: none; margin-right: 1rem;">Clean Architecture Plan &rarr;</a>
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>Documentation v1.0</span>
+        </div>
+        <span>35 Flows</span>
+        <span>5 Categories</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <aside class="sidebar">
+      <nav class="nav-section">
+        <div class="nav-label">Flow Categories</div>
+        <div class="nav-tabs" id="mainTabs">
+          <button class="nav-tab active" data-tab="auth">
+            <span class="nav-tab-icon">🔐</span>
+            <span>Authentication</span>
+            <span class="nav-tab-count">8</span>
+          </button>
+          <button class="nav-tab" data-tab="chat">
+            <span class="nav-tab-icon">💬</span>
+            <span>Chat</span>
+            <span class="nav-tab-count">9</span>
+          </button>
+          <button class="nav-tab" data-tab="subscription">
+            <span class="nav-tab-icon">💳</span>
+            <span>Subscription</span>
+            <span class="nav-tab-count">6</span>
+          </button>
+          <button class="nav-tab" data-tab="funnel">
+            <span class="nav-tab-icon">🎯</span>
+            <span>Funnel</span>
+            <span class="nav-tab-count">7</span>
+          </button>
+          <button class="nav-tab" data-tab="data">
+            <span class="nav-tab-icon">📊</span>
+            <span>Data Flow</span>
+            <span class="nav-tab-count">5</span>
+          </button>
+        </div>
+      </nav>
+      <div class="subflows" id="subflowsContainer"></div>
+    </aside>
+
+    <section class="content">
+      <div class="flow-canvas" id="flowCanvas"></div>
+      <div class="detail-panel" id="detailPanel"></div>
+    </section>
+  </main>
+
+  <script>
+    const flowData = {
+      auth: {
+        name: 'Authentication Flows',
+        description: 'User identity verification and session management across the platform.',
+        flows: [
+          {
+            id: 'login',
+            name: 'Email/Password Login',
+            description: 'Standard login flow for returning users with email and password credentials.',
+            steps: [
+              { actor: 'User', action: 'Click "Login"', detail: 'Opens login modal', type: 'user' },
+              { actor: 'UI', action: 'Show login modal', detail: 'Display email/password form', type: 'frontend' },
+              { actor: 'User', action: 'Enter credentials', detail: 'email, password', type: 'user' },
+              { actor: 'Context', action: 'login(email, password)', detail: 'AuthContext method', type: 'frontend' },
+              { actor: 'API', action: 'POST /api/auth/login', detail: 'Proxy to backend', type: 'api' },
+              { actor: 'Backend', action: 'Verify password', detail: 'bcrypt.compare()', type: 'api' },
+              { actor: 'DB', action: 'Find user by email', detail: 'SELECT * FROM users', type: 'database' },
+              { actor: 'Backend', action: 'Generate JWT pair', detail: 'accessToken (15m), refreshToken (7d)', type: 'api' },
+              { actor: 'DB', action: 'Store refresh token', detail: 'INSERT INTO sessions', type: 'database' },
+              { actor: 'Context', action: 'Store tokens', detail: 'localStorage.setItem()', type: 'frontend' },
+              { actor: 'UI', action: 'Close modal, show chat', detail: 'Login success', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/auth/login',
+            request: '{ email: string, password: string }',
+            response: '{ accessToken, refreshToken, user }',
+            securityNotes: ['Passwords hashed with bcrypt (12 rounds)', 'Rate limited: 10 attempts per 15 min']
+          },
+          {
+            id: 'register',
+            name: 'User Registration',
+            description: 'New user account creation with email validation and password setup.',
+            steps: [
+              { actor: 'User', action: 'Click "Create Account"', detail: 'Opens registration form', type: 'user' },
+              { actor: 'UI', action: 'Show registration form', detail: 'email, password, confirm', type: 'frontend' },
+              { actor: 'UI', action: 'Validate passwords match', detail: 'Client-side validation', type: 'frontend' },
+              { actor: 'API', action: 'POST /api/auth/register', detail: 'Create account request', type: 'api' },
+              { actor: 'DB', action: 'Check email exists', detail: 'SELECT * FROM users WHERE email', type: 'database' },
+              { actor: 'Backend', action: 'Hash password', detail: 'bcrypt.hash(password, 12)', type: 'api' },
+              { actor: 'DB', action: 'INSERT user', detail: 'Create new user record', type: 'database' },
+              { actor: 'Backend', action: 'Generate JWT pair', detail: 'Auto-login after registration', type: 'api' },
+              { actor: 'UI', action: 'Show welcome message', detail: 'Registration complete', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/auth/register',
+            request: '{ email: string, password: string }',
+            response: '{ accessToken, refreshToken, user }',
+            securityNotes: ['Email uniqueness enforced', 'Rate limited: 5 per hour']
+          },
+          {
+            id: 'refresh',
+            name: 'Token Refresh',
+            description: 'Automatic token refresh when access token expires (15 minutes).',
+            steps: [
+              { actor: 'Context', action: 'API call with expired token', detail: 'Authorization: Bearer {expired}', type: 'frontend' },
+              { actor: 'Backend', action: 'Return 401', detail: '{ error: "Token expired" }', type: 'api' },
+              { actor: 'Context', action: 'Get refresh token', detail: 'localStorage.getItem()', type: 'frontend' },
+              { actor: 'API', action: 'POST /api/auth/refresh', detail: '{ refreshToken }', type: 'api' },
+              { actor: 'DB', action: 'Find session', detail: 'Validate refresh token', type: 'database' },
+              { actor: 'Backend', action: 'Generate new pair', detail: 'Rotate refresh token', type: 'api' },
+              { actor: 'DB', action: 'Invalidate old token', detail: 'DELETE old, INSERT new', type: 'database' },
+              { actor: 'Context', action: 'Update localStorage', detail: 'Store new tokens', type: 'frontend' },
+              { actor: 'Context', action: 'Retry original request', detail: 'With new access token', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/auth/refresh',
+            request: '{ refreshToken: string }',
+            response: '{ accessToken, refreshToken }',
+            securityNotes: ['Refresh tokens rotated on each use', 'Old tokens immediately invalidated']
+          },
+          {
+            id: 'magic-link',
+            name: 'Magic Link Authentication',
+            description: 'Passwordless login via email link.',
+            steps: [
+              { actor: 'User', action: 'Click "Magic Link"', detail: 'Alternative login method', type: 'user' },
+              { actor: 'User', action: 'Enter email', detail: 'Email address input', type: 'user' },
+              { actor: 'API', action: 'POST /api/auth/magic-link', detail: 'Request magic link', type: 'api' },
+              { actor: 'Backend', action: 'Generate magic token', detail: 'UUID, hash before storing', type: 'api' },
+              { actor: 'DB', action: 'Store hashed token', detail: 'With 15 min expiry', type: 'database' },
+              { actor: 'Email', action: 'Send magic link', detail: '/auth/magic-link?token={uuid}', type: 'external' },
+              { actor: 'User', action: 'Click email link', detail: 'Opens verification page', type: 'user' },
+              { actor: 'API', action: 'POST /api/auth/magic-link/verify', detail: 'Verify token', type: 'api' },
+              { actor: 'DB', action: 'Delete used token', detail: 'Single-use only', type: 'database' },
+              { actor: 'Backend', action: 'Generate JWT pair', detail: 'Login user', type: 'api' }
+            ],
+            endpoint: 'POST /api/auth/magic-link',
+            request: '{ email: string }',
+            response: '{ message: "Magic link sent" }',
+            securityNotes: ['Tokens hashed before storage', 'Single-use, 15 min expiry']
+          },
+          {
+            id: 'exchange-token',
+            name: 'Exchange Token Flow',
+            description: 'Cross-app authentication from Funnel to Companions after payment.',
+            steps: [
+              { actor: 'Funnel', action: 'User creates password', detail: 'After Stripe payment', type: 'frontend' },
+              { actor: 'FunnelAPI', action: 'POST /api/register-subscriber', detail: 'Create user with profile', type: 'api' },
+              { actor: 'Backend', action: 'Create user', detail: 'With personality data', type: 'api' },
+              { actor: 'FunnelAPI', action: 'Generate exchange code', detail: 'UUID for transfer', type: 'api' },
+              { actor: 'Backend', action: 'POST /api/auth/exchange-token/create', detail: 'Store hashed code', type: 'api' },
+              { actor: 'DB', action: 'Store exchange token', detail: '5 min expiry', type: 'database' },
+              { actor: 'Funnel', action: 'Redirect to Companions', detail: '?code={exchangeCode}', type: 'frontend' },
+              { actor: 'Companions', action: 'Extract code from URL', detail: 'Parse query param', type: 'frontend' },
+              { actor: 'API', action: 'POST /api/auth/exchange-token', detail: 'Verify and exchange', type: 'api' },
+              { actor: 'DB', action: 'Delete used code', detail: 'Single-use', type: 'database' },
+              { actor: 'Backend', action: 'Return JWT pair', detail: 'User now logged in', type: 'api' }
+            ],
+            endpoint: 'POST /api/auth/exchange-token',
+            request: '{ code: string }',
+            response: '{ accessToken, refreshToken, user }',
+            securityNotes: ['Code hashed before storage', 'Single-use, 5 min expiry']
+          },
+          {
+            id: 'password-reset',
+            name: 'Password Reset',
+            description: 'Forgot password recovery flow via email.',
+            steps: [
+              { actor: 'User', action: 'Click "Forgot Password"', detail: 'Forgot password link', type: 'user' },
+              { actor: 'User', action: 'Enter email', detail: 'Account email', type: 'user' },
+              { actor: 'API', action: 'POST /api/auth/forgot-password', detail: 'Request reset', type: 'api' },
+              { actor: 'Backend', action: 'Generate reset token', detail: 'UUID, 1 hour expiry', type: 'api' },
+              { actor: 'DB', action: 'Store hashed token', detail: 'With expiry timestamp', type: 'database' },
+              { actor: 'Email', action: 'Send reset email', detail: '/reset-password?token={uuid}', type: 'external' },
+              { actor: 'User', action: 'Click reset link', detail: 'Opens new password form', type: 'user' },
+              { actor: 'User', action: 'Enter new password', detail: 'New password input', type: 'user' },
+              { actor: 'API', action: 'POST /api/auth/reset-password', detail: 'Submit new password', type: 'api' },
+              { actor: 'Backend', action: 'Hash new password', detail: 'bcrypt.hash()', type: 'api' },
+              { actor: 'DB', action: 'UPDATE password', detail: 'Delete all sessions', type: 'database' }
+            ],
+            endpoint: 'POST /api/auth/reset-password',
+            request: '{ token: string, password: string }',
+            response: '{ message: "Password reset successful" }',
+            securityNotes: ['Token hashed before storage', 'All sessions invalidated on reset']
+          },
+          {
+            id: 'logout',
+            name: 'Logout',
+            description: 'Session termination and token cleanup.',
+            steps: [
+              { actor: 'User', action: 'Click "Logout"', detail: 'Logout button', type: 'user' },
+              { actor: 'Context', action: 'logout()', detail: 'AuthContext method', type: 'frontend' },
+              { actor: 'API', action: 'POST /api/auth/logout', detail: 'With access token', type: 'api' },
+              { actor: 'Backend', action: 'Extract user from token', detail: 'JWT decode', type: 'api' },
+              { actor: 'DB', action: 'DELETE session', detail: 'Remove refresh token', type: 'database' },
+              { actor: 'Context', action: 'Clear localStorage', detail: 'Remove all tokens', type: 'frontend' },
+              { actor: 'Context', action: 'setUser(null)', detail: 'Clear user state', type: 'frontend' },
+              { actor: 'UI', action: 'Redirect to landing', detail: 'Show logged out state', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/auth/logout',
+            request: 'Authorization: Bearer {token}',
+            response: '{ message: "Logged out" }',
+            securityNotes: ['Server-side session invalidation', 'Client-side token cleanup']
+          },
+          {
+            id: 'session-validation',
+            name: 'Session Validation',
+            description: 'Validate existing session on page load.',
+            steps: [
+              { actor: 'User', action: 'Visit companions app', detail: 'Page load', type: 'user' },
+              { actor: 'Context', action: 'Initialize AuthProvider', detail: 'useEffect on mount', type: 'frontend' },
+              { actor: 'Context', action: 'Check localStorage', detail: 'Look for tokens', type: 'frontend' },
+              { actor: 'API', action: 'GET /api/auth/me', detail: 'Validate access token', type: 'api' },
+              { actor: 'Backend', action: 'Verify JWT', detail: 'Check signature & expiry', type: 'api' },
+              { actor: 'Backend', action: 'Return user data', detail: '{ user }', type: 'api' },
+              { actor: 'Context', action: 'setUser(user)', detail: 'Update user state', type: 'frontend' },
+              { actor: 'Context', action: 'Check subscription', detail: 'GET /api/subscription', type: 'frontend' },
+              { actor: 'UI', action: 'Show authenticated state', detail: 'User logged in', type: 'frontend' }
+            ],
+            endpoint: 'GET /api/auth/me',
+            request: 'Authorization: Bearer {token}',
+            response: '{ user: { id, email, isAdmin, personalityMode } }',
+            securityNotes: ['Token validated on every page load', 'Triggers refresh if expired']
+          }
+        ]
+      },
+      chat: {
+        name: 'Chat Flows',
+        description: 'AI chat functionality with streaming responses and conversation management.',
+        flows: [
+          {
+            id: 'send-message',
+            name: 'Send Message (Authenticated)',
+            description: 'Standard chat flow for logged-in users with personalization.',
+            steps: [
+              { actor: 'User', action: 'Type message', detail: 'Chat input', type: 'user' },
+              { actor: 'User', action: 'Press Enter / Click Send', detail: 'Submit message', type: 'user' },
+              { actor: 'UI', action: 'Add message to state', detail: 'Optimistic update', type: 'frontend' },
+              { actor: 'UI', action: 'Show thinking indicator', detail: 'Loading state', type: 'frontend' },
+              { actor: 'Hook', action: 'append(userMessage)', detail: 'useChat hook', type: 'frontend' },
+              { actor: 'API', action: 'POST /api/chat', detail: 'With messages & preferences', type: 'api' },
+              { actor: 'Backend', action: 'Verify JWT', detail: 'Auth check', type: 'api' },
+              { actor: 'DB', action: 'Load user preferences', detail: 'personalityMode, responseLength', type: 'database' },
+              { actor: 'DB', action: 'Load companion config', detail: 'systemPrompt, personalities', type: 'database' },
+              { actor: 'Backend', action: 'Build system prompt', detail: 'Combine base + prefs + personality', type: 'api' },
+              { actor: 'Ollama', action: 'POST /api/chat (stream)', detail: 'LLM inference', type: 'external' },
+              { actor: 'Backend', action: 'SSE stream to client', detail: 'Token by token', type: 'api' },
+              { actor: 'UI', action: 'Render progressive response', detail: 'Real-time updates', type: 'frontend' },
+              { actor: 'UI', action: 'Auto-save conversation', detail: 'PUT /api/conversations/{id}', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/chat',
+            request: '{ messages: Message[], conversationId?, preferences? }',
+            response: 'SSE stream: event: delta, data: {"content": "token"}',
+            securityNotes: ['User-specific personalization', 'Rate limited per user']
+          },
+          {
+            id: 'guest-mode',
+            name: 'Send Message (Guest Mode)',
+            description: 'Chat flow for unauthenticated users with 6 message limit.',
+            steps: [
+              { actor: 'User', action: 'Type message', detail: 'No login required', type: 'user' },
+              { actor: 'UI', action: 'Get guestMessageCount', detail: 'localStorage check', type: 'frontend' },
+              { actor: 'UI', action: 'Check limit (count < 6)', detail: 'Enforce free tier', type: 'frontend' },
+              { actor: 'UI', action: 'Increment count', detail: 'localStorage update', type: 'frontend' },
+              { actor: 'Hook', action: 'append(userMessage)', detail: 'No Authorization header', type: 'frontend' },
+              { actor: 'Backend', action: 'Use default system prompt', detail: 'No personalization', type: 'api' },
+              { actor: 'Ollama', action: 'Stream response', detail: 'Generic AI response', type: 'external' },
+              { actor: 'UI', action: 'Save to localStorage only', detail: 'No server persistence', type: 'frontend' },
+              { actor: 'UI', action: 'Show remaining count', detail: '"X messages remaining"', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/chat (no auth)',
+            request: '{ messages: Message[] }',
+            response: 'SSE stream (limited personalization)',
+            securityNotes: ['6 message limit tracked client-side', 'No conversation persistence']
+          },
+          {
+            id: 'load-conversations',
+            name: 'Load Conversations',
+            description: 'Fetch conversation list on page load.',
+            steps: [
+              { actor: 'User', action: 'Open chat page', detail: 'Page navigation', type: 'user' },
+              { actor: 'Service', action: 'getConversations()', detail: 'ConversationService', type: 'frontend' },
+              { actor: 'API', action: 'GET /api/conversations', detail: 'Fetch user conversations', type: 'api' },
+              { actor: 'Backend', action: 'Verify JWT', detail: 'Get userId', type: 'api' },
+              { actor: 'DB', action: 'SELECT conversations', detail: 'WHERE userId = ?', type: 'database' },
+              { actor: 'UI', action: 'Display conversation list', detail: 'Sorted by lastMessageAt', type: 'frontend' }
+            ],
+            endpoint: 'GET /api/conversations',
+            request: 'Authorization: Bearer {token}',
+            response: '{ conversations: [{ id, title, messageCount, lastMessageAt }] }',
+            securityNotes: ['User can only see own conversations', 'Fallback to localStorage cache']
+          },
+          {
+            id: 'create-conversation',
+            name: 'Create New Conversation',
+            description: 'Start a new chat conversation.',
+            steps: [
+              { actor: 'User', action: 'Click "New Chat"', detail: 'Start fresh conversation', type: 'user' },
+              { actor: 'UI', action: 'Clear current messages', detail: 'Reset state', type: 'frontend' },
+              { actor: 'UI', action: 'Generate temp ID', detail: 'Client-side UUID', type: 'frontend' },
+              { actor: 'User', action: 'Send first message', detail: 'Start chatting', type: 'user' },
+              { actor: 'Service', action: 'saveConversation()', detail: 'On first save', type: 'frontend' },
+              { actor: 'API', action: 'POST /api/conversations', detail: 'Create conversation', type: 'api' },
+              { actor: 'Backend', action: 'Generate title', detail: 'From first message', type: 'api' },
+              { actor: 'DB', action: 'INSERT conversation', detail: 'Create record', type: 'database' },
+              { actor: 'Service', action: 'Store conversation ID', detail: 'For future saves', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/conversations',
+            request: '{ messages: Message[] }',
+            response: '{ id: string, title: string }',
+            securityNotes: ['Auto-created on first message', 'Title generated from content']
+          },
+          {
+            id: 'delete-conversation',
+            name: 'Delete Conversation',
+            description: 'Remove a conversation and all messages.',
+            steps: [
+              { actor: 'User', action: 'Click delete', detail: 'On conversation', type: 'user' },
+              { actor: 'UI', action: 'Show confirmation', detail: 'Confirm dialog', type: 'frontend' },
+              { actor: 'User', action: 'Confirm delete', detail: 'Click confirm', type: 'user' },
+              { actor: 'Service', action: 'deleteConversation(id)', detail: 'ConversationService', type: 'frontend' },
+              { actor: 'API', action: 'DELETE /api/conversations/{id}', detail: 'Remove conversation', type: 'api' },
+              { actor: 'DB', action: 'DELETE conversation', detail: 'Cascade to messages', type: 'database' },
+              { actor: 'UI', action: 'Remove from list', detail: 'Update UI state', type: 'frontend' }
+            ],
+            endpoint: 'DELETE /api/conversations/:id',
+            request: 'Authorization: Bearer {token}',
+            response: '{ success: true }',
+            securityNotes: ['Cascading delete to messages', 'User ownership verified']
+          },
+          {
+            id: 'ice-breakers',
+            name: 'Ice Breaker Flow',
+            description: 'Pre-defined conversation starters for new chats.',
+            steps: [
+              { actor: 'UI', action: 'Display ice breakers', detail: 'New conversation detected', type: 'frontend' },
+              { actor: 'User', action: 'Click ice breaker', detail: '"Tell me about yourself"', type: 'user' },
+              { actor: 'UI', action: 'Hide ice breakers', detail: 'Conversation started', type: 'frontend' },
+              { actor: 'UI', action: 'Add as user message', detail: 'To message list', type: 'frontend' },
+              { actor: 'Hook', action: 'append(iceBreaker)', detail: 'Same as regular message', type: 'frontend' },
+              { actor: 'Backend', action: 'Process normally', detail: 'Standard chat flow', type: 'api' }
+            ],
+            endpoint: 'Same as chat flow',
+            request: 'Ice breaker text as user message',
+            response: 'AI response via SSE',
+            securityNotes: ['Client-side feature', 'No special backend handling']
+          },
+          {
+            id: 'update-preferences',
+            name: 'Update Response Preferences',
+            description: 'Change response length and personality mode.',
+            steps: [
+              { actor: 'User', action: 'Open settings modal', detail: 'Settings icon', type: 'user' },
+              { actor: 'UI', action: 'Show current preferences', detail: 'Load from state', type: 'frontend' },
+              { actor: 'User', action: 'Change response length', detail: 'Brief, Moderate, Detailed', type: 'user' },
+              { actor: 'User', action: 'Click "Save"', detail: 'Submit changes', type: 'user' },
+              { actor: 'API', action: 'PUT /api/settings', detail: 'Update preferences', type: 'api' },
+              { actor: 'DB', action: 'UPDATE user_preferences', detail: 'Save new values', type: 'database' },
+              { actor: 'Context', action: 'Update local state', detail: 'Reflect changes', type: 'frontend' },
+              { actor: 'UI', action: 'Show success toast', detail: 'Confirm saved', type: 'frontend' }
+            ],
+            endpoint: 'PUT /api/settings',
+            request: '{ responseLength?, personalityMode?, theme? }',
+            response: '{ preferences: {...} }',
+            securityNotes: ['Affects future messages only', 'Stored per-user']
+          },
+          {
+            id: 'credit-limit',
+            name: 'Credit Limit Error',
+            description: 'Handling when user runs out of message credits.',
+            steps: [
+              { actor: 'User', action: 'Send message', detail: 'Chat attempt', type: 'user' },
+              { actor: 'Hook', action: 'append(message)', detail: 'API call', type: 'frontend' },
+              { actor: 'Backend', action: 'Check user credits', detail: 'Subscription check', type: 'api' },
+              { actor: 'Backend', action: 'Return 402', detail: '{ error: "Credits exhausted" }', type: 'api' },
+              { actor: 'Hook', action: 'Error callback', detail: 'onError handler', type: 'frontend' },
+              { actor: 'UI', action: 'Show upgrade modal', detail: '"Upgrade to continue"', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/chat',
+            request: 'Normal chat request',
+            response: '402 { error: "Credits exhausted", code: "CREDITS_EXHAUSTED" }',
+            securityNotes: ['Server-side credit tracking', 'Graceful degradation']
+          },
+          {
+            id: 'stream-interruption',
+            name: 'Stream Interruption',
+            description: 'Handling SSE stream disconnection mid-response.',
+            steps: [
+              { actor: 'User', action: 'Send message', detail: 'Start chat', type: 'user' },
+              { actor: 'Backend', action: 'Start SSE stream', detail: 'Ollama streaming', type: 'api' },
+              { actor: 'UI', action: 'Receive partial tokens', detail: 'Progressive rendering', type: 'frontend' },
+              { actor: 'API', action: 'Connection lost', detail: 'Network error', type: 'api' },
+              { actor: 'Hook', action: 'Detect stream error', detail: 'onError callback', type: 'frontend' },
+              { actor: 'UI', action: 'Show partial response', detail: 'Keep what was received', type: 'frontend' },
+              { actor: 'UI', action: 'Show warning', detail: '"Response interrupted"', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/chat',
+            request: 'Normal chat request',
+            response: 'Partial SSE stream + error',
+            securityNotes: ['Partial response preserved', 'User can regenerate']
+          }
+        ]
+      },
+      subscription: {
+        name: 'Subscription Flows',
+        description: 'Stripe payment processing and subscription lifecycle management.',
+        flows: [
+          {
+            id: 'checkout-companions',
+            name: 'Checkout (Companions App)',
+            description: 'Upgrade flow for existing users in the chat app.',
+            steps: [
+              { actor: 'User', action: 'Click "Upgrade"', detail: 'Upgrade button', type: 'user' },
+              { actor: 'UI', action: 'Show plan selection', detail: 'Monthly/Yearly options', type: 'frontend' },
+              { actor: 'User', action: 'Select plan', detail: 'Choose pricing', type: 'user' },
+              { actor: 'API', action: 'POST /api/stripe/checkout', detail: '{ priceId, successUrl }', type: 'api' },
+              { actor: 'Backend', action: 'Get user from token', detail: 'Auth check', type: 'api' },
+              { actor: 'Backend', action: 'Check existing subscription', detail: 'Prevent duplicates', type: 'api' },
+              { actor: 'Stripe', action: 'Create checkout session', detail: 'With customer_email', type: 'external' },
+              { actor: 'UI', action: 'Redirect to Stripe', detail: 'Hosted checkout page', type: 'frontend' },
+              { actor: 'User', action: 'Complete payment', detail: 'Enter card details', type: 'user' },
+              { actor: 'Stripe', action: 'Redirect to success_url', detail: 'Payment complete', type: 'external' },
+              { actor: 'UI', action: 'Refresh subscription status', detail: 'GET /api/subscription', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/stripe/checkout',
+            request: '{ priceId: string, successUrl: string, cancelUrl: string }',
+            response: '{ url: string }',
+            securityNotes: ['Stripe handles PCI compliance', 'User ID in metadata']
+          },
+          {
+            id: 'checkout-funnel',
+            name: 'Checkout (Funnel App)',
+            description: 'New user signup through the marketing funnel.',
+            steps: [
+              { actor: 'User', action: 'Complete quiz', detail: 'Personality quiz done', type: 'user' },
+              { actor: 'User', action: 'Enter email', detail: 'Email capture', type: 'user' },
+              { actor: 'User', action: 'Select plan', detail: 'Choose pricing', type: 'user' },
+              { actor: 'FunnelAPI', action: 'Check existing user', detail: 'POST /api/check-user', type: 'api' },
+              { actor: 'FunnelAPI', action: 'Create Stripe session', detail: 'With email, persona metadata', type: 'api' },
+              { actor: 'Stripe', action: 'Return checkout URL', detail: 'Hosted page', type: 'external' },
+              { actor: 'UI', action: 'Redirect to Stripe', detail: 'Payment page', type: 'frontend' },
+              { actor: 'User', action: 'Complete payment', detail: 'Card details', type: 'user' },
+              { actor: 'Stripe', action: 'Webhook: checkout.session.completed', detail: 'Async notification', type: 'external' },
+              { actor: 'Stripe', action: 'Redirect to /success', detail: 'With session_id', type: 'external' },
+              { actor: 'UI', action: 'Show password form', detail: 'Account creation', type: 'frontend' }
+            ],
+            endpoint: 'GET /api/stripe/checkout',
+            request: '{ email, priceId, persona }',
+            response: '{ url: string }',
+            securityNotes: ['Duplicate user check before checkout', 'Persona stored in metadata']
+          },
+          {
+            id: 'webhook-processing',
+            name: 'Webhook Processing',
+            description: 'Stripe webhook handling for subscription events.',
+            steps: [
+              { actor: 'Stripe', action: 'POST /api/stripe/webhook', detail: 'Event notification', type: 'external' },
+              { actor: 'Backend', action: 'Get raw body', detail: 'For signature verification', type: 'api' },
+              { actor: 'Backend', action: 'Verify signature', detail: 'stripe-signature header', type: 'api' },
+              { actor: 'Backend', action: 'Parse event type', detail: 'checkout.session.completed, etc.', type: 'api' },
+              { actor: 'Backend', action: 'Handle event', detail: 'Switch on event.type', type: 'api' },
+              { actor: 'DB', action: 'Update subscription', detail: 'Status, plan type, etc.', type: 'database' },
+              { actor: 'Email', action: 'Send notification', detail: 'Welcome, cancellation, etc.', type: 'external' },
+              { actor: 'Backend', action: 'Return 200', detail: '{ received: true }', type: 'api' }
+            ],
+            endpoint: 'POST /api/stripe/webhook',
+            request: 'Stripe event payload',
+            response: '{ received: true }',
+            securityNotes: ['Always verify webhook signature', 'Handle duplicate events idempotently']
+          },
+          {
+            id: 'subscription-status',
+            name: 'Subscription Status Check',
+            description: 'How the app checks subscription status.',
+            steps: [
+              { actor: 'UI', action: 'App load or after checkout', detail: 'Trigger status check', type: 'frontend' },
+              { actor: 'Context', action: 'checkSubscription()', detail: 'AuthContext method', type: 'frontend' },
+              { actor: 'API', action: 'GET /api/subscription', detail: 'Fetch status', type: 'api' },
+              { actor: 'DB', action: 'Get user subscription data', detail: 'stripeCustomerId, status', type: 'database' },
+              { actor: 'Stripe', action: 'GET /customers/{id}/subscriptions', detail: 'Verify with Stripe', type: 'external' },
+              { actor: 'Backend', action: 'Parse status', detail: 'active, cancelled, past_due', type: 'api' },
+              { actor: 'Context', action: 'setSubscriptionStatus()', detail: 'Update state', type: 'frontend' }
+            ],
+            endpoint: 'GET /api/subscription',
+            request: 'Authorization: Bearer {token}',
+            response: '{ status, plan, expiresAt, stripeCustomerId }',
+            securityNotes: ['Status verified with Stripe API', 'Cached on client for performance']
+          },
+          {
+            id: 'customer-portal',
+            name: 'Customer Portal',
+            description: 'Stripe portal for managing subscriptions.',
+            steps: [
+              { actor: 'User', action: 'Click "Manage Subscription"', detail: 'Account page', type: 'user' },
+              { actor: 'API', action: 'POST /api/stripe/portal', detail: 'Create portal session', type: 'api' },
+              { actor: 'Backend', action: 'Get stripeCustomerId', detail: 'From user record', type: 'api' },
+              { actor: 'Stripe', action: 'Create portal session', detail: 'With return_url', type: 'external' },
+              { actor: 'UI', action: 'Redirect to portal', detail: 'Stripe hosted page', type: 'frontend' },
+              { actor: 'User', action: 'Manage subscription', detail: 'Cancel, update card, etc.', type: 'user' },
+              { actor: 'Stripe', action: 'Redirect back', detail: 'To return_url', type: 'external' },
+              { actor: 'Stripe', action: 'Webhooks for changes', detail: 'Async updates', type: 'external' }
+            ],
+            endpoint: 'POST /api/stripe/portal',
+            request: 'Authorization: Bearer {token}',
+            response: '{ url: string }',
+            securityNotes: ['Portal actions trigger webhooks', 'User can only manage own subscription']
+          },
+          {
+            id: 'subscription-states',
+            name: 'Subscription State Machine',
+            description: 'Subscription status lifecycle and transitions.',
+            states: [
+              { id: 'inactive', name: 'Inactive', icon: '⚪', desc: 'No subscription', transitions: ['active'] },
+              { id: 'active', name: 'Active', icon: '🟢', desc: 'Subscription active', transitions: ['past_due', 'cancelled'] },
+              { id: 'past_due', name: 'Past Due', icon: '🟡', desc: 'Payment failed', transitions: ['active', 'cancelled'] },
+              { id: 'cancelled', name: 'Cancelled', icon: '🔴', desc: 'User cancelled', transitions: ['active'] }
+            ],
+            endpoint: 'Managed via webhooks',
+            request: 'N/A',
+            response: 'N/A',
+            securityNotes: ['State transitions only via Stripe webhooks', 'Grace period for past_due']
+          }
+        ]
+      },
+      funnel: {
+        name: 'Funnel Conversion Flows',
+        description: 'Marketing funnel from discovery to account creation.',
+        flows: [
+          {
+            id: 'complete-journey',
+            name: 'Complete Conversion Flow',
+            description: 'Full user journey through the marketing funnel.',
+            steps: [
+              { actor: 'User', action: 'Visit funnel.anplexa.com', detail: 'Phase 1: Discovery', type: 'user' },
+              { actor: 'Entry', action: 'Display 6 persona cards', detail: 'Choose your path', type: 'frontend' },
+              { actor: 'User', action: 'Click persona card', detail: 'Phase 2: Selection', type: 'user' },
+              { actor: 'Quiz', action: 'Navigate to quiz', detail: '/funnel/{persona}/paid', type: 'frontend' },
+              { actor: 'User', action: 'Answer 3 questions', detail: 'Phase 3: Quiz', type: 'user' },
+              { actor: 'Backend', action: 'POST /funnel-responses', detail: 'Store each answer', type: 'api' },
+              { actor: 'User', action: 'Enter email', detail: 'Phase 4: Email Capture', type: 'user' },
+              { actor: 'Backend', action: 'POST /funnel/profile', detail: 'Store personality', type: 'api' },
+              { actor: 'Pricing', action: 'Show pricing options', detail: 'Phase 5: Decision', type: 'frontend' },
+              { actor: 'User', action: 'Click "Subscribe"', detail: 'Paid path', type: 'user' },
+              { actor: 'Stripe', action: 'Checkout flow', detail: 'Phase 6: Payment', type: 'external' },
+              { actor: 'Success', action: 'Show password form', detail: 'Phase 7: Account', type: 'frontend' },
+              { actor: 'Backend', action: 'POST /register-subscriber', detail: 'Create user', type: 'api' },
+              { actor: 'App', action: 'Redirect with exchange token', detail: 'Phase 8: Access', type: 'frontend' }
+            ],
+            endpoint: 'Multiple endpoints',
+            request: 'Various across flow',
+            response: 'Various across flow',
+            securityNotes: ['Profile stored for personalization', 'Exchange token for secure redirect']
+          },
+          {
+            id: 'persona-selection',
+            name: 'Persona Selection',
+            description: 'Choose from 6 personality-based entry paths.',
+            personas: [
+              { id: 'A', name: 'Quietly Lonely', desc: 'Connection seeking', color: 'cyan' },
+              { id: 'B', name: 'Curious Explorer', desc: 'Fantasy open', color: 'purple' },
+              { id: 'C', name: 'Privacy First', desc: 'Safety focused', color: 'green' },
+              { id: 'D', name: 'Late Night Thinker', desc: 'Reflective', color: 'amber' },
+              { id: 'E', name: 'Emotional Explorer', desc: 'Deep understanding', color: 'red' },
+              { id: 'F', name: 'Creative Seeker', desc: 'Playful imagination', color: 'blue' }
+            ],
+            steps: [
+              { actor: 'Entry', action: 'Display persona cards', detail: '6 options', type: 'frontend' },
+              { actor: 'User', action: 'Click persona card', detail: 'Make selection', type: 'user' },
+              { actor: 'Analytics', action: 'Track persona_selected', detail: '{ persona }', type: 'frontend' },
+              { actor: 'Entry', action: 'Navigate to quiz', detail: '/funnel/{persona}/paid', type: 'frontend' }
+            ],
+            endpoint: 'Client-side routing',
+            request: 'N/A',
+            response: 'N/A',
+            securityNotes: ['Selection tracked for analytics', 'Determines quiz questions']
+          },
+          {
+            id: 'quiz-flow',
+            name: 'Quiz Flow',
+            description: '3 tailored questions based on selected persona.',
+            steps: [
+              { actor: 'UI', action: 'Display Q1', detail: 'First question', type: 'frontend' },
+              { actor: 'User', action: 'Select answer', detail: 'Multiple choice', type: 'user' },
+              { actor: 'State', action: 'Store response', detail: 'Local state', type: 'frontend' },
+              { actor: 'API', action: 'POST /funnel-responses', detail: '{ questionId, answer }', type: 'api' },
+              { actor: 'Analytics', action: 'Track question_answered', detail: 'Q1 answered', type: 'frontend' },
+              { actor: 'UI', action: 'Animate to Q2', detail: 'Transition', type: 'frontend' },
+              { actor: 'User', action: 'Answer Q2 and Q3', detail: 'Repeat flow', type: 'user' },
+              { actor: 'UI', action: 'Transition to email', detail: 'Quiz complete', type: 'frontend' }
+            ],
+            endpoint: 'POST /funnel-responses',
+            request: '{ sessionId, persona, questionId, answer }',
+            response: '{ success: true }',
+            securityNotes: ['Responses stored for personalization', 'Session ID links answers']
+          },
+          {
+            id: 'profile-submission',
+            name: 'Profile Submission',
+            description: 'Submit personality profile after email capture.',
+            steps: [
+              { actor: 'User', action: 'Enter email', detail: 'Email input', type: 'user' },
+              { actor: 'User', action: 'Submit', detail: 'Continue button', type: 'user' },
+              { actor: 'API', action: 'POST /funnel/profile', detail: 'Full profile data', type: 'api' },
+              { actor: 'Backend', action: 'Store contact_submission', detail: 'Email record', type: 'api' },
+              { actor: 'DB', action: 'Store funnel data', detail: 'Persona, responses, profile', type: 'database' },
+              { actor: 'UI', action: 'Show pricing options', detail: 'Decision point', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/funnel/profile',
+            request: '{ email, persona, responses, profile }',
+            response: '{ success: true }',
+            securityNotes: ['Profile used for AI personalization', 'Email stored for marketing']
+          },
+          {
+            id: 'duplicate-handling',
+            name: 'Duplicate User Handling',
+            description: 'Handle existing users attempting to sign up again.',
+            steps: [
+              { actor: 'User', action: 'Complete quiz, enter email', detail: 'Existing email', type: 'user' },
+              { actor: 'API', action: 'GET /stripe/checkout', detail: 'Checkout attempt', type: 'api' },
+              { actor: 'Backend', action: 'POST /check-user-subscription', detail: 'Check existence', type: 'api' },
+              { actor: 'DB', action: 'Find by email', detail: 'User lookup', type: 'database' },
+              { actor: 'Backend', action: 'Return { exists: true }', detail: 'User found', type: 'api' },
+              { actor: 'API', action: 'Return 409', detail: '{ error, loginUrl }', type: 'api' },
+              { actor: 'UI', action: 'Show "Already Registered"', detail: 'Login prompt', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/check-user-subscription',
+            request: '{ email: string }',
+            response: '{ exists: boolean, hasSubscription: boolean }',
+            securityNotes: ['Prevents duplicate accounts', 'Guides to login if exists']
+          },
+          {
+            id: 'registration',
+            name: 'Registration Flow',
+            description: 'Create account after successful Stripe payment.',
+            steps: [
+              { actor: 'User', action: 'Return from Stripe', detail: '/success?session_id={id}', type: 'user' },
+              { actor: 'Success', action: 'Parse session_id', detail: 'From URL', type: 'frontend' },
+              { actor: 'Success', action: 'Show password form', detail: 'Account creation', type: 'frontend' },
+              { actor: 'User', action: 'Enter password', detail: 'Create password', type: 'user' },
+              { actor: 'FunnelAPI', action: 'POST /register-subscriber', detail: '{ sessionId, password }', type: 'api' },
+              { actor: 'FunnelAPI', action: 'Retrieve Stripe session', detail: 'Get customer_email', type: 'api' },
+              { actor: 'Backend', action: 'POST /funnel/users', detail: 'Create with profile', type: 'api' },
+              { actor: 'DB', action: 'INSERT user', detail: 'With persona, responses', type: 'database' },
+              { actor: 'FunnelAPI', action: 'POST /stripe/verify-checkout', detail: 'Link Stripe customer', type: 'api' },
+              { actor: 'FunnelAPI', action: 'Create exchange token', detail: 'For redirect', type: 'api' },
+              { actor: 'Success', action: 'Redirect to Companions', detail: 'With exchange token', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/register-subscriber',
+            request: '{ sessionId: string, password: string }',
+            response: '{ redirectUrl, exchangeToken }',
+            securityNotes: ['Stripe session verified', 'Exchange token for secure handoff']
+          },
+          {
+            id: 'free-path',
+            name: 'Free Path Flow',
+            description: 'User chooses free trial without payment.',
+            steps: [
+              { actor: 'User', action: 'Complete quiz', detail: 'Quiz done', type: 'user' },
+              { actor: 'User', action: 'Enter email', detail: 'Email capture', type: 'user' },
+              { actor: 'User', action: 'Click "Try Free"', detail: 'Free path', type: 'user' },
+              { actor: 'API', action: 'POST /emails', detail: 'Waitlist signup', type: 'api' },
+              { actor: 'DB', action: 'INSERT email', detail: 'Waitlist record', type: 'database' },
+              { actor: 'Backend', action: 'POST /funnel/profile', detail: 'Store profile', type: 'api' },
+              { actor: 'Analytics', action: 'Track free_signup', detail: '{ persona }', type: 'frontend' },
+              { actor: 'Funnel', action: 'Redirect to Companions', detail: 'Guest mode', type: 'frontend' }
+            ],
+            endpoint: 'POST /api/emails',
+            request: '{ email, funnelSource, persona }',
+            response: '{ success: true }',
+            securityNotes: ['Profile stored for later', 'Guest mode with limits']
+          }
+        ]
+      },
+      data: {
+        name: 'Data Flow',
+        description: 'End-to-end data movement through the Anplexa platform.',
+        flows: [
+          {
+            id: 'system-overview',
+            name: 'System Architecture',
+            description: 'High-level view of how data flows between components.',
+            components: [
+              { id: 'funnel', name: 'Funnel App', type: 'frontend', desc: 'Marketing & conversion' },
+              { id: 'companions', name: 'Companions App', type: 'frontend', desc: 'AI chat interface' },
+              { id: 'api', name: 'API Server', type: 'api', desc: 'Express.js backend' },
+              { id: 'postgres', name: 'PostgreSQL', type: 'database', desc: 'Primary database' },
+              { id: 'ollama', name: 'Ollama LLM', type: 'external', desc: 'AI inference' },
+              { id: 'stripe', name: 'Stripe', type: 'external', desc: 'Payments' }
+            ],
+            steps: [
+              { actor: 'User', action: 'Entry point', detail: 'Funnel or Companions', type: 'user' },
+              { actor: 'Frontend', action: 'Client-side app', detail: 'React UI', type: 'frontend' },
+              { actor: 'API', action: 'Backend services', detail: 'Auth, Chat, Subscription', type: 'api' },
+              { actor: 'DB', action: 'Data persistence', detail: 'PostgreSQL', type: 'database' },
+              { actor: 'External', action: 'Third-party services', detail: 'Stripe, Ollama, etc.', type: 'external' }
+            ],
+            endpoint: 'N/A',
+            request: 'N/A',
+            response: 'N/A',
+            securityNotes: ['HTTPS for all connections', 'API keys secured']
+          },
+          {
+            id: 'new-user-paid',
+            name: 'New User (Paid Path)',
+            description: 'Data flow for new paid user journey.',
+            steps: [
+              { actor: 'User', action: 'Visit funnel', detail: 'Entry point', type: 'user' },
+              { actor: 'Funnel', action: 'Select persona', detail: 'A-F selection', type: 'frontend' },
+              { actor: 'API', action: 'POST /funnel-responses', detail: 'Store quiz answers', type: 'api' },
+              { actor: 'DB', action: 'Store responses', detail: 'Quiz data', type: 'database' },
+              { actor: 'Funnel', action: 'Enter email', detail: 'Email capture', type: 'frontend' },
+              { actor: 'API', action: 'POST /funnel/profile', detail: 'Store personality', type: 'api' },
+              { actor: 'DB', action: 'Store profile', detail: 'Personality data', type: 'database' },
+              { actor: 'Stripe', action: 'Checkout session', detail: 'Payment flow', type: 'external' },
+              { actor: 'Stripe', action: 'Webhook', detail: 'Payment complete', type: 'external' },
+              { actor: 'DB', action: 'Update subscription', detail: 'Status = active', type: 'database' },
+              { actor: 'User', action: 'Create password', detail: 'Account setup', type: 'user' },
+              { actor: 'API', action: 'POST /register-subscriber', detail: 'Create user', type: 'api' },
+              { actor: 'DB', action: 'INSERT user', detail: 'With profile', type: 'database' },
+              { actor: 'Companions', action: 'Exchange for JWT', detail: 'POST /auth/exchange-token', type: 'frontend' },
+              { actor: 'API', action: 'POST /chat', detail: 'Start chatting', type: 'api' },
+              { actor: 'Ollama', action: 'Generate response', detail: 'Personalized AI', type: 'external' }
+            ],
+            endpoint: 'Multiple endpoints',
+            request: 'Various',
+            response: 'Various',
+            securityNotes: ['Profile persists for personalization', 'JWT for authenticated requests']
+          },
+          {
+            id: 'returning-user',
+            name: 'Returning User',
+            description: 'Data flow for existing user session.',
+            steps: [
+              { actor: 'User', action: 'Visit companions', detail: 'Direct access', type: 'user' },
+              { actor: 'Companions', action: 'Check localStorage', detail: 'Look for tokens', type: 'frontend' },
+              { actor: 'API', action: 'GET /auth/me', detail: 'Validate session', type: 'api' },
+              { actor: 'DB', action: 'Validate session', detail: 'Check refresh token', type: 'database' },
+              { actor: 'API', action: 'Return user data', detail: '{ user }', type: 'api' },
+              { actor: 'Companions', action: 'Select conversation', detail: 'Chat history', type: 'frontend' },
+              { actor: 'API', action: 'GET /conversations/:id', detail: 'Load messages', type: 'api' },
+              { actor: 'DB', action: 'Fetch messages', detail: 'Message history', type: 'database' },
+              { actor: 'User', action: 'Send message', detail: 'Chat input', type: 'user' },
+              { actor: 'API', action: 'POST /chat (SSE)', detail: 'Stream request', type: 'api' },
+              { actor: 'DB', action: 'Load preferences', detail: 'Personality mode', type: 'database' },
+              { actor: 'Ollama', action: 'Stream response', detail: 'Token by token', type: 'external' },
+              { actor: 'Companions', action: 'Update UI', detail: 'Progressive render', type: 'frontend' }
+            ],
+            endpoint: 'Multiple endpoints',
+            request: 'Various',
+            response: 'Various',
+            securityNotes: ['Token refresh if expired', 'User-specific data only']
+          },
+          {
+            id: 'database-schema',
+            name: 'Database Schema',
+            description: 'PostgreSQL database structure and relationships.',
+            tables: [
+              { name: 'users', fields: 'id, email, password_hash, stripe_customer_id, subscription_status' },
+              { name: 'conversations', fields: 'id, user_id, title, created_at, updated_at' },
+              { name: 'messages', fields: 'id, conversation_id, role, content, created_at' },
+              { name: 'sessions', fields: 'id, user_id, refresh_token_hash, expires_at' },
+              { name: 'user_preferences', fields: 'id, user_id, gender, response_style, theme' }
+            ],
+            steps: [
+              { actor: 'users', action: 'Core user data', detail: 'Email, auth, subscription', type: 'database' },
+              { actor: 'conversations', action: 'Chat threads', detail: 'User conversations', type: 'database' },
+              { actor: 'messages', action: 'Chat messages', detail: 'user/assistant roles', type: 'database' },
+              { actor: 'sessions', action: 'Auth sessions', detail: 'Refresh tokens', type: 'database' },
+              { actor: 'user_preferences', action: 'User settings', detail: 'Theme, response style', type: 'database' }
+            ],
+            endpoint: 'N/A',
+            request: 'N/A',
+            response: 'N/A',
+            securityNotes: ['Passwords hashed with bcrypt', 'Tokens hashed before storage']
+          },
+          {
+            id: 'api-contracts',
+            name: 'API Data Contracts',
+            description: 'Request/response formats for key endpoints.',
+            contracts: [
+              { endpoint: 'POST /api/auth/login', request: '{ email, password }', response: '{ accessToken, refreshToken, user }' },
+              { endpoint: 'POST /api/chat', request: '{ messages[], conversationId?, preferences? }', response: 'SSE stream' },
+              { endpoint: 'GET /api/conversations', request: 'Auth header', response: '{ conversations[] }' },
+              { endpoint: 'GET /api/subscription', request: 'Auth header', response: '{ status, plan, expiresAt }' },
+              { endpoint: 'POST /api/stripe/checkout', request: '{ priceId, successUrl }', response: '{ url }' }
+            ],
+            steps: [
+              { actor: 'Client', action: 'HTTP Request', detail: 'JSON body', type: 'frontend' },
+              { actor: 'API', action: 'Validate request', detail: 'Zod schemas', type: 'api' },
+              { actor: 'API', action: 'Process request', detail: 'Business logic', type: 'api' },
+              { actor: 'API', action: 'Return response', detail: 'JSON or SSE', type: 'api' }
+            ],
+            endpoint: 'Various',
+            request: 'JSON',
+            response: 'JSON or SSE',
+            securityNotes: ['All requests validated with Zod', 'Consistent error format']
+          }
+        ]
+      }
+    };
+
+    let currentTab = 'auth';
+    let currentFlow = 0;
+    let currentStep = null;
+
+    const mainTabs = document.getElementById('mainTabs');
+    const subflowsContainer = document.getElementById('subflowsContainer');
+    const flowCanvas = document.getElementById('flowCanvas');
+    const detailPanel = document.getElementById('detailPanel');
+
+    function init() {
+      renderMainTabs();
+      renderSubflows();
+      renderFlowCanvas();
+      renderDetailPanel();
+    }
+
+    function renderMainTabs() {
+      mainTabs.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === currentTab);
+        tab.onclick = () => {
+          currentTab = tab.dataset.tab;
+          currentFlow = 0;
+          currentStep = null;
+          renderMainTabs();
+          renderSubflows();
+          renderFlowCanvas();
+          renderDetailPanel();
+        };
+      });
+    }
+
+    function renderSubflows() {
+      const data = flowData[currentTab];
+      const flows = data.flows;
+      const label = document.createElement('div');
+      label.className = 'nav-label';
+      label.textContent = data.name;
+
+      subflowsContainer.replaceChildren(label);
+
+      flows.forEach((flow, index) => {
+        const item = document.createElement('div');
+        item.className = 'subflow-item' + (index === currentFlow ? ' active' : '');
+        item.textContent = flow.name;
+        item.onclick = () => {
+          currentFlow = index;
+          currentStep = null;
+          renderSubflows();
+          renderFlowCanvas();
+          renderDetailPanel();
+        };
+        subflowsContainer.appendChild(item);
+      });
+    }
+
+    function getActorIcon(type) {
+      const icons = { user: '👤', frontend: '🖥️', api: '⚡', database: '💾', external: '🌐' };
+      return icons[type] || '📦';
+    }
+
+    function getTagClass(type) {
+      const classes = { user: 'cyan', frontend: 'purple', api: 'green', database: 'amber', external: 'red' };
+      return classes[type] || 'cyan';
+    }
+
+    function renderFlowCanvas() {
+      const data = flowData[currentTab];
+      const flow = data.flows[currentFlow];
+
+      flowCanvas.replaceChildren();
+
+      const header = document.createElement('div');
+      header.className = 'flow-header fade-in';
+
+      const headerContent = document.createElement('div');
+      const title = document.createElement('h2');
+      title.className = 'flow-title';
+      title.textContent = flow.name;
+      const desc = document.createElement('p');
+      desc.className = 'flow-description';
+      desc.textContent = flow.description;
+      headerContent.appendChild(title);
+      headerContent.appendChild(desc);
+
+      const badge = document.createElement('span');
+      badge.className = 'flow-badge';
+      badge.textContent = flow.states ? flow.states.length + ' States' :
+                          flow.personas ? flow.personas.length + ' Personas' :
+                          (flow.steps?.length || 0) + ' Steps';
+
+      header.appendChild(headerContent);
+      header.appendChild(badge);
+      flowCanvas.appendChild(header);
+
+      if (flow.states) {
+        const diagram = document.createElement('div');
+        diagram.className = 'state-diagram';
+        flow.states.forEach(state => {
+          const node = document.createElement('div');
+          node.className = 'state-node';
+          node.innerHTML = '<span class="state-icon">' + state.icon + '</span>' +
+                          '<span class="state-label">' + state.name + '</span>' +
+                          '<span class="state-desc">' + state.desc + '</span>';
+          diagram.appendChild(node);
+        });
+        flowCanvas.appendChild(diagram);
+        return;
+      }
+
+      if (flow.personas) {
+        const colorMap = { cyan: '--accent-cyan', purple: '--accent-purple', green: '--accent-green', amber: '--accent-amber', red: '--accent-red', blue: '--accent-blue' };
+        const diagram = document.createElement('div');
+        diagram.className = 'state-diagram';
+        flow.personas.forEach(persona => {
+          const node = document.createElement('div');
+          node.className = 'state-node';
+          node.style.borderColor = 'var(' + colorMap[persona.color] + ')';
+          node.innerHTML = '<span class="state-label" style="color: var(' + colorMap[persona.color] + ');">Persona ' + persona.id + '</span>' +
+                          '<span class="state-icon" style="font-size: 0.9rem;">' + persona.name + '</span>' +
+                          '<span class="state-desc">' + persona.desc + '</span>';
+          diagram.appendChild(node);
+        });
+        flowCanvas.appendChild(diagram);
+        return;
+      }
+
+      const steps = flow.steps || [];
+      const actors = [...new Set(steps.map(s => s.actor))];
+
+      const sequenceDiagram = document.createElement('div');
+      sequenceDiagram.className = 'sequence-diagram';
+
+      const actorsDiv = document.createElement('div');
+      actorsDiv.className = 'sequence-actors';
+      actors.slice(0, 6).forEach(actor => {
+        const step = steps.find(s => s.actor === actor);
+        const iconClass = step ? step.type : 'frontend';
+        const actorDiv = document.createElement('div');
+        actorDiv.className = 'sequence-actor fade-in';
+        actorDiv.innerHTML = '<div class="sequence-actor-icon flow-node-icon ' + iconClass + '">' + getActorIcon(iconClass) + '</div>' +
+                            '<span class="sequence-actor-name">' + actor + '</span>';
+        actorsDiv.appendChild(actorDiv);
+      });
+      sequenceDiagram.appendChild(actorsDiv);
+
+      steps.forEach((step, index) => {
+        const stepDiv = document.createElement('div');
+        stepDiv.className = 'sequence-step fade-in fade-in-delay-' + Math.min((index % 4) + 1, 4) + (currentStep === index ? ' active' : '');
+        stepDiv.innerHTML = '<span class="sequence-step-number">' + (index + 1) + '</span>' +
+                           '<div class="sequence-step-content">' +
+                           '<div class="sequence-step-action">' + step.action + '</div>' +
+                           '<div class="sequence-step-detail">' + step.detail + '</div>' +
+                           '</div>' +
+                           '<span class="sequence-step-arrow">→</span>' +
+                           '<span class="tag ' + getTagClass(step.type) + '">' + step.actor + '</span>';
+        stepDiv.onclick = () => {
+          currentStep = index;
+          renderFlowCanvas();
+          renderDetailPanel();
+        };
+        sequenceDiagram.appendChild(stepDiv);
+      });
+
+      flowCanvas.appendChild(sequenceDiagram);
+    }
+
+    function renderDetailPanel() {
+      const data = flowData[currentTab];
+      const flow = data.flows[currentFlow];
+
+      detailPanel.replaceChildren();
+
+      const header = document.createElement('div');
+      header.className = 'detail-header';
+      header.innerHTML = '<div class="detail-title"><div class="detail-title-icon">📋</div>Flow Details</div>' +
+                        '<div class="detail-tabs"><button class="detail-tab active">Overview</button><button class="detail-tab">API</button><button class="detail-tab">Security</button></div>';
+      detailPanel.appendChild(header);
+
+      const content = document.createElement('div');
+      content.className = 'detail-content';
+
+      if (currentStep !== null && flow.steps) {
+        const step = flow.steps[currentStep];
+        const section = document.createElement('div');
+        section.className = 'detail-section';
+        section.innerHTML = '<div class="detail-section-title">Current Step</div>' +
+                           '<div class="detail-text"><strong>Step ' + (currentStep + 1) + ':</strong> ' + step.action + '<br>' +
+                           '<strong>Actor:</strong> ' + step.actor + '<br>' +
+                           '<strong>Detail:</strong> ' + step.detail + '</div>';
+        content.appendChild(section);
+      }
+
+      const endpointSection = document.createElement('div');
+      endpointSection.className = 'detail-section';
+      endpointSection.innerHTML = '<div class="detail-section-title">Endpoint</div>' +
+                                 '<div class="detail-code">' + (flow.endpoint || 'N/A') + '</div>';
+      content.appendChild(endpointSection);
+
+      if (flow.request) {
+        const reqSection = document.createElement('div');
+        reqSection.className = 'detail-section';
+        reqSection.innerHTML = '<div class="detail-section-title">Request</div>' +
+                              '<div class="detail-code"><span class="keyword">Request:</span> ' + flow.request + '</div>';
+        content.appendChild(reqSection);
+      }
+
+      if (flow.response) {
+        const resSection = document.createElement('div');
+        resSection.className = 'detail-section';
+        resSection.innerHTML = '<div class="detail-section-title">Response</div>' +
+                              '<div class="detail-code"><span class="string">Response:</span> ' + flow.response + '</div>';
+        content.appendChild(resSection);
+      }
+
+      if (flow.securityNotes) {
+        const secSection = document.createElement('div');
+        secSection.className = 'detail-section';
+        let listHtml = '<div class="detail-section-title">Security Notes</div><ul class="detail-list">';
+        flow.securityNotes.forEach(note => {
+          listHtml += '<li class="detail-list-item"><div class="detail-list-icon flow-node-icon api">🔒</div>' +
+                     '<div class="detail-list-content"><div class="detail-list-desc">' + note + '</div></div></li>';
+        });
+        listHtml += '</ul>';
+        secSection.innerHTML = listHtml;
+        content.appendChild(secSection);
+      }
+
+      if (flow.tables) {
+        const tablesSection = document.createElement('div');
+        tablesSection.className = 'detail-section';
+        let listHtml = '<div class="detail-section-title">Database Tables</div><ul class="detail-list">';
+        flow.tables.forEach(table => {
+          listHtml += '<li class="detail-list-item"><div class="detail-list-icon flow-node-icon database">📊</div>' +
+                     '<div class="detail-list-content"><div class="detail-list-title">' + table.name + '</div>' +
+                     '<div class="detail-list-desc">' + table.fields + '</div></div></li>';
+        });
+        listHtml += '</ul>';
+        tablesSection.innerHTML = listHtml;
+        content.appendChild(tablesSection);
+      }
+
+      if (flow.contracts) {
+        const contractsSection = document.createElement('div');
+        contractsSection.className = 'detail-section';
+        let listHtml = '<div class="detail-section-title">API Contracts</div><ul class="detail-list">';
+        flow.contracts.forEach(contract => {
+          listHtml += '<li class="detail-list-item"><div class="detail-list-icon flow-node-icon api">⚡</div>' +
+                     '<div class="detail-list-content"><div class="detail-list-title">' + contract.endpoint + '</div>' +
+                     '<div class="detail-list-desc">In: ' + contract.request + ' → Out: ' + contract.response + '</div></div></li>';
+        });
+        listHtml += '</ul>';
+        contractsSection.innerHTML = listHtml;
+        content.appendChild(contractsSection);
+      }
+
+      detailPanel.appendChild(content);
+    }
+
+    init();
+  </script>
+</body>
+</html>

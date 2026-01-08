@@ -1,0 +1,131 @@
+/**
+ * Anplexa Documentation Theme
+ * Custom CSS for Docusaurus
+ */
+
+:root {
+  /* Anplexa Brand Colors */
+  --ifm-color-primary: #7B2CBF;
+  --ifm-color-primary-dark: #6A25A6;
+  --ifm-color-primary-darker: #5A189A;
+  --ifm-color-primary-darkest: #3C096C;
+  --ifm-color-primary-light: #9D4EDD;
+  --ifm-color-primary-lighter: #C77DFF;
+  --ifm-color-primary-lightest: #E0AAFF;
+
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(123, 44, 191, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #9D4EDD;
+  --ifm-color-primary-dark: #8B3FCC;
+  --ifm-color-primary-darker: #7B2CBF;
+  --ifm-color-primary-darkest: #5A189A;
+  --ifm-color-primary-light: #C77DFF;
+  --ifm-color-primary-lighter: #E0AAFF;
+  --ifm-color-primary-lightest: #F3E8FF;
+
+  --ifm-background-color: #121212;
+  --ifm-background-surface-color: #1E1E1E;
+  --docusaurus-highlighted-code-line-bg: rgba(157, 78, 221, 0.2);
+}
+
+/* Mermaid diagram styling */
+.mermaid {
+  background: transparent;
+}
+
+[data-theme='dark'] .mermaid {
+  filter: invert(93%) hue-rotate(180deg);
+}
+
+/* API endpoint styling */
+.api-method {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85em;
+  margin-right: 8px;
+}
+
+.api-method-get {
+  background: #61affe;
+  color: white;
+}
+
+.api-method-post {
+  background: #49cc90;
+  color: white;
+}
+
+.api-method-put {
+  background: #fca130;
+  color: white;
+}
+
+.api-method-delete {
+  background: #f93e3e;
+  color: white;
+}
+
+/* Custom table styling */
+table {
+  width: 100%;
+}
+
+table th {
+  background: var(--ifm-color-primary-lightest);
+}
+
+[data-theme='dark'] table th {
+  background: var(--ifm-color-primary-darkest);
+}
+
+/* Code block enhancements */
+.prism-code {
+  border-radius: 8px;
+}
+
+/* Hero section for intro */
+.hero-intro {
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--ifm-color-primary-darkest) 0%, var(--ifm-color-primary) 100%);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.hero-intro h1 {
+  color: white;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: bold;
+}
+
+.status-badge-critical {
+  background: #f93e3e;
+  color: white;
+}
+
+.status-badge-high {
+  background: #fca130;
+  color: white;
+}
+
+.status-badge-medium {
+  background: #61affe;
+  color: white;
+}
+
+.status-badge-low {
+  background: #49cc90;
+  color: white;
+}
