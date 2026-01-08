@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anplexa Documentation Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e14;
+      --bg-secondary: #0d1117;
+      --bg-tertiary: #161b22;
+      --bg-elevated: #1c2128;
+      --border-subtle: #21262d;
+      --border-default: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --accent-cyan: #00d9ff;
+      --accent-cyan-dim: rgba(0, 217, 255, 0.15);
+      --accent-purple: #a855f7;
+      --accent-purple-dim: rgba(168, 85, 247, 0.15);
+      --accent-green: #00ff88;
+      --accent-green-dim: rgba(0, 255, 136, 0.15);
+      --accent-amber: #ffb800;
+      --accent-amber-dim: rgba(255, 184, 0, 0.15);
+      --accent-red: #ff4757;
+      --accent-red-dim: rgba(255, 71, 87, 0.15);
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Space Grotesk', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0, 217, 255, 0.1) 0%, transparent 50%);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 2rem;
+      color: var(--bg-primary);
+      box-shadow: 0 0 40px rgba(0, 217, 255, 0.3);
+    }
+
+    .logo-text {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .tagline {
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: linear-gradient(180deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 2px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 217, 255, 0.1);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-icon.cyan { background: var(--accent-cyan-dim); }
+    .card-icon.purple { background: var(--accent-purple-dim); }
+    .card-icon.green { background: var(--accent-green-dim); }
+    .card-icon.amber { background: var(--accent-amber-dim); }
+    .card-icon.red { background: var(--accent-red-dim); }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-desc {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .card-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .featured-card {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+      border: 2px solid var(--accent-cyan);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .featured-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(0, 217, 255, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .featured-content {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .featured-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent-cyan-dim), var(--accent-purple-dim));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      flex-shrink: 0;
+      border: 1px solid var(--accent-cyan);
+    }
+
+    .featured-text {
+      flex: 1;
+    }
+
+    .featured-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--accent-cyan-dim);
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 20px;
+      margin-bottom: 0.75rem;
+    }
+
+    .featured-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .featured-desc {
+      color: var(--text-secondary);
+      max-width: 500px;
+    }
+
+    .featured-arrow {
+      font-size: 2rem;
+      color: var(--accent-cyan);
+      transition: transform 0.3s ease;
+    }
+
+    .featured-card:hover .featured-arrow {
+      transform: translateX(8px);
+    }
+
+    .doc-list {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .doc-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .doc-item:last-child {
+      border-bottom: none;
+    }
+
+    .doc-item:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .doc-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      background: var(--bg-elevated);
+    }
+
+    .doc-content {
+      flex: 1;
+    }
+
+    .doc-title {
+      font-weight: 500;
+      margin-bottom: 0.15rem;
+    }
+
+    .doc-path {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .doc-arrow {
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .doc-item:hover .doc-arrow {
+      transform: translateX(4px);
+      color: var(--accent-cyan);
+    }
+
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .tech-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .tech-badge span {
+      font-size: 1.1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 2rem;
+    }
+
+    footer a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 2rem 1rem; }
+      .logo-text { font-size: 1.75rem; }
+      .stats { flex-direction: column; gap: 1.5rem; }
+      .featured-content { flex-direction: column; text-align: center; }
+      .featured-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">A</div>
+        <div class="logo-text">Anplexa Docs</div>
+      </div>
+      <p class="tagline">Technical documentation for the AI companion platform. Architecture, user flows, API references, and development guides.</p>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Applications</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">35</div>
+          <div class="stat-label">User Flows</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Categories</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2 class="section-title">Interactive Documentation</h2>
+      <div class="cards">
+        <a href="user-flows-interactive.html" class="card featured-card">
+          <div class="featured-content">
+            <div class="featured-icon">🔄</div>
+            <div class="featured-text">
+              <span class="featured-badge">INTERACTIVE</span>
+              <h3 class="featured-title">User Flows Explorer</h3>
+              <p class="featured-desc">Interactive visualization of all 35 user journeys across authentication, chat, subscription, funnel conversion, and data flows.</p>
+            </div>
+            <span class="featured-arrow">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Documentation Categories</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon cyan">🔐</div>
+          <h3 class="card-title">Authentication</h3>
+          <p class="card-desc">Login, registration, token management, magic links, password reset, and session handling.</p>
+          <div class="card-meta">
+            <span>📄 8 flows</span>
+            <span>🔑 JWT + Refresh</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon purple">💬</div>
+          <h3 class="card-title">Chat</h3>
+          <p class="card-desc">AI streaming responses, conversation management, guest mode, preferences, and error handling.</p>
+          <div class="card-meta">
+            <span>📄 9 flows</span>
+            <span>⚡ SSE Streaming</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon green">💳</div>
+          <h3 class="card-title">Subscription</h3>
+          <p class="card-desc">Stripe checkout, webhook processing, subscription lifecycle, and customer portal.</p>
+          <div class="card-meta">
+            <span>📄 6 flows</span>
+            <span>💰 Stripe</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon amber">🎯</div>
+          <h3 class="card-title">Funnel Conversion</h3>
+          <p class="card-desc">Marketing funnel with 6 personas, personality quiz, registration, and account creation.</p>
+          <div class="card-meta">
+            <span>📄 7 flows</span>
+            <span>👤 6 Personas</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon red">📊</div>
+          <h3 class="card-title">Data Flow</h3>
+          <p class="card-desc">System architecture, database schema, API contracts, and end-to-end data movement.</p>
+          <div class="card-meta">
+            <span>📄 5 flows</span>
+            <span>🗄️ PostgreSQL</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Markdown Documentation</h2>
+      <div class="doc-list">
+        <a href="docs/intro.md" class="doc-item">
+          <div class="doc-icon">📖</div>
+          <div class="doc-content">
+            <div class="doc-title">Introduction</div>
+            <div class="doc-path">docs/intro.md</div>
+          </div>
+          <span class="doc-arrow">→</span>
+        </a>
+        <a href="docs/architecture/overview.md" class="doc-item">
+          <div class="doc-icon">🏗️</div>
+          <div class="doc-content">
+            <div class="doc-title">Architecture Overview</div>
+            <div class="doc-path">docs/architecture/overview.md</div>
+          </div>
+          <span class="doc-arrow">→</span>
+        </a>
+        <a href="docs/architecture/backend-api.md" class="doc-item">
+          <div class="doc-icon">⚡</div>
+          <div class="doc-content">
+            <div class="doc-title">Backend API</div>
+            <div class="doc-path">docs/architecture/backend-api.md</div>
+          </div>
+          <span class="doc-arrow">→</span>
+        </a>
+        <a href="docs/architecture/data-flow.md" class="doc-item">
+          <div class="doc-icon">🔄</div>
+          <div class="doc-content">
+            <div class="doc-title">Data Flow</div>
+            <div class="doc-path">docs/architecture/data-flow.md</div>
+          </div>
+          <span class="doc-arrow">→</span>
+        </a>
+        <a href="docs/user-flows/authentication.md" class="doc-item">
+          <div class="doc-icon">🔐</div>
+          <div class="doc-content">
+            <div class="doc-title">Authentication Flows</div>
+            <div class="doc-path">docs/user-flows/authentication.md</div>
+          </div>
+          <span class="doc-arrow">→</span>
+        </a>
+        <a href="docs/user-flows/chat.md" class="doc-item">
+          <div class="doc-icon">💬</div>
+          <div class="doc-content">
+            <div class="doc-title">Chat Flows</div>
+            <div class="doc-path">docs/user-flows/chat.md</div>
+          </div>
+          <span class="doc-arrow">→</span>
+        </a>
+        <a href="docs/user-flows/subscription.md" class="doc-item">
+          <div class="doc-icon">💳</div>
+          <div class="doc-content">
+            <div class="doc-title">Subscription Flows</div>
+            <div class="doc-path">docs/user-flows/subscription.md</div>
+          </div>
+          <span class="doc-arrow">→</span>
+        </a>
+        <a href="docs/user-flows/funnel-conversion.md" class="doc-item">
+          <div class="doc-icon">🎯</div>
+          <div class="doc-content">
+            <div class="doc-title">Funnel Conversion</div>
+            <div class="doc-path">docs/user-flows/funnel-conversion.md</div>
+          </div>
+          <span class="doc-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Technology Stack</h2>
+      <div class="tech-stack">
+        <div class="tech-badge"><span>⚛️</span> React 19</div>
+        <div class="tech-badge"><span>▲</span> Next.js 16</div>
+        <div class="tech-badge"><span>⚡</span> Vite</div>
+        <div class="tech-badge"><span>🟢</span> Express.js</div>
+        <div class="tech-badge"><span>🐘</span> PostgreSQL</div>
+        <div class="tech-badge"><span>🦙</span> Ollama LLM</div>
+        <div class="tech-badge"><span>💳</span> Stripe</div>
+        <div class="tech-badge"><span>📧</span> Resend</div>
+        <div class="tech-badge"><span>📊</span> PostHog</div>
+        <div class="tech-badge"><span>🎨</span> Tailwind CSS v4</div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Anplexa Platform Documentation &bull; Version 1.0.0 &bull; January 2025</p>
+      <p>View the <a href="user-flows-interactive.html">Interactive User Flows</a> or browse the <a href="docs/intro.md">Markdown Docs</a></p>
+    </footer>
+  </div>
+</body>
+</html>

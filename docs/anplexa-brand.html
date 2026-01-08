@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anplexa | World-Leading AI Companion Platform</title>
+  <meta name="description" content="Anplexa - Enterprise-grade conversational AI platform powering personalized companion experiences. Market analysis, brand strategy, and industry insights.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e14;
+      --bg-secondary: #0d1117;
+      --bg-tertiary: #161b22;
+      --bg-elevated: #1c2128;
+      --bg-card: #13181f;
+      --border-subtle: #21262d;
+      --border-default: #30363d;
+      --border-accent: #3d444d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --accent-cyan: #00d9ff;
+      --accent-cyan-dim: rgba(0, 217, 255, 0.15);
+      --accent-cyan-glow: rgba(0, 217, 255, 0.3);
+      --accent-purple: #a855f7;
+      --accent-purple-dim: rgba(168, 85, 247, 0.15);
+      --accent-green: #00ff88;
+      --accent-green-dim: rgba(0, 255, 136, 0.15);
+      --accent-amber: #ffb800;
+      --accent-amber-dim: rgba(255, 184, 0, 0.15);
+      --accent-red: #ff4757;
+      --accent-red-dim: rgba(255, 71, 87, 0.15);
+      --accent-blue: #3b82f6;
+      --accent-blue-dim: rgba(59, 130, 246, 0.15);
+      --gradient-primary: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      --gradient-secondary: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 40px var(--accent-cyan-glow);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* Background Effects */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 217, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 217, 255, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0, 217, 255, 0.08) 0%, transparent 50%);
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 14, 20, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 2rem;
+    }
+
+    .nav-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--bg-primary);
+    }
+
+    .nav-title {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent-cyan); }
+
+    /* Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 8rem 0 6rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(0, 217, 255, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--accent-cyan-dim);
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      border-radius: 50px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .hero h1 {
+      font-family: var(--font-sans);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-value {
+      font-family: var(--font-mono);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Section Styling */
+    section {
+      padding: 5rem 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-tag {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--font-sans);
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 1.1rem;
+    }
+
+    /* Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 217, 255, 0.08);
+    }
+
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-icon.cyan { background: var(--accent-cyan-dim); }
+    .card-icon.purple { background: var(--accent-purple-dim); }
+    .card-icon.green { background: var(--accent-green-dim); }
+    .card-icon.amber { background: var(--accent-amber-dim); }
+    .card-icon.red { background: var(--accent-red-dim); }
+    .card-icon.blue { background: var(--accent-blue-dim); }
+
+    .card h3 {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Market Charts */
+    .chart-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .chart-title {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* SVG Charts */
+    .market-chart {
+      width: 100%;
+      height: 300px;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 250px;
+      padding: 1rem 0;
+      gap: 1rem;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      max-width: 80px;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 8px 8px 0 0;
+      transition: height 0.5s ease;
+      position: relative;
+    }
+
+    .bar.cyan { background: linear-gradient(180deg, var(--accent-cyan), rgba(0, 217, 255, 0.5)); }
+    .bar.purple { background: linear-gradient(180deg, var(--accent-purple), rgba(168, 85, 247, 0.5)); }
+    .bar.green { background: linear-gradient(180deg, var(--accent-green), rgba(0, 255, 136, 0.5)); }
+    .bar.amber { background: linear-gradient(180deg, var(--accent-amber), rgba(255, 184, 0, 0.5)); }
+
+    .bar-label {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Pricing Table */
+    .pricing-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .pricing-table th,
+    .pricing-table td {
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .pricing-table th {
+      background: var(--bg-tertiary);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .pricing-table td {
+      font-size: 0.95rem;
+    }
+
+    .pricing-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pricing-table tr:hover td {
+      background: rgba(0, 217, 255, 0.03);
+    }
+
+    .pricing-highlight {
+      background: var(--accent-cyan-dim);
+      border-left: 3px solid var(--accent-cyan);
+    }
+
+    .price-value {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    /* Target Market Personas */
+    .persona-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .persona-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .persona-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--gradient-primary);
+    }
+
+    .persona-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .persona-name {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .persona-role {
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      margin-bottom: 1rem;
+    }
+
+    .persona-traits {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .persona-traits li {
+      padding: 0.5rem 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .persona-traits li:last-child {
+      border-bottom: none;
+    }
+
+    .persona-traits li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Market Segment Cards */
+    .segment-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    .segment-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: var(--accent-cyan-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .segment-content {
+      flex: 1;
+    }
+
+    .segment-title {
+      font-family: var(--font-sans);
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .segment-subtitle {
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      margin-bottom: 1rem;
+    }
+
+    .segment-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .segment-stat {
+      text-align: center;
+    }
+
+    .segment-stat-value {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .segment-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Analysis Blocks */
+    .analysis-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .analysis-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .analysis-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--bg-primary);
+    }
+
+    .analysis-title {
+      font-family: var(--font-sans);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .analysis-content {
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .analysis-content h4 {
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 2rem 0 1rem;
+    }
+
+    .analysis-content h4:first-child {
+      margin-top: 0;
+    }
+
+    .analysis-content ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .analysis-content li {
+      margin-bottom: 0.75rem;
+    }
+
+    /* Key Insights */
+    .insight-box {
+      background: var(--accent-cyan-dim);
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .insight-box h5 {
+      color: var(--accent-cyan);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .insight-box p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* Competitor Grid */
+    .competitor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .competitor-item {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .competitor-name {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .competitor-price {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--accent-amber);
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-card-value {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Source Citations */
+    .sources {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 4rem;
+    }
+
+    .sources h3 {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sources-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .sources-list li {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .sources-list a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .sources-list a:hover {
+      color: var(--text-primary);
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      padding: 4rem 0;
+      text-align: center;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 4rem;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--bg-primary);
+    }
+
+    .footer-title {
+      font-family: var(--font-sans);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .footer-tagline {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-cyan);
+    }
+
+    .footer-copyright {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .segment-card {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem; }
+
+      .nav-links { display: none; }
+
+      .hero { padding: 6rem 0 4rem; }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .hero-stat-value { font-size: 2rem; }
+
+      section { padding: 3rem 0; }
+
+      .section-title { font-size: 1.75rem; }
+
+      .container { padding: 0 1rem; }
+
+      .analysis-block { padding: 1.5rem; }
+
+      .pricing-table { font-size: 0.85rem; }
+
+      .pricing-table th,
+      .pricing-table td { padding: 1rem; }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <nav>
+    <div class="nav-content">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-logo">A</div>
+        <span class="nav-title">Anplexa</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#industry">Industry Analysis</a></li>
+        <li><a href="#market">Target Market</a></li>
+        <li><a href="#pricing">Pricing Research</a></li>
+        <li><a href="#segments">Market Segments</a></li>
+        <li><a href="index.html">Documentation</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <span class="hero-badge">Brand & Market Strategy 2025</span>
+      <h1>World-Leading AI Companion Platform</h1>
+      <p class="hero-subtitle">
+        Anplexa powers next-generation conversational AI experiences with enterprise-grade security,
+        personalized companion interactions, and seamless subscription management. Trusted by industry
+        leaders including ChatPMU for the permanent makeup industry.
+      </p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">$61.7B</div>
+          <div class="hero-stat-label">Market by 2032</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">22.6%</div>
+          <div class="hero-stat-label">Annual Growth</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">987M+</div>
+          <div class="hero-stat-label">AI Chatbot Users</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">6</div>
+          <div class="hero-stat-label">Personas</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Anplexa -->
+    <section id="about">
+      <div class="section-header">
+        <span class="section-tag">Platform Overview</span>
+        <h2 class="section-title">The Anplexa Advantage</h2>
+        <p class="section-desc">Enterprise-grade AI companion platform with personality-driven personalization and seamless monetization</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card fade-in">
+          <div class="card-icon cyan">AI</div>
+          <h3>Streaming AI Responses</h3>
+          <p>Real-time SSE streaming with Ollama LLM integration delivers natural, responsive conversations that feel genuinely human.</p>
+        </div>
+        <div class="card fade-in delay-1">
+          <div class="card-icon purple">ID</div>
+          <h3>6 Personality Modes</h3>
+          <p>Proprietary personality quiz segments users into 6 distinct personas, enabling hyper-personalized AI interactions.</p>
+        </div>
+        <div class="card fade-in delay-2">
+          <div class="card-icon green">$</div>
+          <h3>Stripe Integration</h3>
+          <p>Full subscription lifecycle management with webhooks, customer portal, and seamless checkout experiences.</p>
+        </div>
+        <div class="card fade-in delay-3">
+          <div class="card-icon amber">FN</div>
+          <h3>Marketing Funnel</h3>
+          <p>Conversion-optimized funnel app with personality-based segmentation driving 35%+ higher conversion rates.</p>
+        </div>
+        <div class="card fade-in delay-4">
+          <div class="card-icon blue">JWT</div>
+          <h3>Enterprise Security</h3>
+          <p>JWT with refresh token rotation, Helmet.js headers, CORS restrictions, and per-IP rate limiting.</p>
+        </div>
+        <div class="card fade-in">
+          <div class="card-icon red">API</div>
+          <h3>Modern Architecture</h3>
+          <p>Next.js 16 + React 19 frontend, Express.js backend, PostgreSQL database, and Drizzle ORM.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Industry Analysis -->
+    <section id="industry">
+      <div class="section-header">
+        <span class="section-tag">Section 1</span>
+        <h2 class="section-title">Industry Analysis</h2>
+        <p class="section-desc">Comprehensive analysis of the conversational AI and chatbot industry landscape</p>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">1</div>
+          <h3 class="analysis-title">Market Size & Growth</h3>
+        </div>
+        <div class="analysis-content">
+          <p>The global conversational AI market represents one of the fastest-growing technology sectors, with unprecedented expansion driven by enterprise adoption and consumer demand.</p>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-card-value">$14.79B</div>
+              <div class="stat-card-label">Market Size 2025</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-value">$61.69B</div>
+              <div class="stat-card-label">Projected 2032</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-value">22.6%</div>
+              <div class="stat-card-label">CAGR 2025-2032</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-value">33.62%</div>
+              <div class="stat-card-label">North America Share</div>
+            </div>
+          </div>
+
+          <!-- Market Growth Chart -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <h4 class="chart-title">Conversational AI Market Projection (Billions USD)</h4>
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <div class="legend-dot" style="background: var(--accent-cyan);"></div>
+                  Market Size
+                </div>
+              </div>
+            </div>
+            <div class="bar-chart">
+              <div class="bar-group">
+                <div class="bar cyan" style="height: 60px;"><span class="bar-value">$12.2B</span></div>
+                <div class="bar-label">2024</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar cyan" style="height: 74px;"><span class="bar-value">$14.8B</span></div>
+                <div class="bar-label">2025</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar cyan" style="height: 90px;"><span class="bar-value">$18.1B</span></div>
+                <div class="bar-label">2026</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar cyan" style="height: 130px;"><span class="bar-value">$27.3B</span></div>
+                <div class="bar-label">2028</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar cyan" style="height: 165px;"><span class="bar-value">$34.2B</span></div>
+                <div class="bar-label">2029</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar cyan" style="height: 200px;"><span class="bar-value">$61.7B</span></div>
+                <div class="bar-label">2032</div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Leading Market Players</h4>
+          <div class="competitor-grid">
+            <div class="competitor-item">
+              <div class="competitor-name">OpenAI (ChatGPT)</div>
+              <div class="competitor-price">79.8% market share</div>
+            </div>
+            <div class="competitor-item">
+              <div class="competitor-name">Google</div>
+              <div class="competitor-price">Enterprise AI</div>
+            </div>
+            <div class="competitor-item">
+              <div class="competitor-name">Microsoft</div>
+              <div class="competitor-price">Azure AI</div>
+            </div>
+            <div class="competitor-item">
+              <div class="competitor-name">Amazon</div>
+              <div class="competitor-price">AWS Lex</div>
+            </div>
+            <div class="competitor-item">
+              <div class="competitor-name">IBM</div>
+              <div class="competitor-price">Watson</div>
+            </div>
+            <div class="competitor-item">
+              <div class="competitor-name">Salesforce</div>
+              <div class="competitor-price">Einstein AI</div>
+            </div>
+          </div>
+
+          <h4>Key Industry Trends</h4>
+          <ul>
+            <li><strong>Shift to Proactive AI Agents:</strong> Businesses are evolving beyond reactive FAQ chatbots to deploy context-aware, emotion-sensitive virtual assistants that handle complex queries and automate workflows.</li>
+            <li><strong>Healthcare Leading Growth:</strong> The healthcare segment is projected to record the highest CAGR, revolutionizing patient care and administrative processes.</li>
+            <li><strong>Retail Dominance:</strong> Retail and commerce currently lead all industries in conversational AI adoption with 21.2% market share.</li>
+            <li><strong>Automation Acceleration:</strong> By 2026, AI assistants are anticipated to automate 70% of tasks currently handled by customer service representatives.</li>
+            <li><strong>Voice Assistant Expansion:</strong> Voice assistant users in the US expected to reach 157.1 million by 2026.</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>Anplexa Strategic Insight</h5>
+            <p>With the market projected to grow 4x by 2032 and vertical-specific AI solutions commanding premium pricing, Anplexa's specialized approach targeting niche markets like PMU (via ChatPMU) positions it perfectly in the emerging "vertical AI" category where industry-specific solutions command 2-3x higher customer lifetime values.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">2</div>
+          <h3 class="analysis-title">Regulatory Environment & Barriers to Entry</h3>
+        </div>
+        <div class="analysis-content">
+          <h4>Regulatory Landscape</h4>
+          <p>The AI chatbot regulatory environment is rapidly evolving with significant implications for market entrants:</p>
+
+          <ul>
+            <li><strong>No Federal Framework:</strong> As of 2025, there is no comprehensive federal AI law in the US. Executive Order 14179 shifted focus from restrictive oversight to promoting innovation.</li>
+            <li><strong>State-Level Patchwork:</strong> At least 6 states enacted new AI chatbot laws in 2025, including California (SB 243), New York, Maine, and Utah with specific requirements for companion chatbots.</li>
+            <li><strong>FTC Scrutiny:</strong> In September 2025, the FTC announced marketplace studies into companies operating consumer-facing AI companion chatbots, signaling increased regulatory attention.</li>
+            <li><strong>Privacy Compliance:</strong> Comprehensive state privacy laws now exist in 20+ US states, creating obligations around notice, consumer rights, and data governance.</li>
+          </ul>
+
+          <h4>Barriers to Entry</h4>
+          <ul>
+            <li><strong>Capital Requirements:</strong> Custom AI chatbot development ranges from $75,000-$150,000+ for development agencies. Enterprise-grade LLM development requires massive infrastructure investment.</li>
+            <li><strong>Technical Expertise:</strong> Requires specialized knowledge in NLP, machine learning, and real-time streaming architectures.</li>
+            <li><strong>Integration Complexity:</strong> Integration costs can add 20-50% to overall budget ($5,000-$25,000 per system connection).</li>
+            <li><strong>Compliance Overhead:</strong> Multi-state compliance requires either tailored programs or geo-gating features, adding 15-20% annually in hidden costs.</li>
+            <li><strong>Brand Trust:</strong> Established players benefit from user trust and data network effects that take years to build.</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>Anplexa Competitive Advantage</h5>
+            <p>Anplexa's modular architecture with built-in security layers (Helmet.js, JWT rotation, rate limiting) and Stripe compliance positions it to navigate the evolving regulatory landscape. The platform's open-source LLM approach (Ollama) reduces dependency on major AI providers while maintaining enterprise-grade capabilities.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Target Market Analysis -->
+    <section id="market">
+      <div class="section-header">
+        <span class="section-tag">Section 2</span>
+        <h2 class="section-title">Target Market Analysis</h2>
+        <p class="section-desc">Detailed profiling of Anplexa's target demographics, needs, and behaviors</p>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">3</div>
+          <h3 class="analysis-title">Target Demographic Profile</h3>
+        </div>
+        <div class="analysis-content">
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-card-value">25-44</div>
+              <div class="stat-card-label">Primary Age Range</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-value">55/45</div>
+              <div class="stat-card-label">Male/Female Split</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-value">40%</div>
+              <div class="stat-card-label">SMB Adopters</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-value">75%</div>
+              <div class="stat-card-label">SMB Experimentation</div>
+            </div>
+          </div>
+
+          <h4>Primary Target Segments</h4>
+
+          <div class="persona-grid">
+            <div class="persona-card">
+              <div class="persona-avatar">SA</div>
+              <h4 class="persona-name">Solo PMU Artist</h4>
+              <p class="persona-role">Beauty Professional | $40K-$80K Revenue</p>
+              <ul class="persona-traits">
+                <li>Age 28-45, predominantly female</li>
+                <li>Running independent PMU business</li>
+                <li>Needs 24/7 client communication</li>
+                <li>Budget: $50-$200/month for tools</li>
+                <li>Tech-savvy but time-constrained</li>
+              </ul>
+            </div>
+
+            <div class="persona-card">
+              <div class="persona-avatar">BS</div>
+              <h4 class="persona-name">Beauty Salon Owner</h4>
+              <p class="persona-role">Multi-Artist Studio | $200K-$500K Revenue</p>
+              <ul class="persona-traits">
+                <li>Age 35-55, business-focused</li>
+                <li>Managing team of 3-10 artists</li>
+                <li>Needs booking automation</li>
+                <li>Budget: $200-$500/month for automation</li>
+                <li>Values proven ROI and testimonials</li>
+              </ul>
+            </div>
+
+            <div class="persona-card">
+              <div class="persona-avatar">TE</div>
+              <h4 class="persona-name">Tech Entrepreneur</h4>
+              <p class="persona-role">SaaS Builder | $100K-$1M ARR</p>
+              <ul class="persona-traits">
+                <li>Age 25-40, male-skewed</li>
+                <li>Building vertical SaaS products</li>
+                <li>Needs white-label AI capability</li>
+                <li>Budget: $500-$2,000/month platform</li>
+                <li>Values API quality and docs</li>
+              </ul>
+            </div>
+
+            <div class="persona-card">
+              <div class="persona-avatar">HP</div>
+              <h4 class="persona-name">Healthcare Provider</h4>
+              <p class="persona-role">Medical Practice | $500K-$2M Revenue</p>
+              <ul class="persona-traits">
+                <li>Age 35-55, quality-focused</li>
+                <li>Patient scheduling needs</li>
+                <li>HIPAA compliance required</li>
+                <li>Budget: $300-$1,000/month</li>
+                <li>Requires security certifications</li>
+              </ul>
+            </div>
+
+            <div class="persona-card">
+              <div class="persona-avatar">EC</div>
+              <h4 class="persona-name">E-Commerce Manager</h4>
+              <p class="persona-role">Online Retail | $1M-$10M Revenue</p>
+              <ul class="persona-traits">
+                <li>Age 28-45, conversion-focused</li>
+                <li>24/7 customer support needs</li>
+                <li>Shopify/WooCommerce integration</li>
+                <li>Budget: $200-$800/month</li>
+                <li>Values conversion rate data</li>
+              </ul>
+            </div>
+
+            <div class="persona-card">
+              <div class="persona-avatar">CU</div>
+              <h4 class="persona-name">Consumer User</h4>
+              <p class="persona-role">Personal Companion | Individual</p>
+              <ul class="persona-traits">
+                <li>Age 18-34, digitally native</li>
+                <li>Seeking AI companionship</li>
+                <li>Values personality matching</li>
+                <li>Budget: $10-$50/month subscription</li>
+                <li>Mobile-first usage patterns</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">4</div>
+          <h3 class="analysis-title">Audience Needs & Behaviors</h3>
+        </div>
+        <div class="analysis-content">
+          <h4>Primary Pain Points</h4>
+          <ul>
+            <li><strong>24/7 Availability Gap:</strong> Small businesses cannot afford round-the-clock staff but lose customers to competitors who respond instantly. Chatbots provide instant coverage competing with industry giants.</li>
+            <li><strong>Personalization at Scale:</strong> Generic chatbot responses fail to build relationships. Users expect context-aware, personality-matched interactions.</li>
+            <li><strong>Integration Complexity:</strong> Most chatbot solutions require expensive custom development to integrate with existing CRM and booking systems.</li>
+            <li><strong>Cost Predictability:</strong> Usage-based pricing creates budget uncertainty. Businesses prefer predictable subscription costs.</li>
+          </ul>
+
+          <h4>Purchase Decision Motivators</h4>
+          <ul>
+            <li><strong>ROI Demonstration:</strong> 64% of people trust AI chatbots, and 60% say chatbots influence purchasing decisions. Clear conversion data drives adoption.</li>
+            <li><strong>Ease of Setup:</strong> No-code platforms with pre-built templates significantly reduce adoption barriers for non-technical users.</li>
+            <li><strong>Industry-Specific Features:</strong> Vertical SaaS solutions with built-in compliance (HIPAA, PCI) command premium pricing and higher retention.</li>
+            <li><strong>Social Proof:</strong> Testimonials and case studies from recognizable brands or industry peers significantly influence B2B decisions.</li>
+          </ul>
+
+          <h4>Usage Patterns</h4>
+          <ul>
+            <li>27% of shoppers use chatbots daily; 34% use them several times per week</li>
+            <li>Millennials represent the demographic most likely to interact with chatbots</li>
+            <li>57% adoption rate in computer-related professional fields</li>
+            <li>80% of e-commerce businesses expected to use chatbots by end of 2025</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>ChatPMU Market Opportunity</h5>
+            <p>The permanent makeup market in North America alone represents $2.1 billion with 12.9% CAGR. Beauty salons conduct 30%+ of PMU procedures, yet lack industry-specific AI tools. ChatPMU, powered by Anplexa, addresses this vertical gap with tailored features for consultation booking, aftercare instructions, and client retention automation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Research -->
+    <section id="pricing">
+      <div class="section-header">
+        <span class="section-tag">Section 3</span>
+        <h2 class="section-title">Pricing Research</h2>
+        <p class="section-desc">Competitive pricing analysis and optimal positioning strategy</p>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">5</div>
+          <h3 class="analysis-title">Competitive Pricing Landscape</h3>
+        </div>
+        <div class="analysis-content">
+          <h4>Market Pricing Overview</h4>
+          <p>The chatbot market employs diverse pricing models ranging from simple subscriptions to complex usage-based structures. Understanding these models is critical for optimal positioning.</p>
+
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Segment</th>
+                <th>Monthly Range</th>
+                <th>Pricing Model</th>
+                <th>Key Features</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Small Business</strong></td>
+                <td class="price-value">$15 - $500</td>
+                <td>Subscription</td>
+                <td>Basic chat, limited integrations, FAQ bots</td>
+              </tr>
+              <tr>
+                <td><strong>Mid-Market</strong></td>
+                <td class="price-value">$300 - $1,000</td>
+                <td>Hybrid (base + usage)</td>
+                <td>AI responses, CRM integration, analytics</td>
+              </tr>
+              <tr class="pricing-highlight">
+                <td><strong>Enterprise</strong></td>
+                <td class="price-value">$1,200 - $5,000+</td>
+                <td>Per-seat + add-ons</td>
+                <td>Full AI, multi-language, security, SLA</td>
+              </tr>
+              <tr>
+                <td><strong>Custom Development</strong></td>
+                <td class="price-value">$75,000 - $150,000+</td>
+                <td>One-time + maintenance</td>
+                <td>Fully customized, on-premise options</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Major Competitor Pricing</h4>
+
+          <!-- Competitor Pricing Chart -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <h4 class="chart-title">Enterprise Chatbot Platform Pricing (Monthly USD)</h4>
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <div class="legend-dot" style="background: var(--accent-purple);"></div>
+                  Starting Price
+                </div>
+              </div>
+            </div>
+            <div class="bar-chart">
+              <div class="bar-group">
+                <div class="bar purple" style="height: 180px;"><span class="bar-value">$2,500</span></div>
+                <div class="bar-label">Drift Premium</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar purple" style="height: 60px;"><span class="bar-value">$395</span></div>
+                <div class="bar-label">Intercom Advanced</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar purple" style="height: 45px;"><span class="bar-value">$215</span></div>
+                <div class="bar-label">Zendesk Enterprise</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar purple" style="height: 30px;"><span class="bar-value">$139</span></div>
+                <div class="bar-label">Intercom Pro</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar purple" style="height: 22px;"><span class="bar-value">$115</span></div>
+                <div class="bar-label">Zendesk Pro</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar purple" style="height: 15px;"><span class="bar-value">$55</span></div>
+                <div class="bar-label">Zendesk Team</div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Usage-Based Pricing Models</h4>
+          <ul>
+            <li><strong>Intercom Fin AI:</strong> $0.99 per resolution - pay per successful AI-handled conversation</li>
+            <li><strong>Zendesk AI:</strong> $1.50-$2.00 per AI resolution after included limit (10 per seat)</li>
+            <li><strong>General Market:</strong> $2-$6 per resolution, with financial services at higher end</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>Anplexa Pricing Strategy Recommendation</h5>
+            <p><strong>Tiered Vertical Pricing:</strong> Position Anplexa products (like ChatPMU) in the $99-$299/month range for SMBs with unlimited conversations. This undercuts enterprise solutions while offering superior vertical-specific features. Usage-based pricing should be reserved for enterprise tiers only, maintaining predictable costs for target SMB market.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">6</div>
+          <h3 class="analysis-title">Optimal Pricing Recommendations</h3>
+        </div>
+        <div class="analysis-content">
+          <h4>Recommended Anplexa Pricing Tiers</h4>
+
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Price</th>
+                <th>Target</th>
+                <th>Features</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Starter</strong></td>
+                <td class="price-value">$49/mo</td>
+                <td>Solo professionals</td>
+                <td>500 conversations, 1 personality, basic analytics</td>
+              </tr>
+              <tr>
+                <td><strong>Professional</strong></td>
+                <td class="price-value">$149/mo</td>
+                <td>Small businesses</td>
+                <td>Unlimited conversations, 3 personalities, integrations</td>
+              </tr>
+              <tr class="pricing-highlight">
+                <td><strong>Business</strong></td>
+                <td class="price-value">$299/mo</td>
+                <td>Growing teams</td>
+                <td>All 6 personalities, priority support, white-label</td>
+              </tr>
+              <tr>
+                <td><strong>Enterprise</strong></td>
+                <td class="price-value">Custom</td>
+                <td>Large organizations</td>
+                <td>Dedicated infrastructure, SLA, custom development</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Pricing Risks & Mitigations</h4>
+          <ul>
+            <li><strong>Risk:</strong> AI cost volatility from LLM providers. <strong>Mitigation:</strong> Ollama self-hosted approach provides cost predictability.</li>
+            <li><strong>Risk:</strong> Price war with well-funded competitors. <strong>Mitigation:</strong> Focus on vertical-specific value, not generic features.</li>
+            <li><strong>Risk:</strong> Integration costs eating margins. <strong>Mitigation:</strong> Build native integrations for target verticals (Stripe, booking systems).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Market Segmentation -->
+    <section id="segments">
+      <div class="section-header">
+        <span class="section-tag">Section 4</span>
+        <h2 class="section-title">Market Segmentation</h2>
+        <p class="section-desc">Strategic segment identification and tailored go-to-market approaches</p>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">7</div>
+          <h3 class="analysis-title">Primary Market Segments</h3>
+        </div>
+        <div class="analysis-content">
+          <div class="segment-card" style="margin-bottom: 2rem;">
+            <div class="segment-icon">PMU</div>
+            <div class="segment-content">
+              <h4 class="segment-title">Permanent Makeup & Beauty</h4>
+              <p class="segment-subtitle">ChatPMU - First-to-Market Vertical AI</p>
+              <p>The PMU industry represents a $2.1B North American market growing at 12.9% CAGR. Beauty salons conduct 30%+ of procedures and lack specialized AI tools. ChatPMU addresses consultation booking, aftercare automation, and client retention with PMU-specific features.</p>
+              <div class="segment-stats">
+                <div class="segment-stat">
+                  <div class="segment-stat-value">$2.1B</div>
+                  <div class="segment-stat-label">Market Size NA</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">12.9%</div>
+                  <div class="segment-stat-label">CAGR</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">30%+</div>
+                  <div class="segment-stat-label">Salon Share</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">Low</div>
+                  <div class="segment-stat-label">Competition</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment-card" style="margin-bottom: 2rem;">
+            <div class="segment-icon" style="background: var(--accent-purple-dim);">HC</div>
+            <div class="segment-content">
+              <h4 class="segment-title">Healthcare & Wellness</h4>
+              <p class="segment-subtitle">Patient Engagement Platform</p>
+              <p>Healthcare is the fastest-growing segment in conversational AI. Patient scheduling, appointment reminders, and aftercare instructions represent clear automation opportunities. HIPAA compliance is essential but creates significant barriers to entry for competitors.</p>
+              <div class="segment-stats">
+                <div class="segment-stat">
+                  <div class="segment-stat-value">Highest</div>
+                  <div class="segment-stat-label">CAGR Segment</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">HIPAA</div>
+                  <div class="segment-stat-label">Compliance Need</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">$300-1K</div>
+                  <div class="segment-stat-label">Monthly Budget</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">Medium</div>
+                  <div class="segment-stat-label">Competition</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment-card" style="margin-bottom: 2rem;">
+            <div class="segment-icon" style="background: var(--accent-green-dim);">EC</div>
+            <div class="segment-content">
+              <h4 class="segment-title">E-Commerce & Retail</h4>
+              <p class="segment-subtitle">Conversion Optimization AI</p>
+              <p>Retail leads conversational AI adoption at 21.2% market share. 80% of e-commerce expected to use chatbots by 2025. Clear ROI metrics (Avon saw 320% conversion rate increase) make this segment highly receptive to AI solutions.</p>
+              <div class="segment-stats">
+                <div class="segment-stat">
+                  <div class="segment-stat-value">21.2%</div>
+                  <div class="segment-stat-label">AI Adoption Lead</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">80%</div>
+                  <div class="segment-stat-label">Expected Adoption</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">320%</div>
+                  <div class="segment-stat-label">Conversion Lift</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">High</div>
+                  <div class="segment-stat-label">Competition</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="segment-card">
+            <div class="segment-icon" style="background: var(--accent-amber-dim);">CU</div>
+            <div class="segment-content">
+              <h4 class="segment-title">Consumer AI Companions</h4>
+              <p class="segment-subtitle">Personalized AI Relationships</p>
+              <p>The AI companion market faces increasing regulatory scrutiny (FTC Section 6(b) study, state laws) but represents significant consumer demand. Anplexa's 6-persona personality system differentiates from generic chatbots, creating emotional engagement.</p>
+              <div class="segment-stats">
+                <div class="segment-stat">
+                  <div class="segment-stat-value">987M+</div>
+                  <div class="segment-stat-label">Global Users</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">6</div>
+                  <div class="segment-stat-label">Personas</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">$10-50</div>
+                  <div class="segment-stat-label">Monthly Budget</div>
+                </div>
+                <div class="segment-stat">
+                  <div class="segment-stat-value">Regulated</div>
+                  <div class="segment-stat-label">Environment</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">8</div>
+          <h3 class="analysis-title">Distribution Channel Strategy</h3>
+        </div>
+        <div class="analysis-content">
+          <h4>Primary Channels</h4>
+
+          <div class="cards-grid">
+            <div class="card">
+              <div class="card-icon cyan">WEB</div>
+              <h3>Direct Web Sales</h3>
+              <p>Self-service signup through marketing funnel with personality quiz. Conversion-optimized flow demonstrated by existing Anplexa funnel architecture. Best for: Consumer and SMB segments.</p>
+            </div>
+            <div class="card">
+              <div class="card-icon purple">PTR</div>
+              <h3>Industry Partnerships</h3>
+              <p>Partner with industry associations (PMU Elite Academy), training platforms, and equipment suppliers. Co-branded solutions (ChatPMU) with built-in distribution. Best for: Vertical markets.</p>
+            </div>
+            <div class="card">
+              <div class="card-icon green">MKT</div>
+              <h3>Marketplace Integration</h3>
+              <p>List on Shopify App Store, WordPress plugin directory, and CRM marketplaces. Reduces customer acquisition cost through existing user bases. Best for: E-commerce segment.</p>
+            </div>
+            <div class="card">
+              <div class="card-icon amber">API</div>
+              <h3>API/White-Label</h3>
+              <p>Enable tech entrepreneurs and agencies to build on Anplexa platform. Revenue share or licensing model. Creates ecosystem and network effects. Best for: Enterprise and developer segments.</p>
+            </div>
+          </div>
+
+          <h4>Channel Effectiveness by Segment</h4>
+
+          <table class="pricing-table">
+            <thead>
+              <tr>
+                <th>Segment</th>
+                <th>Primary Channel</th>
+                <th>Secondary Channel</th>
+                <th>CAC Estimate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>PMU/Beauty</td>
+                <td>Industry Partnerships</td>
+                <td>Content Marketing</td>
+                <td class="price-value">$50-$100</td>
+              </tr>
+              <tr>
+                <td>Healthcare</td>
+                <td>Direct Sales</td>
+                <td>Partner Networks</td>
+                <td class="price-value">$200-$500</td>
+              </tr>
+              <tr>
+                <td>E-Commerce</td>
+                <td>Marketplace</td>
+                <td>Paid Acquisition</td>
+                <td class="price-value">$75-$150</td>
+              </tr>
+              <tr>
+                <td>Consumer</td>
+                <td>Direct Web</td>
+                <td>Social/Influencer</td>
+                <td class="price-value">$15-$40</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="analysis-block">
+        <div class="analysis-header">
+          <div class="analysis-number">9</div>
+          <h3 class="analysis-title">Strategic Recommendations</h3>
+        </div>
+        <div class="analysis-content">
+          <h4>Immediate Priorities (0-6 Months)</h4>
+          <ul>
+            <li><strong>Launch ChatPMU:</strong> Capitalize on PMU Elite Academy partnership and existing blog mention. First-mover advantage in underserved vertical.</li>
+            <li><strong>Implement Tiered Pricing:</strong> $49/$149/$299 structure targeting SMB sweet spot below enterprise competitors.</li>
+            <li><strong>Build Case Studies:</strong> Document conversion improvements from early adopters for social proof.</li>
+            <li><strong>Strengthen Compliance:</strong> Implement state-specific disclosures for AI companion features per new regulations.</li>
+          </ul>
+
+          <h4>Medium-Term Growth (6-18 Months)</h4>
+          <ul>
+            <li><strong>Expand Verticals:</strong> Apply ChatPMU playbook to adjacent beauty verticals (hair salons, spas, aesthetics).</li>
+            <li><strong>Healthcare Entry:</strong> Partner with EHR providers for HIPAA-compliant patient engagement vertical.</li>
+            <li><strong>Marketplace Integrations:</strong> Launch Shopify and WordPress plugins for e-commerce penetration.</li>
+            <li><strong>White-Label Program:</strong> Enable agencies and entrepreneurs to build on Anplexa platform.</li>
+          </ul>
+
+          <h4>Long-Term Vision (18+ Months)</h4>
+          <ul>
+            <li><strong>Platform Ecosystem:</strong> Developer marketplace with community-built integrations and templates.</li>
+            <li><strong>International Expansion:</strong> Multi-language support targeting high-growth Asia Pacific market.</li>
+            <li><strong>Enterprise Tier:</strong> Dedicated infrastructure and SLA offerings for large organizations.</li>
+            <li><strong>AI Model Advancement:</strong> Proprietary fine-tuned models for specific verticals.</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>Key Success Metrics</h5>
+            <p>Track: Monthly Recurring Revenue (MRR), Customer Acquisition Cost (CAC) by channel, Churn Rate by segment, Net Revenue Retention, and Feature Adoption rates. Target: 15% MoM growth in first year, CAC payback under 6 months, and net retention above 110%.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sources -->
+    <div class="sources">
+      <h3>Research Sources</h3>
+      <ul class="sources-list">
+        <li><a href="https://www.fortunebusinessinsights.com/conversational-ai-market-109850" target="_blank">Fortune Business Insights - Conversational AI Market Size 2025-2032</a></li>
+        <li><a href="https://www.marketsandmarkets.com/Market-Reports/conversational-ai-market-49043506.html" target="_blank">Markets and Markets - Conversational AI Statistics</a></li>
+        <li><a href="https://www.nextiva.com/blog/conversational-ai-statistics.html" target="_blank">Nextiva - 50+ Conversational AI Statistics 2026</a></li>
+        <li><a href="https://www.demandsage.com/chatbot-statistics/" target="_blank">DemandSage - AI Chatbot Statistics 2026</a></li>
+        <li><a href="https://www.crescendo.ai/blog/how-much-do-chatbots-cost" target="_blank">Crescendo AI - Chatbot Pricing Estimates 2026</a></li>
+        <li><a href="https://wotnot.io/blog/chatbot-pricing" target="_blank">WotNot - Chatbot Cost Breakdown 2025</a></li>
+        <li><a href="https://www.fortunebusinessinsights.com/permanent-makeup-market-109710" target="_blank">Fortune Business Insights - Permanent Makeup Market 2032</a></li>
+        <li><a href="https://academy.pmuelite.com/blog" target="_blank">PMU Elite Academy - AI for Beauty Business 2025</a></li>
+        <li><a href="https://leadlite.io/litebot-pmu/" target="_blank">LiteBot - AI Assistants for PMU Studios</a></li>
+        <li><a href="https://www.cooley.com/news/insight/2025/2025-10-21-ai-chatbots-at-the-crossroads-navigating-new-laws-and-compliance-risks" target="_blank">Cooley Law - AI Chatbot Compliance Risks 2025</a></li>
+        <li><a href="https://www.zendesk.com/service/comparison/zendesk-vs-intercom/" target="_blank">Zendesk vs Intercom Comparison</a></li>
+        <li><a href="https://www.tidio.com/blog/drift-vs-intercom/" target="_blank">Tidio - Drift vs Intercom Analysis</a></li>
+        <li><a href="https://botpress.com/blog/key-chatbot-statistics" target="_blank">Botpress - Key Chatbot Statistics 2025</a></li>
+        <li><a href="https://www.singlegrain.com/saas/vertical-saas/" target="_blank">Single Grain - Vertical SaaS Strategy</a></li>
+        <li><a href="https://www.billyrichards.com/about" target="_blank">Billy Richards - Founder Profile</a></li>
+      </ul>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-brand">
+        <div class="footer-logo">A</div>
+        <span class="footer-title">Anplexa</span>
+      </div>
+      <p class="footer-tagline">World-Leading AI Companion Platform</p>
+      <div class="footer-links">
+        <a href="index.html">Documentation</a>
+        <a href="user-flows-interactive.html">User Flows</a>
+        <a href="#industry">Industry Analysis</a>
+        <a href="#market">Target Market</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#segments">Segments</a>
+      </div>
+      <p class="footer-copyright">
+        Anplexa Platform &bull; Brand & Market Strategy Document &bull; January 2025<br>
+        Powered by ChatPMU for the permanent makeup industry
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
