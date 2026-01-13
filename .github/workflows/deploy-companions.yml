@@ -1,0 +1,74 @@
+name: Deploy Companions App
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "apps/companions/**"
+      - "packages/**"
+
+env:
+  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+jobs:
+  deploy-dev:
+    if: github.ref == "refs/heads/develop"
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      
+      - run: pnpm install --frozen-lockfile
+      
+      - run: pnpm build --filter=companions
+      
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      
+      - name: Deploy to Railway (Development)
+        run: |
+          railway link --project ${{ secrets.RAILWAY_DEV_PROJECT_ID }}
+          railway up --service companions --environment development --ci
+
+  deploy-prod:
+    if: github.ref == "refs/heads/main"
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      
+      - run: pnpm install --frozen-lockfile
+      
+      - run: pnpm build --filter=companions
+      
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      
+      - name: Deploy to Railway (Production)
+        run: |
+          railway link --project ${{ secrets.RAILWAY_PROD_PROJECT_ID }}
+          railway up --service companions --environment production --ci
+      
+      - name: Post-Deployment Notification
+        if: success()
+        run: echo "Companions app deployed successfully to Production"
