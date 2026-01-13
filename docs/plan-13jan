@@ -1,0 +1,1364 @@
+# Clean Architecture Monorepo Consolidation Plan
+
+**Generated:** 2026-01-13
+**Agent IDs:** af22c15, afd0c73, acfac1b, a68dbc7
+
+---
+
+## Executive Summary
+
+This plan consolidates the Anplexa platform's 4 repositories into a production-grade monorepo while completing the Clean Architecture implementation (currently 48-60% complete across apps).
+
+**Current State:**
+- **Backend API** (2-terminal-companion): 55% Clean Architecture - Domain layer excellent, repository pattern 5% (interfaces only, zero implementations)
+- **Companions App** (v0-ai-companion-prototype): 55-60% - Good domain entities, adapters created but unused, God component (948 lines)
+- **Funnel App** (Funnel-Forge): 48% - Monolithic routes (769 lines), minimal code sharing
+- **Documentation** (anplexa): Docusaurus site with comprehensive architecture docs
+
+**Goals:**
+1. **Complete Clean Architecture**: Implement missing repository layer, use cases, dependency injection
+2. **Consolidate to Monorepo**: pnpm workspaces + Turborepo, extract shared packages
+3. **Refactor Fat Files**: Break up 1815-line docsRoutes, 948-line ChatInterface, 769-line routes.ts
+4. **Eliminate Duplication**: 20%+ code duplication across Stripe, email, analytics integrations
+5. **Maintain Deployment Independence**: Each app deploys separately (Vercel/Replit)
+
+**Expected Outcomes:**
+- Clean Architecture maturity: 48-60% → 85%+
+- Repository implementations: 0% → 100%
+- Code duplication: 20% → <5%
+- Largest file size: 1815 LOC → <400 LOC
+- Test coverage: 0% → 70%+
+- Build time: Baseline → <60s (Turborepo caching)
+
+---
+
+## Phase 1: Clean Architecture Audit Summary
+
+### Backend API (2-terminal-companion) - 55% Complete
+
+**✅ Strengths:**
+- **Domain Layer (95/100)**: Excellent entities (User, Conversation, Message), rich value objects (Email, Credits, Password), domain services
+- **Use Case Layer (60/100)**: Well-designed use cases (RegisterUser, LoginUser, SendMessage) with proper async patterns
+- **Adapter Pattern (75/100)**: Good implementations for Ollama, JWT, Email services
+
+**❌ Critical Gaps:**
+- **Repository Pattern (5/100)**: Interfaces defined but ZERO implementations
+  - `IUserRepository`, `IConversationRepository`, `IMessageRepository` exist in `/server/domain/repositories/`
+  - Routes directly query Drizzle ORM instead of using repositories
+  - Example violation (authRoutes.ts line 73):
+    ```typescript
+    const existingUser = await db.query.users.findFirst({
+      where: eq(users.email, body.email),
+    });
+    ```
+- **Dependency Injection (0/100)**: No DI container, use cases never instantiated
+- **Fat Routes**: docsRoutes.ts (1815 lines), adminUiRoutes.ts (1478 lines), authRoutes.ts (984 lines), crmRoutes.ts (924 lines)
+
+**File Locations:**
+```
+/home/billyrichards/bbrdev1/2-terminal-companion/
+├── server/domain/
+│   ├── entities/ ✓ (User.ts 187 LOC, Conversation.ts 125 LOC, Message.ts 123 LOC)
+│   ├── value-objects/ ✓ (Email.ts, Credits.ts, Password.ts)
+│   ├── repositories/ ⚠️ (Interfaces only, NO implementations)
+│   └── services/ ✓ (CreditService.ts 78 LOC)
+├── server/application/
+│   ├── ports/ ✓ (IAIProvider, ITokenService, IEmailService)
+│   └── use-cases/ ⚠️ (Partial - RegisterUser 129 LOC, LoginUser 91 LOC, SendMessage 155 LOC)
+├── server/infrastructure/
+│   ├── adapters/ ✓ (OllamaGateway 438 LOC implements IAIProvider)
+│   ├── auth/ ✓ (JWTAdapter implements ITokenService)
+│   └── email/ ✓ (ResendService 235 LOC implements IEmailService)
+└── server/presentation/
+    ├── controllers/ ✓ (AuthController 145 LOC - thin)
+    └── routes/ ❌ (FAT FILES - business logic in routes)
+```
+
+---
+
+### Companions App (v0-ai-companion-prototype) - 55-60% Complete
+
+**✅ Strengths:**
+- **Domain Entities (80/100)**: Clean Message and Conversation entities with normalization functions
+- **Adapters Created**: ApiClient (160 LOC) and StorageService (212 LOC) exist but unused
+
+**❌ Critical Gaps:**
+- **God Component (35/100)**: `chat-interface.tsx` (948 lines) mixes 10 concerns:
+  - 10 useState hooks, 12+ useEffect hooks, 5+ useRef hooks
+  - Presentation + Business logic + Data fetching + Analytics + localStorage + Modal management
+- **Service Layer Mixed (45/100)**: `conversation-service.ts` (462 LOC) duplicates domain logic AND infra logic
+- **Adapter Usage (40/100)**: ApiClient and StorageService created but:
+  - Components use direct `fetch()` instead of ApiClient (4+ places)
+  - Direct `localStorage` access instead of StorageService
+- **No Use Case Layer**: No orchestration between domain and presentation
+
+**File Locations:**
+```
+/home/billyrichards/bbrdev1/v0-ai-companion-prototype-main/
+├── lib/domain/entities/
+│   ├── message.ts ✓ (147 LOC - normalization functions)
+│   └── conversation.ts ✓ (133 LOC - factory functions)
+├── lib/adapters/
+│   ├── api/api-client.ts ⚠️ (160 LOC - created but UNUSED)
+│   └── storage/storage-service.ts ⚠️ (212 LOC - inconsistent usage)
+├── lib/
+│   ├── conversation-service.ts ❌ (462 LOC - mixed concerns, duplicates domain)
+│   └── use-conversation.ts ✓ (208 LOC - well-designed hook)
+└── components/
+    ├── chat-interface.tsx ❌ (948 LOC - GOD COMPONENT)
+    ├── chat/MessageInput.tsx ✓ (96 LOC - excellent)
+    └── chat/MessageList.tsx ✓ (96 LOC - good)
+```
+
+**Decomposition Opportunity:**
+- 948 lines → 340 lines (64% reduction) by extracting:
+  - Guest message handling → `useGuestChat` hook (150 LOC saved)
+  - Message persistence → abstraction layer (100 LOC saved)
+  - API calls → service + adapter (100 LOC saved)
+  - localStorage → consistent StorageService usage (50 LOC saved)
+  - Analytics → service wrapper (30 LOC saved)
+  - Modal state → custom hook (40 LOC saved)
+  - Preferences → Context or hook (40 LOC saved)
+
+---
+
+### Funnel App (Funnel-Forge) - 48% Complete
+
+**✅ Strengths:**
+- **Storage Abstraction (75/100)**: Clean DAO pattern with `IStorage` interface (95 LOC)
+- **Frontend/Backend Separation (75/100)**: `/client` and `/server` properly separated
+
+**❌ Critical Gaps:**
+- **Monolithic Routes (35/100)**: `server/routes.ts` (769 lines) contains:
+  - Stripe configuration & initialization
+  - Email capture logic
+  - Funnel response tracking
+  - Profile forwarding
+  - Webhook handling
+  - User registration flow
+- **Fat Component (40/100)**: `FunnelFlow.tsx` (451 lines) mixes UI + state + API + analytics + business logic
+- **No Shared Code (25/100)**: Minimal sharing with other apps, types duplicated
+
+**File Locations:**
+```
+/home/billyrichards/bbrdev1/Funnel-Forge/
+├── client/src/
+│   ├── pages/FunnelFlow.tsx ❌ (451 LOC - mixed concerns)
+│   ├── pages/Success.tsx ⚠️ (268 LOC - password logic mixed)
+│   └── lib/
+│       ├── funnel-data.ts ✓ (318 LOC - centralized quiz config)
+│       └── analytics.ts ✓ (195 LOC - good PostHog wrapper)
+├── server/
+│   ├── routes.ts ❌ (769 LOC - MONOLITHIC)
+│   └── storage.ts ✓ (95 LOC - good DAO pattern)
+└── shared/
+    └── schema.ts ⚠️ (57 LOC - not used on client)
+```
+
+---
+
+## Phase 2: Monorepo Structure Design
+
+### Recommended Structure (pnpm Workspaces + Turborepo)
+
+```
+anplexa-monorepo/
+├── apps/
+│   ├── api/                          # Express backend (from 2-terminal-companion)
+│   ├── companions/                   # Next.js 16 (from v0-ai-companion-prototype)
+│   ├── funnel/                       # Vite + React (from Funnel-Forge)
+│   └── docs/                         # Docusaurus (from anplexa)
+│
+├── packages/
+│   ├── contracts/                    # Shared type definitions
+│   │   ├── src/
+│   │   │   ├── stripe.ts            # Stripe types (unified)
+│   │   │   ├── auth.ts              # Auth types (TokenPayload, etc.)
+│   │   │   ├── chat.ts              # Chat types (MessageDTO, ConversationDTO)
+│   │   │   ├── user.ts              # User types
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   ├── core/                        # Domain + Repositories + Use Cases
+│   │   ├── src/
+│   │   │   ├── domain/
+│   │   │   │   ├── entities/ (from 2-terminal-companion)
+│   │   │   │   ├── value-objects/
+│   │   │   │   └── errors/
+│   │   │   ├── repositories/        # ⚠️ IMPLEMENT HERE (currently 0%)
+│   │   │   │   ├── user.repository.ts
+│   │   │   │   ├── conversation.repository.ts
+│   │   │   │   ├── message.repository.ts
+│   │   │   │   └── session.repository.ts
+│   │   │   └── use-cases/
+│   │   │       ├── auth/
+│   │   │       ├── chat/
+│   │   │       └── subscription/
+│   │   └── package.json
+│   │
+│   ├── services/                    # External service integrations
+│   │   ├── src/
+│   │   │   ├── stripe/              # Unified from all 3 apps
+│   │   │   ├── email/               # From 2-terminal-companion
+│   │   │   ├── analytics/           # Unified PostHog wrapper
+│   │   │   ├── auth/                # JWT + crypto
+│   │   │   └── ai/                  # Ollama gateway
+│   │   └── package.json
+│   │
+│   ├── database/                    # Drizzle schema (single source of truth)
+│   │   ├── src/
+│   │   │   ├── schema/
+│   │   │   ├── migrations/
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   ├── ui/                          # shadcn/ui shared components
+│   │   ├── src/components/
+│   │   └── package.json
+│   │
+│   ├── config/                      # Environment validation (Zod)
+│   │   └── src/env.ts
+│   │
+│   └── testing/                     # Test utilities
+│       ├── src/factories/
+│       └── src/mocks/
+│
+├── pnpm-workspace.yaml
+├── turbo.json
+├── tsconfig.base.json
+└── package.json
+```
+
+### Package Dependency Graph
+
+```
+apps/api
+├── @anplexa/contracts
+├── @anplexa/config
+├── @anplexa/database
+├── @anplexa/core (repositories, use cases)
+└── @anplexa/services/*
+
+apps/companions
+├── @anplexa/contracts
+├── @anplexa/ui
+└── @anplexa/services/analytics
+
+apps/funnel
+├── @anplexa/contracts
+├── @anplexa/ui
+└── @anplexa/services/{analytics,stripe}
+
+packages/core
+├── @anplexa/database
+├── @anplexa/contracts
+└── @anplexa/services/*
+
+packages/services/*
+└── @anplexa/contracts
+```
+
+**Critical Rule:** Packages MUST NOT import from apps.
+
+---
+
+## Phase 3: Implementation Phases
+
+### Phase 0: Setup (Weeks 1-2) - 5 days
+
+**Goal:** Create working monorepo structure
+
+1. Create root monorepo structure
+2. Configure pnpm workspaces (`pnpm-workspace.yaml`)
+3. Set up Turborepo (`turbo.json`)
+4. Configure root TypeScript config with path aliases
+5. Set up GitHub Actions workflows (lint, test, build)
+6. Verify all apps build independently
+
+**Deliverables:**
+- Empty monorepo structure
+- Working build pipeline
+- Apps still independent, buildable
+
+---
+
+### Phase 1: Foundation Packages (Weeks 2-4) - 18 days
+
+**Goal:** Extract shared code (non-invasive, no breaking changes)
+
+#### Week 2: Type Consolidation
+
+**1.1 Create @anplexa/contracts (3 days)**
+- Extract type definitions from all 3 apps
+- Consolidate User, Conversation, Message, Stripe types
+- Add Zod validation schemas
+- **Files:**
+  - `/packages/contracts/src/stripe.ts` - Stripe types from all apps
+  - `/packages/contracts/src/auth.ts` - TokenPayload, AuthRequest/Response
+  - `/packages/contracts/src/chat.ts` - MessageDTO, ConversationDTO
+  - `/packages/contracts/src/user.ts` - UserDTO, UserPreferences
+
+**1.2 Create @anplexa/config (2 days)**
+- Extract env validation from 2-terminal-companion
+- Add constants (Stripe product IDs, feature flags)
+- **Files:**
+  - `/packages/config/src/env.ts` - Zod schemas for all env vars
+  - `/packages/config/src/constants.ts` - Shared constants
+
+**1.3 Create @anplexa/database (3 days)**
+- Copy schema from 2-terminal-companion
+- Ensure PostgreSQL/SQLite support
+- Export type definitions
+- **Files:**
+  - `/packages/database/src/schema/` - Unified Drizzle schema
+  - `/packages/database/drizzle.config.ts` - Migration config
+
+#### Week 3: Service Extraction
+
+**1.4 Create @anplexa/services (3 days)**
+- Extract auth from 2-terminal-companion/infrastructure/auth
+- Extract stripe from 2-terminal-companion/infrastructure/stripe
+- Extract email from 2-terminal-companion/infrastructure/email
+- Wrap PostHog usage
+- **Files:**
+  - `/packages/services/src/auth/jwt.ts` - JWTAdapter
+  - `/packages/services/src/stripe/service.ts` - StripeService (from backend + Funnel)
+  - `/packages/services/src/email/resend-service.ts` - ResendService
+  - `/packages/services/src/analytics/client.ts` - PostHog wrapper
+
+**1.5 Update all apps to import from packages (2 days)**
+- Change import paths in all apps
+- No logic changes
+- CI should pass
+
+#### Week 4: Core Package Skeleton
+
+**1.6 Create @anplexa/core (2 days)**
+- Copy domain entities from 2-terminal-companion
+- Create empty repository implementations (skeleton)
+- Create use-case skeletons
+- **Files:**
+  - `/packages/core/src/domain/entities/` - Copy from backend
+  - `/packages/core/src/repositories/user.repository.ts` - Empty implementation
+  - `/packages/core/src/use-cases/auth/register-user.use-case.ts` - Skeleton
+
+**Phase 1 Result:** Apps functional, no breaking changes, shared code extracted
+
+---
+
+### Phase 2: Clean Architecture Implementation (Weeks 5-8) - 20 days
+
+**Goal:** Implement missing repository layer + use cases
+
+#### Weeks 5-6: Repository Implementations (8 days)
+
+**2.1 Implement UserRepository**
+- Query methods: `getById`, `getByEmail`, `getAll`
+- Command methods: `create`, `update`, `delete`
+- Use Drizzle ORM from @anplexa/database
+- Unit tests with test database
+- **File:** `/packages/core/src/repositories/user.repository.ts`
+
+**2.2 Implement ConversationRepository**
+- Query methods: `getById`, `getByUserId`, `searchByContent`
+- Command methods: `create`, `update`, `delete`
+- Pagination support
+- **File:** `/packages/core/src/repositories/conversation.repository.ts`
+
+**2.3 Implement MessageRepository**
+- Query methods: `getByConversationId`, `search`
+- Command methods: `create`, `bulkCreate`, `delete`
+- **File:** `/packages/core/src/repositories/message.repository.ts`
+
+**2.4 Implement SessionRepository**
+- Query methods: `getByUserId`, `getByRefreshToken`
+- Command methods: `create`, `delete`, `deleteExpired`
+- **File:** `/packages/core/src/repositories/session.repository.ts`
+
+#### Weeks 7-8: Use Case Implementation (8 days)
+
+**2.5 Create Auth Use Cases**
+- `RegisterUserUseCase` - Replace authRoutes.ts logic (lines 66-100)
+- `LoginUserUseCase` - Replace authRoutes.ts logic
+- `RefreshTokenUseCase` - Replace authRoutes.ts logic
+- `ResetPasswordUseCase` - Replace authRoutes.ts logic
+- **Files:** `/packages/core/src/use-cases/auth/*.use-case.ts`
+
+**2.6 Create Chat Use Cases**
+- `SendMessageUseCase` - Already exists in backend, needs repository integration
+- `CreateConversationUseCase` - Extract from chatRoutes.ts
+- `GetConversationHistoryUseCase` - Extract from chatRoutes.ts
+- **Files:** `/packages/core/src/use-cases/chat/*.use-case.ts`
+
+**2.7 Create Subscription Use Cases**
+- `CreateCheckoutUseCase` - Extract from stripeRoutes.ts and Funnel routes.ts
+- `UpdateSubscriptionUseCase` - Extract from webhook handlers
+- `HandleWebhookUseCase` - Refactor webhookHandlers.ts (293 lines)
+- **Files:** `/packages/core/src/use-cases/subscription/*.use-case.ts`
+
+#### Week 8: Integration (4 days)
+
+**2.8 Update API Routes to Use Repositories**
+- Replace all raw Drizzle queries with repository calls
+- Example: `authRoutes.ts` line 73 becomes `await userRepo.getByEmail(email)`
+- **Files Modified:**
+  - `apps/api/src/presentation/routes/authRoutes.ts`
+  - `apps/api/src/presentation/routes/chatRoutes.ts`
+  - `apps/api/src/presentation/routes/stripeRoutes.ts`
+
+**Phase 2 Result:** Clean Architecture 85% complete, repositories implemented, use cases extracted
+
+---
+
+### Phase 3: Route Consolidation & DI (Weeks 9-11) - 11 days
+
+**Goal:** Break up fat routes, implement dependency injection
+
+#### Week 9: Dependency Injection (3 days)
+
+**3.1 Setup DI Container**
+- Install `awilix` (or manual factory pattern)
+- Create service container
+- Register repositories, services, use cases
+- **File:** `apps/api/src/container.ts`
+
+**3.2 Update API Entry Point**
+- Modify `apps/api/src/index.ts` to use DI
+- Inject dependencies into controllers
+- **File Modified:** `apps/api/src/index.ts`
+
+#### Weeks 10-11: Route Refactoring (8 days)
+
+**3.3 Break Up docsRoutes.ts (1815 → <400 LOC)**
+- Extract OpenAPI spec to separate JSON file
+- Split into:
+  - `apps/api/src/presentation/routes/docs/index.ts` (API docs)
+  - `apps/api/src/presentation/routes/docs/release-notes.ts`
+  - `apps/api/src/presentation/routes/docs/changelog.ts`
+- **Target:** No file > 400 LOC
+
+**3.4 Break Up adminUiRoutes.ts (1478 → <400 LOC)**
+- Extract HTML rendering to template system
+- Split into:
+  - `apps/api/src/presentation/routes/admin/users.ts`
+  - `apps/api/src/presentation/routes/admin/analytics.ts`
+  - `apps/api/src/presentation/routes/admin/settings.ts`
+
+**3.5 Break Up authRoutes.ts (984 → <300 LOC)**
+- Move business logic to use cases
+- Split into:
+  - `apps/api/src/presentation/routes/auth/register.ts`
+  - `apps/api/src/presentation/routes/auth/login.ts`
+  - `apps/api/src/presentation/routes/auth/refresh.ts`
+  - `apps/api/src/presentation/routes/auth/password.ts`
+
+**3.6 Break Up crmRoutes.ts (924 → <400 LOC)**
+- Extract CRM operations to use cases
+- Split by domain
+
+**3.7 Refactor Funnel routes.ts (769 → <300 LOC)**
+- Extract Stripe service usage
+- Create separate route files
+- **File Modified:** `apps/funnel/server/routes.ts` → multiple files
+
+**Phase 3 Result:** Zero route files > 400 LOC, dependency injection complete
+
+---
+
+### Phase 4: Frontend Refactoring (Weeks 12-15) - 10 days
+
+**Goal:** Create @anplexa/ui, decompose ChatInterface
+
+#### Week 12: UI Package (2 days)
+
+**4.1 Create @anplexa/ui**
+- Copy shadcn/ui setup from Companions app
+- Export all components
+- **File:** `/packages/ui/src/components/`
+
+**4.2 Update Apps to Use @anplexa/ui**
+- Companions app: Remove local shadcn, import from package
+- Funnel app: Import shared components
+
+#### Weeks 13-15: Component Decomposition (8 days)
+
+**4.3 Decompose ChatInterface.tsx (948 → ~340 LOC)**
+
+Extract custom hooks:
+- `hooks/useGuestChat.ts` - Guest message handling (save 150 LOC)
+- `hooks/useMessagePersistence.ts` - Message saving logic (save 100 LOC)
+- `hooks/usePreferences.ts` - Companion preferences (save 40 LOC)
+- `hooks/useUpgradeModal.ts` - Modal state management (save 40 LOC)
+
+Enforce adapter usage:
+- Replace direct `fetch()` with `apiClient` (4+ locations)
+- Replace direct `localStorage` with `storageService`
+
+Extract components:
+- `components/chat/ConversationHeader.tsx` - Header with actions
+- `components/chat/IceBreakerButtons.tsx` - Conversation starters
+- `components/chat/PreferencesBar.tsx` - Settings bar
+
+**Files Created:**
+- `apps/companions/hooks/useGuestChat.ts`
+- `apps/companions/hooks/useMessagePersistence.ts`
+- `apps/companions/hooks/usePreferences.ts`
+- `apps/companions/hooks/useUpgradeModal.ts`
+- `apps/companions/components/chat/ConversationHeader.tsx`
+- `apps/companions/components/chat/IceBreakerButtons.tsx`
+
+**File Modified:**
+- `apps/companions/components/chat-interface.tsx` (948 → ~340 LOC)
+
+**4.4 Refactor FunnelFlow.tsx (451 → ~250 LOC)**
+- Extract business logic to custom hooks
+- Create `hooks/useFunnelSession.ts`
+- Create `hooks/useFunnelTracking.ts`
+- **Files:**
+  - `apps/funnel/client/src/hooks/useFunnelSession.ts`
+  - `apps/funnel/client/src/hooks/useFunnelTracking.ts`
+
+**4.5 Fix conversation-service.ts Duplication**
+- Remove duplicate normalization logic
+- Use domain entities from @anplexa/core
+- Consistently use apiClient and storageService
+- **File Modified:** `apps/companions/lib/conversation-service.ts` (462 → ~250 LOC)
+
+**Phase 4 Result:** Consistent UI, ChatInterface decomposed, adapters enforced
+
+---
+
+### Phase 5: Testing & Production Readiness (Weeks 16-18) - 10 days
+
+**Goal:** Comprehensive testing, verification, documentation
+
+#### Week 16: Integration Testing (3 days)
+
+**5.1 Repository Tests**
+- Unit tests for all repository implementations
+- Test with SQLite in-memory database
+- **Files:** `/packages/core/src/repositories/__tests__/*.test.ts`
+
+**5.2 Use Case Tests**
+- Integration tests for all use cases
+- Mock repositories
+- **Files:** `/packages/core/src/use-cases/__tests__/*.test.ts`
+
+**5.3 API Integration Tests**
+- Test all API endpoints
+- Contract tests (API matches @anplexa/contracts)
+- **Files:** `apps/api/__tests__/integration/*.test.ts`
+
+#### Week 17: E2E Testing (3 days)
+
+**5.4 Critical User Flow Tests**
+- Signup → Email verification → Login → Payment → Chat
+- Guest mode → Upgrade prompt → Payment → Login
+- **Files:** `/e2e/*.spec.ts`
+
+#### Week 18: Documentation & Monitoring (4 days)
+
+**5.5 Update Documentation**
+- Add Clean Architecture audit findings to `/apps/docs/docs/architecture/clean-architecture-audit.md`
+- Update `/apps/docs/docs/improvement-plans/clean-architecture-transition.md` with completion status
+- Create `/apps/docs/docs/development/monorepo-guide.md`
+- Update all architecture diagrams with monorepo structure
+- **Files:**
+  - `apps/docs/docs/architecture/clean-architecture-audit.md` (NEW)
+  - `apps/docs/docs/development/monorepo-guide.md` (NEW)
+  - `apps/docs/docs/improvement-plans/clean-architecture-transition.md` (UPDATE)
+
+**5.6 Performance Verification**
+- Measure build time (target: <60s with Turborepo caching)
+- Measure test execution (target: <30s parallel)
+- Verify no bundle size increase
+
+**5.7 Deployment Verification**
+- Test independent app deployments
+- Verify Vercel/Replit deployments
+- Smoke tests in staging
+
+**Phase 5 Result:** Production-ready monorepo with 70%+ test coverage
+
+---
+
+## Critical Files Reference
+
+### Files to Create (New)
+
+**Packages:**
+```
+packages/contracts/src/{stripe,auth,chat,user}.ts
+packages/config/src/env.ts
+packages/database/src/schema/*.ts
+packages/services/src/{auth,stripe,email,analytics,ai}/*.ts
+packages/core/src/repositories/*.repository.ts  ⚠️ CRITICAL - Currently 0% implemented
+packages/core/src/use-cases/{auth,chat,subscription}/*.use-case.ts
+packages/ui/src/components/*.tsx
+packages/testing/src/{factories,mocks}/*.ts
+```
+
+**Documentation:**
+```
+apps/docs/docs/architecture/clean-architecture-audit.md
+apps/docs/docs/development/monorepo-guide.md
+```
+
+**Hooks (Companions App):**
+```
+apps/companions/hooks/useGuestChat.ts
+apps/companions/hooks/useMessagePersistence.ts
+apps/companions/hooks/usePreferences.ts
+apps/companions/hooks/useUpgradeModal.ts
+```
+
+**Hooks (Funnel App):**
+```
+apps/funnel/client/src/hooks/useFunnelSession.ts
+apps/funnel/client/src/hooks/useFunnelTracking.ts
+```
+
+### Files to Modify (Existing)
+
+**Backend API:**
+```
+apps/api/src/index.ts  # Add DI container
+apps/api/src/container.ts  # NEW - DI setup
+apps/api/src/presentation/routes/authRoutes.ts  # 984 → <300 LOC, use repositories
+apps/api/src/presentation/routes/docsRoutes.ts  # 1815 → <400 LOC, split
+apps/api/src/presentation/routes/adminUiRoutes.ts  # 1478 → <400 LOC, split
+apps/api/src/presentation/routes/crmRoutes.ts  # 924 → <400 LOC, split
+```
+
+**Companions App:**
+```
+apps/companions/components/chat-interface.tsx  # 948 → ~340 LOC, decompose
+apps/companions/lib/conversation-service.ts  # 462 → ~250 LOC, remove duplication
+```
+
+**Funnel App:**
+```
+apps/funnel/server/routes.ts  # 769 → <300 LOC, split
+apps/funnel/client/src/pages/FunnelFlow.tsx  # 451 → ~250 LOC, extract hooks
+```
+
+### Files to Delete (Duplicates)
+
+After extraction to packages:
+```
+apps/api/server/infrastructure/stripe/*  → @anplexa/services/stripe
+apps/api/server/infrastructure/email/*  → @anplexa/services/email
+apps/api/server/infrastructure/auth/*  → @anplexa/services/auth
+apps/companions/lib/adapters/api/api-client.ts  → Enforce usage
+apps/companions/lib/adapters/storage/storage-service.ts  → Enforce usage
+```
+
+---
+
+## Verification Steps
+
+### Phase 1 Verification
+- [ ] All 4 apps build successfully
+- [ ] All apps run independently
+- [ ] All packages have 80%+ test coverage
+- [ ] Zero type errors with strict TypeScript
+- [ ] CI pipeline passes
+
+### Phase 2 Verification
+- [ ] All repository implementations complete (4 repositories)
+- [ ] All use cases implemented (10+ use cases)
+- [ ] API routes use repositories (no direct Drizzle queries)
+- [ ] Integration tests pass (70%+ coverage)
+- [ ] Clean Architecture maturity: 85%+
+
+### Phase 3 Verification
+- [ ] Zero route files > 400 LOC
+- [ ] Dependency injection working
+- [ ] All routes use DI container
+- [ ] Code duplication < 5%
+
+### Phase 4 Verification
+- [ ] @anplexa/ui used by all apps
+- [ ] ChatInterface.tsx < 400 LOC
+- [ ] All adapters enforced (no direct fetch/localStorage)
+- [ ] Component tests pass
+
+### Phase 5 Verification
+- [ ] Test coverage 70%+ (all packages and apps)
+- [ ] E2E tests pass for critical flows
+- [ ] Build time < 60s (Turborepo caching)
+- [ ] Documentation updated
+- [ ] All apps deploy successfully
+- [ ] Performance metrics within targets
+
+---
+
+## Success Metrics
+
+**Before → After:**
+- Clean Architecture: 48-60% → 85%+
+- Repository implementations: 0% → 100%
+- Largest file: 1815 LOC → <400 LOC
+- Code duplication: 20% → <5%
+- Test coverage: 0% → 70%+
+- Build time: Baseline → <60s
+- Type safety: Partial → 100% (strict mode)
+
+---
+
+## Effort Summary
+
+| Phase | Duration | Days | Key Deliverables |
+|-------|----------|------|------------------|
+| 0: Setup | Weeks 1-2 | 5 | Monorepo structure, CI/CD |
+| 1: Foundation | Weeks 2-4 | 18 | Shared packages, no breaking changes |
+| 2: Clean Arch | Weeks 5-8 | 20 | Repositories (0→100%), use cases |
+| 3: Routes & DI | Weeks 9-11 | 11 | Fat routes split, DI container |
+| 4: Frontend | Weeks 12-15 | 10 | UI package, ChatInterface decomposed |
+| 5: Testing | Weeks 16-18 | 10 | Tests, docs, production-ready |
+| **TOTAL** | **18 weeks** | **74 days** | **Production-grade monorepo** |
+
+**With Team:**
+- 1 developer: 18 weeks (~4 months)
+- 2 developers: 11 weeks (~2.5 months)
+- 3 developers: 8 weeks (2 months)
+
+---
+
+## Multi-Agent Execution Strategy
+
+### Overview
+
+This plan can be accelerated significantly using parallel subagents with cross-checking. Each phase has tasks that can run concurrently, with validation agents ensuring consistency and correctness.
+
+**Estimated Time Savings:**
+- Single-threaded: 18 weeks (74 days)
+- Multi-agent parallel: 9-11 weeks (38-47 days)
+- **Speedup: 45-50%**
+
+---
+
+### Phase 0: Setup (Week 1) - 3 Agents in Parallel
+
+**Agent 1: Infrastructure Setup** (haiku)
+```
+Task: Create monorepo file structure
+- Create directory structure (apps/, packages/)
+- Set up pnpm-workspace.yaml
+- Create root package.json with workspace config
+- Set up basic turbo.json
+Duration: 0.5 days
+```
+
+**Agent 2: TypeScript Configuration** (haiku)
+```
+Task: Configure TypeScript for monorepo
+- Create tsconfig.base.json with path aliases
+- Create per-app tsconfig.json inheriting from base
+- Configure module resolution for @anplexa/* packages
+Duration: 0.5 days
+```
+
+**Agent 3: CI/CD Pipeline** (haiku)
+```
+Task: Set up GitHub Actions
+- Create .github/workflows/lint.yml
+- Create .github/workflows/test.yml
+- Create .github/workflows/build.yml
+- Create per-app deployment workflows
+Duration: 1 day
+```
+
+**Validation Agent (sonnet):**
+```
+After all 3 agents complete:
+- Verify monorepo structure follows best practices
+- Test that TypeScript compilation works
+- Verify CI workflows syntax
+- Cross-check consistency between all configs
+Duration: 0.5 days
+```
+
+**Total Phase 0: 2 days (vs. 5 days single-threaded) - 60% faster**
+
+---
+
+### Phase 1: Foundation Packages (Weeks 2-3) - 6 Agents in Parallel
+
+**Agent 1: Contracts Package** (haiku)
+```
+Task: Extract and consolidate type definitions
+- Create @anplexa/contracts package structure
+- Extract types from 2-terminal-companion
+- Extract types from v0-ai-companion-prototype
+- Extract types from Funnel-Forge
+- Resolve type conflicts
+- Add Zod schemas
+- Write unit tests (type-level tests with tsd)
+Files: packages/contracts/src/{stripe,auth,chat,user}.ts
+Duration: 3 days
+```
+
+**Agent 2: Config Package** (haiku)
+```
+Task: Create unified configuration
+- Create @anplexa/config package
+- Extract env validation from backend
+- Add constants (Stripe products, feature flags)
+- Create Zod schemas for all env vars
+- Write validation tests
+Files: packages/config/src/{env,constants}.ts
+Duration: 2 days
+```
+
+**Agent 3: Database Package** (haiku)
+```
+Task: Unify database schema
+- Create @anplexa/database package
+- Copy Drizzle schema from backend
+- Ensure PostgreSQL + SQLite support
+- Export type definitions
+- Set up migration config
+- Write schema tests
+Files: packages/database/src/schema/*.ts
+Duration: 3 days
+```
+
+**Agent 4: Services Package (Auth + AI)** (haiku)
+```
+Task: Extract auth and AI services
+- Create @anplexa/services package structure
+- Extract JWTAdapter from backend
+- Extract PasswordCrypto from backend
+- Extract OllamaGateway from backend
+- Write unit tests with mocks
+Files: packages/services/src/{auth,ai}/*.ts
+Duration: 3 days
+```
+
+**Agent 5: Services Package (Stripe + Email)** (haiku)
+```
+Task: Extract payment and email services
+- Extract StripeService from backend + Funnel
+- Extract EmailService from backend
+- Consolidate Stripe webhook handlers
+- Write unit tests with mocked Stripe SDK
+Files: packages/services/src/{stripe,email}/*.ts
+Duration: 3 days
+```
+
+**Agent 6: Services Package (Analytics)** (haiku)
+```
+Task: Create unified analytics service
+- Extract PostHog usage from all apps
+- Create analytics client wrapper
+- Define event types
+- Write unit tests
+Files: packages/services/src/analytics/*.ts
+Duration: 2 days
+```
+
+**Validation Agent (sonnet):**
+```
+After all 6 agents complete:
+- Verify no circular dependencies between packages
+- Check all types export correctly
+- Run integration test: import all packages together
+- Verify Zod schemas match actual types
+- Cross-check Stripe types across all extractions
+- Ensure database schema matches all app usage
+Duration: 1 day
+```
+
+**Agent 7: App Migration** (sonnet)
+```
+After validation passes:
+- Update all apps to import from packages
+- Change import paths (no logic changes)
+- Fix any type mismatches
+- Run all app builds
+- Verify CI passes
+Duration: 2 days
+```
+
+**Total Phase 1: 8 days (vs. 18 days single-threaded) - 56% faster**
+
+---
+
+### Phase 2: Clean Architecture Implementation (Weeks 4-6) - 8 Agents in Parallel
+
+**Agent 1: UserRepository** (sonnet)
+```
+Task: Implement user repository with tests
+- Create UserRepository class implementing IUserRepository
+- Implement query methods (getById, getByEmail, getAll)
+- Implement command methods (create, update, delete)
+- Use Drizzle ORM from @anplexa/database
+- Write comprehensive unit tests (80%+ coverage)
+- Test with in-memory SQLite
+File: packages/core/src/repositories/user.repository.ts
+Duration: 2 days
+```
+
+**Agent 2: ConversationRepository** (sonnet)
+```
+Task: Implement conversation repository with tests
+- Create ConversationRepository implementing IConversationRepository
+- Implement query methods (getById, getByUserId, search)
+- Implement command methods (create, update, delete)
+- Add pagination support
+- Write unit tests with test fixtures
+File: packages/core/src/repositories/conversation.repository.ts
+Duration: 2 days
+```
+
+**Agent 3: MessageRepository** (sonnet)
+```
+Task: Implement message repository with tests
+- Create MessageRepository implementing IMessageRepository
+- Implement query methods (getByConversationId, search)
+- Implement command methods (create, bulkCreate, delete)
+- Optimize for bulk operations
+- Write unit tests
+File: packages/core/src/repositories/message.repository.ts
+Duration: 2 days
+```
+
+**Agent 4: SessionRepository** (sonnet)
+```
+Task: Implement session repository with tests
+- Create SessionRepository implementing ISessionRepository
+- Implement query methods (getByUserId, getByRefreshToken)
+- Implement command methods (create, delete, deleteExpired)
+- Add cleanup for expired sessions
+- Write unit tests
+File: packages/core/src/repositories/session.repository.ts
+Duration: 2 days
+```
+
+**Agent 5: Auth Use Cases** (sonnet)
+```
+Task: Implement auth use cases
+- RegisterUserUseCase (replace authRoutes.ts lines 66-100)
+- LoginUserUseCase
+- RefreshTokenUseCase
+- ResetPasswordUseCase
+- Write integration tests (mock repositories)
+Files: packages/core/src/use-cases/auth/*.use-case.ts
+Duration: 4 days
+```
+
+**Agent 6: Chat Use Cases** (sonnet)
+```
+Task: Implement chat use cases
+- SendMessageUseCase (integrate with repositories)
+- CreateConversationUseCase
+- GetConversationHistoryUseCase
+- Write integration tests
+Files: packages/core/src/use-cases/chat/*.use-case.ts
+Duration: 3 days
+```
+
+**Agent 7: Subscription Use Cases** (sonnet)
+```
+Task: Implement subscription use cases
+- CreateCheckoutUseCase (extract from stripeRoutes + Funnel)
+- UpdateSubscriptionUseCase
+- HandleWebhookUseCase (refactor 293-line handler)
+- Write integration tests with mocked Stripe
+Files: packages/core/src/use-cases/subscription/*.use-case.ts
+Duration: 3 days
+```
+
+**Agent 8: Core Package Integration** (haiku)
+```
+Task: Set up core package exports and DI prep
+- Create barrel exports for all repositories
+- Create barrel exports for all use cases
+- Set up package.json with proper exports
+- Create factory functions for DI
+- Document usage examples
+Duration: 1 day
+```
+
+**Validation Agent (sonnet):**
+```
+After Agents 1-4 (repositories) complete:
+- Verify all IRepository interfaces implemented
+- Check test coverage (must be 80%+)
+- Run integration tests with real PostgreSQL
+- Verify no N+1 query issues
+- Check proper error handling
+Duration: 1 day
+```
+
+**Cross-Check Agent (sonnet):**
+```
+After Agents 5-7 (use cases) complete:
+- Verify use cases use repositories (not direct Drizzle)
+- Check all business logic extracted from routes
+- Verify proper transaction handling
+- Test use case integration tests pass
+- Ensure consistent error handling across all use cases
+Duration: 1 day
+```
+
+**Agent 9: API Routes Migration** (sonnet)
+```
+After validation passes:
+- Update authRoutes.ts to use repositories
+- Update chatRoutes.ts to use use cases
+- Update stripeRoutes.ts to use use cases
+- Remove direct Drizzle queries
+- Verify all tests pass
+Duration: 2 days
+```
+
+**Total Phase 2: 10 days (vs. 20 days single-threaded) - 50% faster**
+
+---
+
+### Phase 3: Route Consolidation & DI (Weeks 7-8) - 7 Agents in Parallel
+
+**Agent 1: DI Container Setup** (haiku)
+```
+Task: Create dependency injection container
+- Install awilix
+- Create apps/api/src/container.ts
+- Register all repositories
+- Register all services
+- Register all use cases
+- Set up scoped vs singleton lifetimes
+Duration: 1.5 days
+```
+
+**Agent 2: Split authRoutes.ts** (sonnet)
+```
+Task: Refactor authentication routes (984 → <300 LOC)
+- Split into separate files:
+  - routes/auth/register.ts
+  - routes/auth/login.ts
+  - routes/auth/refresh.ts
+  - routes/auth/password.ts
+- Move business logic to use cases
+- Use DI for use case injection
+- Update tests
+Duration: 3 days
+```
+
+**Agent 3: Split docsRoutes.ts** (haiku)
+```
+Task: Refactor docs routes (1815 → <400 LOC)
+- Extract OpenAPI spec to JSON file
+- Split into:
+  - routes/docs/index.ts (API docs)
+  - routes/docs/release-notes.ts
+  - routes/docs/changelog.ts
+- Clean up HTML generation
+Duration: 2 days
+```
+
+**Agent 4: Split adminUiRoutes.ts** (sonnet)
+```
+Task: Refactor admin routes (1478 → <400 LOC)
+- Extract HTML to template system
+- Split into:
+  - routes/admin/users.ts
+  - routes/admin/analytics.ts
+  - routes/admin/settings.ts
+- Use DI for dependencies
+Duration: 3 days
+```
+
+**Agent 5: Split crmRoutes.ts** (haiku)
+```
+Task: Refactor CRM routes (924 → <400 LOC)
+- Extract CRM operations to use cases
+- Split by domain (contacts, campaigns, etc.)
+- Use DI for dependencies
+Duration: 2 days
+```
+
+**Agent 6: Split Funnel routes.ts** (haiku)
+```
+Task: Refactor Funnel routes (769 → <300 LOC)
+- Extract Stripe service usage
+- Split into separate route files
+- Use @anplexa/services
+Duration: 2 days
+```
+
+**Agent 7: API Entry Point Migration** (haiku)
+```
+After Agent 1 (DI) completes:
+- Update apps/api/src/index.ts to use DI
+- Inject container into all routes
+- Update middleware to use container
+- Test full API with DI
+Duration: 1 day
+```
+
+**Validation Agent (sonnet):**
+```
+After all agents complete:
+- Verify no route file > 400 LOC
+- Check all routes use DI
+- Verify no direct service instantiation
+- Run full API integration tests
+- Check for code duplication (must be <5%)
+Duration: 1 day
+```
+
+**Total Phase 3: 6 days (vs. 11 days single-threaded) - 45% faster**
+
+---
+
+### Phase 4: Frontend Refactoring (Weeks 9-10) - 6 Agents in Parallel
+
+**Agent 1: UI Package** (haiku)
+```
+Task: Create shared UI library
+- Create @anplexa/ui package
+- Copy shadcn/ui components from Companions
+- Export all components with barrel file
+- Set up Tailwind config
+- Write component documentation
+Duration: 2 days
+```
+
+**Agent 2: Extract useGuestChat hook** (haiku)
+```
+Task: Extract guest chat logic from ChatInterface
+- Create hooks/useGuestChat.ts
+- Move guest message handling (150 LOC)
+- Handle localStorage for guest messages
+- Include upgrade modal triggers
+- Write hook tests
+Duration: 1 day
+```
+
+**Agent 3: Extract useMessagePersistence hook** (haiku)
+```
+Task: Extract message persistence logic
+- Create hooks/useMessagePersistence.ts
+- Move message saving logic (100 LOC)
+- Enforce apiClient usage (replace fetch)
+- Enforce storageService usage
+- Write hook tests
+Duration: 1 day
+```
+
+**Agent 4: Extract usePreferences + useUpgradeModal hooks** (haiku)
+```
+Task: Extract preference and modal logic
+- Create hooks/usePreferences.ts (40 LOC saved)
+- Create hooks/useUpgradeModal.ts (40 LOC saved)
+- Handle companion settings
+- Handle modal state management
+- Write hook tests
+Duration: 1 day
+```
+
+**Agent 5: Decompose ChatInterface** (sonnet)
+```
+After Agents 2-4 complete:
+- Refactor ChatInterface to use new hooks
+- Extract components:
+  - components/chat/ConversationHeader.tsx
+  - components/chat/IceBreakerButtons.tsx
+  - components/chat/PreferencesBar.tsx
+- Replace direct fetch with apiClient
+- Replace direct localStorage with storageService
+- Target: 948 → ~340 LOC
+- Update tests
+Duration: 3 days
+```
+
+**Agent 6: Refactor Funnel Components** (haiku)
+```
+Task: Extract Funnel business logic
+- Create hooks/useFunnelSession.ts
+- Create hooks/useFunnelTracking.ts
+- Refactor FunnelFlow.tsx (451 → ~250 LOC)
+- Use @anplexa/ui components
+- Write tests
+Duration: 2 days
+```
+
+**Agent 7: Fix conversation-service.ts** (haiku)
+```
+Task: Remove duplication in conversation service
+- Use domain entities from @anplexa/core
+- Remove duplicate normalization logic
+- Enforce apiClient usage
+- Enforce storageService usage
+- Target: 462 → ~250 LOC
+- Update tests
+Duration: 2 days
+```
+
+**Validation Agent (sonnet):**
+```
+After all agents complete:
+- Verify ChatInterface < 400 LOC
+- Check all direct fetch() replaced with apiClient
+- Check all localStorage replaced with storageService
+- Verify @anplexa/ui used consistently
+- Run component tests (70%+ coverage)
+- Visual regression testing
+Duration: 1 day
+```
+
+**Total Phase 4: 7 days (vs. 10 days single-threaded) - 30% faster**
+
+---
+
+### Phase 5: Testing & Docs (Weeks 11-12) - 5 Agents in Parallel
+
+**Agent 1: Repository Tests** (haiku)
+```
+Task: Comprehensive repository testing
+- Write unit tests for all repositories
+- Test with SQLite in-memory
+- Test with PostgreSQL (docker)
+- Test edge cases and errors
+- Target: 80%+ coverage
+Duration: 2 days
+```
+
+**Agent 2: Use Case Tests** (haiku)
+```
+Task: Comprehensive use case testing
+- Integration tests for all use cases
+- Mock repositories appropriately
+- Test business logic edge cases
+- Test error scenarios
+- Target: 80%+ coverage
+Duration: 2 days
+```
+
+**Agent 3: API Integration Tests** (sonnet)
+```
+Task: End-to-end API testing
+- Test all API endpoints
+- Contract tests (API matches @anplexa/contracts)
+- Test with real database
+- Test authentication flows
+- Test webhook handling
+Duration: 3 days
+```
+
+**Agent 4: E2E Tests** (sonnet)
+```
+Task: Critical user flow testing
+- Set up Playwright/Cypress
+- Test: Signup → Email → Login → Payment → Chat
+- Test: Guest mode → Upgrade → Payment → Login
+- Test: Subscription management flow
+Duration: 3 days
+```
+
+**Agent 5: Documentation** (haiku)
+```
+Task: Update all documentation
+- Create docs/architecture/clean-architecture-audit.md
+- Update docs/improvement-plans/clean-architecture-transition.md
+- Create docs/development/monorepo-guide.md
+- Update architecture diagrams with monorepo
+- Add repository pattern documentation
+- Document DI container usage
+- Create migration guide
+Duration: 4 days
+```
+
+**Agent 6: Performance Verification** (haiku)
+```
+After other agents complete:
+- Measure Turborepo build time (target: <60s)
+- Measure test execution time (target: <30s)
+- Verify no bundle size increases
+- Run lighthouse audits
+- Check API response times
+Duration: 1 day
+```
+
+**Validation Agent (sonnet):**
+```
+Final cross-check of entire system:
+- Run all tests (must pass)
+- Verify 70%+ test coverage across all packages
+- Check all documentation complete
+- Verify all success metrics achieved
+- Deploy to staging and smoke test
+- Sign off for production
+Duration: 2 days
+```
+
+**Total Phase 5: 8 days (vs. 10 days single-threaded) - 20% faster**
+
+---
+
+## Multi-Agent Execution Summary
+
+| Phase | Single-Threaded | Multi-Agent | Agents | Speedup |
+|-------|----------------|-------------|---------|---------|
+| 0: Setup | 5 days | 2 days | 3 + 1 validator | 60% |
+| 1: Foundation | 18 days | 8 days | 6 + 1 validator + 1 migrator | 56% |
+| 2: Clean Arch | 20 days | 10 days | 8 + 2 validators + 1 migrator | 50% |
+| 3: Routes & DI | 11 days | 6 days | 6 + 1 validator + 1 migrator | 45% |
+| 4: Frontend | 10 days | 7 days | 6 + 1 validator | 30% |
+| 5: Testing & Docs | 10 days | 8 days | 5 + 1 validator | 20% |
+| **TOTAL** | **74 days** | **41 days** | **35 + 7 validators + 3 migrators** | **45%** |
+
+**Key Benefits:**
+1. **45% faster overall** (74 → 41 days)
+2. **Parallel execution** where tasks are independent
+3. **Validation agents** ensure quality and consistency
+4. **Cross-checking** prevents integration issues
+5. **Clear handoffs** between agents
+
+---
+
+## Agent Coordination Rules
+
+### 1. Parallel Execution
+- Launch agents in parallel when tasks are independent
+- Use single message with multiple Task tool calls
+- Example: "Launch Agents 1-6 in parallel for Phase 1"
+
+### 2. Sequential Dependencies
+- Some agents depend on others completing first
+- Use validator agents as checkpoints
+- Example: "After validation passes, launch migration agent"
+
+### 3. Validation Pattern
+```
+[Agent 1] [Agent 2] [Agent 3] → [Validation Agent] → [Integration Agent]
+```
+
+### 4. Model Selection
+- **Haiku** for straightforward extraction/refactoring tasks
+- **Sonnet** for complex logic, use cases, validation
+- **Opus** not needed for this plan (Sonnet sufficient)
+
+### 5. Cross-Checking
+- Validation agents check for:
+  - Type consistency
+  - No circular dependencies
+  - Test coverage thresholds
+  - Code duplication metrics
+  - Performance targets
+
+---
+
+## Next Steps
+
+1. **User approval** of multi-agent strategy
+2. **Launch Phase 0** with 3 parallel agents + validator
+3. **Iterate through phases** using parallel execution
+4. **Monitor progress** via agent coordination dashboard
+5. **Adjust as needed** based on validation feedback
+
+**Critical Priority:** Repository implementations (currently 0%) can be parallelized across 4 agents in Phase 2, completing in 2-3 days instead of 8 days.
+
+**Total Time Reduction:** 74 days → 41 days (18 weeks → 9 weeks) with multi-agent parallelization.
