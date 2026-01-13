@@ -1,0 +1,6 @@
+# Global owners
+* @billyrichards
+
+# Package owners
+/packages/core/ @billyrichards
+/packages/services/ @billyrichards
