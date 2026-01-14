@@ -65,8 +65,10 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
+    "@types/stripe": "^8.0.0",
     "@vitest/coverage-v8": "^4.0.17",
     "better-sqlite3": "^12.6.0",
+    "stripe": "^14.16.0",
     "typescript": "^5.7.2",
     "vite-tsconfig-paths": "^6.0.4",
     "vitest": "^1.2.0"
