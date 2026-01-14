@@ -24,7 +24,8 @@
     "dev": "tsc --watch",
     "lint": "eslint src/ --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist build .next *.tsbuildinfo"
+    "clean": "rm -rf dist build .next *.tsbuildinfo",
+    "test": "vitest --passWithNoTests"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
