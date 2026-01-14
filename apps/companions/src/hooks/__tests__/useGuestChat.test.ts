@@ -494,7 +494,7 @@ describe('useGuestChat Hook', () => {
 
     it('should handle missing window object gracefully', async () => {
       const originalWindow = global.window;
-      // @ts-ignore
+      // @ts-expect-error - Testing undefined window scenario
       global.window = undefined;
 
       const { result } = renderHook(() => useGuestChat({}));
