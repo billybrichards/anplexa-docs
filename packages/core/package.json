@@ -56,7 +56,8 @@
     "dev": "tsc --watch",
     "lint": "eslint src/",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist build .next *.tsbuildinfo"
   },
   "dependencies": {
     "@anplexa/contracts": "workspace:*",

@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint client/ server/",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist build .next *.tsbuildinfo"
   },
   "dependencies": {
     "react": "^19.0.0",
