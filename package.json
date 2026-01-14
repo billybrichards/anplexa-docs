@@ -17,7 +17,6 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@mapbox/node-pre-gyp": "^2.0.3",
-    "@types/eslint__js": "^9.14.0",
     "@types/pg": "^8.11.6",
     "@types/uuid": "^9.0.0",
     "eslint": "^9.39.2",
