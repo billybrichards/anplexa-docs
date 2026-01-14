@@ -1,0 +1,140 @@
+name: Deploy All Services to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint all packages
+        run: pnpm lint
+
+      - name: Type check all packages
+        run: pnpm typecheck
+        continue-on-error: false
+
+      - name: Run all tests
+        run: pnpm test
+        continue-on-error: false
+
+      - name: Build all packages
+        run: pnpm build
+
+  deploy-all:
+    name: Deploy All Services to Production
+    runs-on: ubuntu-latest
+    needs: test
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Verify Railway authentication
+        run: railway whoami
+
+      - name: Link to Railway Production project
+        run: railway link --project ${{ secrets.RAILWAY_PROD_PROJECT_ID }}
+
+      - name: Deploy API service
+        run: |
+          cd apps/api
+          railway up --service api --environment production --ci
+        continue-on-error: false
+
+      - name: Wait for API to be healthy
+        run: sleep 30
+
+      - name: Deploy Companions service
+        run: |
+          cd apps/companions
+          railway up --service companions --environment production --ci
+        continue-on-error: false
+
+      - name: Deploy Funnel service
+        run: |
+          cd apps/funnel
+          railway up --service funnel --environment production --ci
+        continue-on-error: false
+
+      - name: Deploy Docs service
+        run: |
+          cd apps/docs
+          railway up --service docs --environment production --ci
+        continue-on-error: false
+
+      - name: Get deployment status
+        if: always()
+        run: railway status
+
+      - name: Deployment summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          echo "====================================="
+          echo "Production Deployment completed"
+          echo "Status: $JOB_STATUS"
+          echo "====================================="
+
+      - name: Post-deployment notification
+        if: success()
+        run: echo "All services deployed successfully to Production"
+
+      - name: Deployment failed notification
+        if: failure()
+        run: |
+          echo "Production deployment failed"
+          echo "Check the logs above for details"
+          exit 1

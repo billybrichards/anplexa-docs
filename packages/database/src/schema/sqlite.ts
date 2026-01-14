@@ -233,6 +233,18 @@ export const apiUsageDaily = sqliteTable('api_usage_daily', {
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
 });
 
+// Funnel API Keys for external funnel integrations
+export const funnelApiKeys = sqliteTable('funnel_api_keys', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull().default('Funnel API Key'),
+  keyHash: text('key_hash').notNull(),
+  keyPrefix: text('key_prefix').notNull(), // First 12 chars for identification
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+  lastUsedAt: text('last_used_at'),
+  notes: text('notes'),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   conversations: many(conversations),
@@ -303,6 +315,7 @@ export type UserFeedback = typeof userFeedback.$inferSelect;
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type ApiUsage = typeof apiUsage.$inferSelect;
 export type ApiUsageDaily = typeof apiUsageDaily.$inferSelect;
+export type FunnelApiKey = typeof funnelApiKeys.$inferSelect;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type SystemPrompt = typeof systemPrompts.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;

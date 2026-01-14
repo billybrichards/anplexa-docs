@@ -32,3 +32,37 @@ export type {
   Session,
   CreateSessionData,
 } from './session.repository.interface';
+
+// Password Reset Token Repository
+export type {
+  IPasswordResetTokenRepository,
+  PasswordResetToken,
+  CreatePasswordResetTokenData,
+} from './password-reset-token.repository.interface';
+
+// API Usage Repository
+export type {
+  IApiUsageRepository,
+  CreateApiUsageData,
+  ApiUsageStats,
+  DateRangeQuery,
+} from './api-usage.repository.interface';
+
+// User Feedback Repository
+export type {
+  IUserFeedbackRepository,
+  CreateUserFeedbackData,
+  UserFeedbackStats,
+} from './user-feedback.repository.interface';
+
+// API Key Repository
+export type {
+  IApiKeyRepository,
+  CreateApiKeyData,
+} from './api-key.repository.interface';
+
+// Funnel API Key Repository
+export type {
+  IFunnelApiKeyRepository,
+  CreateFunnelApiKeyData,
+} from './funnel-api-key.repository.interface';

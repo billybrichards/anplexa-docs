@@ -56,6 +56,7 @@ export interface DIContainer {
   conversationRepository: IConversationRepository;
   messageRepository: IMessageRepository;
   sessionRepository: ISessionRepository;
+  ollamaGateway?: import('@anplexa/services/ai').OllamaGateway;
 }
 
 // ============================================================================
@@ -163,12 +164,12 @@ export function createRefreshTokenUseCase(
  *
  * @param conversationRepository - Repository for conversation data access
  * @param messageRepository - Repository for message data access
- * @param userRepository - Repository for user data access
+ * @param ollamaGateway - AI service gateway for generating responses
  * @returns SendMessageUseCase instance ready for use
  *
  * @example
  * ```ts
- * const sendMessage = createSendMessageUseCase(convRepo, msgRepo, userRepo);
+ * const sendMessage = createSendMessageUseCase(convRepo, msgRepo, ollamaGateway);
  * const result = await sendMessage.execute({
  *   conversationId: 'conv-123',
  *   userId: 'user-123',
@@ -179,12 +180,12 @@ export function createRefreshTokenUseCase(
 export function createSendMessageUseCase(
   conversationRepository: IConversationRepository,
   messageRepository: IMessageRepository,
-  userRepository: IUserRepository
+  ollamaGateway: import('@anplexa/services/ai').OllamaGateway
 ): SendMessageUseCase {
   return new SendMessageUseCase(
     conversationRepository,
     messageRepository,
-    userRepository
+    ollamaGateway
   );
 }
 
@@ -264,7 +265,15 @@ export function createCreateCheckoutUseCase(
  * ```
  */
 export function createAllUseCases(container: DIContainer) {
-  return {
+  // Build result object with required use cases
+  const useCases: {
+    loginUser: LoginUser;
+    registerUser: RegisterUser;
+    refreshToken: RefreshToken;
+    sendMessage?: SendMessageUseCase;
+    getConversationHistory: GetConversationHistoryUseCase;
+    createCheckout: CreateCheckoutUseCase;
+  } = {
     // Auth use cases
     loginUser: createLoginUserUseCase(
       container.userRepository,
@@ -276,12 +285,7 @@ export function createAllUseCases(container: DIContainer) {
       container.userRepository
     ),
 
-    // Chat use cases
-    sendMessage: createSendMessageUseCase(
-      container.conversationRepository,
-      container.messageRepository,
-      container.userRepository
-    ),
+    // Chat use cases (sendMessage requires ollamaGateway)
     getConversationHistory: createGetConversationHistoryUseCase(
       container.conversationRepository,
       container.messageRepository
@@ -290,6 +294,17 @@ export function createAllUseCases(container: DIContainer) {
     // Subscription use cases
     createCheckout: createCreateCheckoutUseCase(container.userRepository),
   };
+
+  // Add sendMessage use case if ollamaGateway is provided
+  if (container.ollamaGateway) {
+    useCases.sendMessage = createSendMessageUseCase(
+      container.conversationRepository,
+      container.messageRepository,
+      container.ollamaGateway
+    );
+  }
+
+  return useCases;
 }
 
 /**

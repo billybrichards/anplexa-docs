@@ -1,0 +1,249 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Anplexa API",
+    "version": "1.0.0",
+    "description": "# Unrestricted AI Companion API\n\nBuild immersive adult AI experiences without limitations.\n\n## Authentication\n\nThis API supports two authentication methods:\n\n### 1. API Key Authentication (Recommended for Server-to-Server)\nInclude your API key in the `X-API-Key` header:\n```\nX-API-Key: your-api-key-here\n```\n\n**How to get an API key:**\n- Subscribe to a paid plan via the dashboard\n- Navigate to Settings → API Keys\n- Generate a new API key\n\n### 2. JWT Bearer Token (Recommended for User Sessions)\nInclude the JWT token in the Authorization header:\n```\nAuthorization: Bearer your-jwt-token\n```\n\nObtain tokens via the `/api/auth/login` endpoint.\n\n## Rate Limits\n\n| Tier | Limit | Reset |\n|------|-------|-------|\n| Free | 50 calls/month | Monthly |\n| Unlimited | No limits | - |\n\n## Quick Start Examples\n\n### Chat with AI (curl)\n```bash\ncurl -X POST \"https://api.anplexa.com/api/chat\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"X-API-Key: your-api-key\" \\\n  -d '{\"message\": \"Hello, how are you?\"}'\n```\n\n### Chat with AI (Node.js)\n```javascript\nconst response = await fetch('https://api.anplexa.com/api/chat', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n    'X-API-Key': 'your-api-key'\n  },\n  body: JSON.stringify({ message: 'Hello, how are you?' })\n});\n\nconst reader = response.body.getReader();\nconst decoder = new TextDecoder();\n\nwhile (true) {\n  const { done, value } = await reader.read();\n  if (done) break;\n  console.log(decoder.decode(value));\n}\n```\n"
+  },
+  "servers": [
+    { "url": "/", "description": "Current server" }
+  ],
+  "tags": [
+    { "name": "Authentication", "description": "User registration, login, and session management" },
+    { "name": "Chat", "description": "AI companion chat endpoints" },
+    { "name": "Conversations", "description": "Conversation history management" },
+    { "name": "Settings", "description": "User preferences and settings" },
+    { "name": "Stripe", "description": "Subscription management and payment processing" },
+    { "name": "Public", "description": "Public endpoints for landing pages and lead capture (no authentication required)" },
+    { "name": "Funnel", "description": "External funnel integration endpoints - create users, manage subscriptions (requires funnel API key)" },
+    { "name": "Admin 🔐", "description": "ADMIN ONLY - Administrative endpoints (requires admin role). These endpoints require admin authentication." },
+    { "name": "Health", "description": "System health checks" },
+    { "name": "Webhooks", "description": "External webhook integrations" }
+  ],
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register a new user",
+        "description": "Create a new user account. First user becomes admin.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "user@example.com" },
+                  "password": { "type": "string", "minLength": 6, "example": "password123" },
+                  "displayName": { "type": "string", "example": "John Doe" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Registration successful" },
+          "400": { "description": "Validation error or email already registered" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login user",
+        "description": "Authenticate with email and password to receive JWT tokens.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "user@example.com" },
+                  "password": { "type": "string", "example": "password123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Refresh access token",
+        "description": "Exchange a valid refresh token for a new access token pair.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["refreshToken"],
+                "properties": {
+                  "refreshToken": { "type": "string", "example": "eyJhbGciOiJIUzI1NiIs..." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "New tokens returned" },
+          "401": { "description": "Invalid or expired refresh token" }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Logout user",
+        "security": [{ "bearerAuth": [] }, { "apiKey": [] }],
+        "responses": {
+          "200": { "description": "Logged out successfully" }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get current user",
+        "security": [{ "bearerAuth": [] }, { "apiKey": [] }],
+        "responses": {
+          "200": { "description": "User info and preferences" },
+          "401": { "description": "Not authenticated" }
+        }
+      }
+    },
+    "/api/auth/credits": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Check remaining daily credits",
+        "security": [{ "bearerAuth": [] }, { "apiKey": [] }],
+        "responses": {
+          "200": { "description": "Credit status" },
+          "401": { "description": "Not authenticated" }
+        }
+      }
+    },
+    "/api/chat": {
+      "post": {
+        "tags": ["Chat"],
+        "summary": "Send message (streaming)",
+        "security": [{ "bearerAuth": [] }, { "apiKey": [] }],
+        "responses": {
+          "200": { "description": "SSE stream with text chunks" },
+          "403": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
+    "/api/chat/non-streaming": {
+      "post": {
+        "tags": ["Chat"],
+        "summary": "Send message (non-streaming)",
+        "security": [{ "bearerAuth": [] }, { "apiKey": [] }],
+        "responses": {
+          "200": { "description": "Complete response" }
+        }
+      }
+    },
+    "/api/conversations": {
+      "get": {
+        "tags": ["Conversations"],
+        "summary": "List conversations",
+        "security": [{ "bearerAuth": [] }, { "apiKey": [] }],
+        "responses": {
+          "200": { "description": "List of conversations" }
+        }
+      },
+      "post": {
+        "tags": ["Conversations"],
+        "summary": "Create new conversation",
+        "security": [{ "bearerAuth": [] }, { "apiKey": [] }],
+        "responses": {
+          "201": { "description": "Conversation created" }
+        }
+      }
+    },
+    "/api/funnel/users": {
+      "post": {
+        "tags": ["Funnel"],
+        "summary": "Create a user via funnel",
+        "security": [{ "funnelAuth": [] }],
+        "responses": {
+          "201": { "description": "User created successfully" },
+          "400": { "description": "Email already registered or validation error" },
+          "403": { "description": "Invalid funnel API secret" }
+        }
+      }
+    },
+    "/api/register-subscriber": {
+      "post": {
+        "tags": ["Public"],
+        "summary": "Register for waitlist/landing page",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "user@example.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Successfully registered" },
+          "200": { "description": "Already on list" },
+          "429": { "description": "Rate limited" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      },
+      "funnelAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Funnel API key"
+      }
+    },
+    "schemas": {
+      "SourceChannel": {
+        "type": "string",
+        "enum": ["funnel", "waitlist", "access_anplexa", "frontend", "api", "auth_register"],
+        "description": "Indicates how the user was acquired. Used for analytics and segmentation."
+      },
+      "ContactSubmission": {
+        "type": "object",
+        "description": "Audit log entry for all contact submissions (including duplicates)",
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string" },
+          "displayName": { "type": "string", "nullable": true },
+          "sourceChannel": { "$ref": "#/components/schemas/SourceChannel" },
+          "isNewUser": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

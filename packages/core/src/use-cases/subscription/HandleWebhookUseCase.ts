@@ -41,7 +41,7 @@ import {
   isSubscriptionActive,
   isSubscriptionCanceled,
 } from '@anplexa/services/stripe';
-import type { UserRepository } from '../../repositories/UserRepository.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 import type Stripe from 'stripe';
 
 export interface HandleWebhookRequest {
@@ -73,7 +73,7 @@ export class HandleWebhookUseCaseError extends Error {
 }
 
 export class HandleWebhookUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: IUserRepository) {}
 
   /**
    * Execute the use case to handle a webhook event
@@ -172,7 +172,7 @@ export class HandleWebhookUseCase {
     }
 
     // Find user
-    const user = await this.userRepository.findById(userId);
+    const user = await this.userRepository.getById(userId);
     if (!user) {
       throw new HandleWebhookUseCaseError('User not found', 'USER_NOT_FOUND');
     }
@@ -201,7 +201,7 @@ export class HandleWebhookUseCase {
     const subscriptionData = handleSubscriptionCreated(subscription);
 
     // Find user by Stripe customer ID
-    const user = await this.userRepository.findByStripeCustomerId(subscriptionData.customerId);
+    const user = await this.userRepository.getByStripeCustomerId(subscriptionData.customerId);
     if (!user) {
       // Try to find by metadata
       const userId = subscription.metadata?.userId;
@@ -213,7 +213,7 @@ export class HandleWebhookUseCase {
         };
       }
 
-      const userById = await this.userRepository.findById(userId);
+      const userById = await this.userRepository.getById(userId);
       if (!userById) {
         throw new HandleWebhookUseCaseError('User not found', 'USER_NOT_FOUND');
       }
@@ -257,7 +257,7 @@ export class HandleWebhookUseCase {
     const subscriptionData = handleSubscriptionUpdated(subscription);
 
     // Find user by Stripe subscription ID
-    const user = await this.userRepository.findByStripeSubscriptionId(
+    const user = await this.userRepository.getByStripeSubscriptionId(
       subscriptionData.subscriptionId
     );
     if (!user) {
@@ -304,7 +304,7 @@ export class HandleWebhookUseCase {
     const subscriptionData = handleSubscriptionDeleted(subscription);
 
     // Find user by Stripe subscription ID
-    const user = await this.userRepository.findByStripeSubscriptionId(
+    const user = await this.userRepository.getByStripeSubscriptionId(
       subscriptionData.subscriptionId
     );
     if (!user) {
@@ -347,7 +347,7 @@ export class HandleWebhookUseCase {
     }
 
     // Find user by Stripe customer ID
-    const user = await this.userRepository.findByStripeCustomerId(invoiceData.customerId);
+    const user = await this.userRepository.getByStripeCustomerId(invoiceData.customerId);
     if (!user) {
       console.warn('Invoice paid but no user found');
       return {
@@ -356,9 +356,8 @@ export class HandleWebhookUseCase {
       };
     }
 
-    // Update user's last activity
+    // Update user's last activity timestamp
     await this.userRepository.update(user.id, {
-      lastActivityAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
 
@@ -386,7 +385,7 @@ export class HandleWebhookUseCase {
     }
 
     // Find user by Stripe customer ID
-    const user = await this.userRepository.findByStripeCustomerId(invoiceData.customerId);
+    const user = await this.userRepository.getByStripeCustomerId(invoiceData.customerId);
     if (!user) {
       console.warn('Invoice payment failed but no user found');
       return {

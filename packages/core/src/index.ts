@@ -62,6 +62,11 @@ export {
   ConversationRepository,
   MessageRepository,
   SessionRepository,
+  PasswordResetTokenRepository,
+  ApiKeyRepository,
+  FunnelApiKeyRepository,
+  ApiUsageRepository,
+  UserFeedbackRepository,
 } from './repositories/index.js';
 
 // ============================================================================

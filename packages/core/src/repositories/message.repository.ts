@@ -5,10 +5,9 @@
  * Handles all database operations for message entities.
  */
 
-import { eq, and, like, desc, asc } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import type { Database } from '@anplexa/database';
-import { messages } from '@anplexa/database';
+import { messages, eq, and, like, asc } from '@anplexa/database';
 import type { MessageDTO } from '@anplexa/contracts';
 import type {
   IMessageRepository,

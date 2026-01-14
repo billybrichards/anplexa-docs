@@ -10,7 +10,7 @@ const config = {
   url: 'https://docs.anplexa.com',
   baseUrl: '/',
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   i18n: {

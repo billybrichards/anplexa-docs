@@ -9,6 +9,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./stripe": {
+      "types": "./dist/stripe/index.d.ts",
+      "default": "./dist/stripe/index.js"
+    },
+    "./ai": {
+      "types": "./dist/ai/index.d.ts",
+      "default": "./dist/ai/index.js"
     }
   },
   "scripts": {

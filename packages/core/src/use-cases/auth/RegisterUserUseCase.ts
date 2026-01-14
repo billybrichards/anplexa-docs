@@ -9,8 +9,8 @@
  * - Creates initial session
  */
 
-import type { IUserRepository } from '../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../repositories/ISessionRepository';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
 import { User } from '../../domain/entities/User';
 import { Session } from '../../domain/entities/Session';
 import { ValidationError } from '../../domain/errors/ValidationError';
@@ -30,7 +30,7 @@ export interface RegisterUserOutput {
     displayName: string | null;
     isAdmin: boolean;
     credits: number;
-    createdAt: Date;
+    createdAt: string;
   };
   tokens: TokenPair;
 }
@@ -60,7 +60,7 @@ export class RegisterUserUseCase {
     await this.validateInput(input);
 
     // 2. Check email uniqueness
-    const existingUser = await this.userRepository.findByEmail(input.email);
+    const existingUser = await this.userRepository.getByEmail(input.email);
     if (existingUser) {
       throw new ValidationError('Email already registered', 'email');
     }
@@ -68,22 +68,18 @@ export class RegisterUserUseCase {
     // 3. Hash password
     const passwordHash = await this.passwordService.hashPassword(input.password);
 
-    // 4. Create user entity
+    // 4. Prepare user data
     const userId = this.jwtService.generateId();
-    const user = User.create({
+    const userData = {
       id: userId,
       email: input.email.toLowerCase().trim(),
       passwordHash,
       displayName: input.displayName?.trim() || null,
-      isVerified: false,
-      isAdmin: false,
       credits: 5, // Default free credits
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    };
 
-    // 5. Save user to database
-    const savedUser = await this.userRepository.save(user);
+    // 5. Create user in database
+    const savedUser = await this.userRepository.create(userData);
 
     // 6. Generate JWT tokens
     const tokens = this.jwtService.generateTokenPair(
@@ -93,18 +89,12 @@ export class RegisterUserUseCase {
     );
 
     // 7. Create session
-    const sessionId = this.jwtService.generateId();
     const expiresAt = this.jwtService.getRefreshExpiryDate();
-    const session = Session.create({
-      id: sessionId,
+    await this.sessionRepository.create({
       userId: savedUser.id,
       refreshToken: tokens.refreshToken,
-      expiresAt,
-      createdAt: new Date(),
-      isActive: true,
+      expiresAt: expiresAt.toISOString(),
     });
-
-    await this.sessionRepository.save(session);
 
     // 8. Return user data and tokens
     return {

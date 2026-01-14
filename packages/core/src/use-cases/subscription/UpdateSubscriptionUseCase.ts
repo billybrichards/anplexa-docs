@@ -30,7 +30,7 @@ import {
   unscheduleSubscriptionCancellation,
   changeSubscriptionPrice,
 } from '@anplexa/services/stripe';
-import type { UserRepository } from '../../repositories/UserRepository.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 import type Stripe from 'stripe';
 
 export type SubscriptionAction =
@@ -70,7 +70,7 @@ export class UpdateSubscriptionUseCaseError extends Error {
 }
 
 export class UpdateSubscriptionUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: IUserRepository) {}
 
   /**
    * Execute the use case to update a subscription
@@ -80,7 +80,7 @@ export class UpdateSubscriptionUseCase {
     this.validateRequest(request);
 
     // Find user
-    const user = await this.userRepository.findById(request.userId);
+    const user = await this.userRepository.getById(request.userId);
     if (!user) {
       throw new UpdateSubscriptionUseCaseError('User not found', 'USER_NOT_FOUND');
     }

@@ -9,8 +9,8 @@
  * - Returns new token pair
  */
 
-import type { ISessionRepository } from '../../repositories/ISessionRepository';
-import type { IUserRepository } from '../../repositories/IUserRepository';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
 import { ValidationError } from '../../domain/errors/ValidationError';
 import { JWTService } from '@anplexa/services';
@@ -55,7 +55,7 @@ export class RefreshTokenUseCase {
     }
 
     // 3. Find session by refresh token
-    const session = await this.sessionRepository.findByRefreshToken(
+    const session = await this.sessionRepository.getByRefreshToken(
       input.refreshToken
     );
 
@@ -66,14 +66,14 @@ export class RefreshTokenUseCase {
     // 4. Verify session validity
     if (!session.isValid()) {
       // Invalidate expired session
-      await this.sessionRepository.invalidate(session.id);
+      await this.sessionRepository.delete(session.id);
       throw new AuthenticationError('Session expired');
     }
 
     // 5. Verify user still exists
-    const user = await this.userRepository.findById(session.userId);
+    const user = await this.userRepository.getById(session.userId);
     if (!user) {
-      await this.sessionRepository.invalidate(session.id);
+      await this.sessionRepository.delete(session.id);
       throw new AuthenticationError('User not found');
     }
 
@@ -91,7 +91,18 @@ export class RefreshTokenUseCase {
       expiresAt: this.jwtService.getRefreshExpiryDate(),
     };
 
-    await this.sessionRepository.save(updatedSession);
+    // Save the updated session using available method
+    if (this.sessionRepository.save) {
+      await this.sessionRepository.save(updatedSession as any);
+    } else {
+      // Fall back to delete and create
+      await this.sessionRepository.delete(session.id);
+      await this.sessionRepository.create({
+        userId: session.userId,
+        refreshToken: tokens.refreshToken,
+        expiresAt: this.jwtService.getRefreshExpiryDate().toISOString(),
+      });
+    }
 
     // 8. Return new tokens
     return { tokens };

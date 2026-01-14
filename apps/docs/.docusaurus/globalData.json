@@ -1,0 +1,63 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs",
+          "mainDocId": "intro",
+          "docs": [
+            {
+              "id": "architecture/clean-architecture-audit",
+              "path": "/docs/architecture/clean-architecture-audit",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "architecture/dependency-injection",
+              "path": "/docs/architecture/dependency-injection",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "architecture/repository-pattern",
+              "path": "/docs/architecture/repository-pattern",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "development/monorepo-guide",
+              "path": "/docs/development/monorepo-guide",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "frontend/custom-hooks",
+              "path": "/docs/frontend/custom-hooks",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "improvement-plans/clean-architecture-transition",
+              "path": "/docs/improvement-plans/clean-architecture-transition",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "intro",
+              "path": "/docs/intro",
+              "sidebar": "tutorialSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/docs/intro",
+                "label": "intro"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

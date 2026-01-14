@@ -6,19 +6,14 @@
  * outer layers (infrastructure) implement it.
  */
 
-/**
- * Session entity representing an authenticated user session
- */
-export interface Session {
-  id: string;
-  userId: string;
-  refreshToken: string;
-  expiresAt: string;
-  createdAt: string;
-}
+import { Session } from '../../domain/entities/Session.js';
+
+// Re-export Session for use by other modules
+export { Session };
 
 /**
  * Data required to create a new session
+ * Note: Uses string for expiresAt to match database storage format
  */
 export interface CreateSessionData {
   userId: string;
@@ -67,4 +62,14 @@ export interface ISessionRepository {
    * @returns Promise resolving to the count of deleted sessions
    */
   deleteExpired(): Promise<number>;
+
+  /**
+   * Legacy aliases - kept for backwards compatibility
+   */
+  findById?(id: string): Promise<Session | null>;
+  findActiveByUserId?(userId: string): Promise<Session[]>;
+  findByRefreshToken?(refreshToken: string): Promise<Session | null>;
+  save?(session: Session): Promise<Session>;
+  invalidate?(id: string): Promise<void>;
+  invalidateAll?(userId: string): Promise<void>;
 }

@@ -6,9 +6,8 @@
  * and transaction support where appropriate.
  */
 
-import { eq } from 'drizzle-orm';
 import type { Database } from '@anplexa/database';
-import { users, type User, type NewUser } from '@anplexa/database';
+import { users, type User, type NewUser, eq } from '@anplexa/database';
 import type {
   IUserRepository,
   CreateUserData,
@@ -53,6 +52,40 @@ export class UserRepository implements IUserRepository {
   }
 
   /**
+   * Get a user by Stripe customer ID
+   */
+  async getByStripeCustomerId(customerId: string): Promise<User | null> {
+    try {
+      const result = await this.db
+        .select()
+        .from(users)
+        .where(eq(users.stripeCustomerId, customerId))
+        .limit(1);
+
+      return result[0] || null;
+    } catch (error) {
+      throw new Error(`Failed to get user by Stripe customer ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Get a user by Stripe subscription ID
+   */
+  async getByStripeSubscriptionId(subscriptionId: string): Promise<User | null> {
+    try {
+      const result = await this.db
+        .select()
+        .from(users)
+        .where(eq(users.stripeSubscriptionId, subscriptionId))
+        .limit(1);
+
+      return result[0] || null;
+    } catch (error) {
+      throw new Error(`Failed to get user by Stripe subscription ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
    * Get all users with optional pagination
    */
   async getAll(options?: PaginationOptions): Promise<User[]> {
@@ -90,7 +123,14 @@ export class UserRepository implements IUserRepository {
       }
 
       // Prepare user data with defaults
-      const newUser: NewUser = {
+      // Note: Using 'as any' because Drizzle's $inferInsert only includes notNull() fields
+      // but the schema accepts all optional fields
+
+      // Convert booleans to integers for SQLite compatibility (0/1 instead of false/true)
+      const isAdminValue = userData.isAdmin ? 1 : 0;
+      const manualOverrideValue = 0;
+
+      const newUser = {
         id: userData.id,
         email: userData.email,
         passwordHash: userData.passwordHash,
@@ -98,7 +138,7 @@ export class UserRepository implements IUserRepository {
         chatName: userData.chatName ?? null,
         personalityMode: userData.personalityMode ?? 'nurturing',
         storagePreference: userData.storagePreference ?? 'cloud',
-        isAdmin: userData.isAdmin ?? false,
+        isAdmin: isAdminValue,
         subscriptionStatus: userData.subscriptionStatus ?? 'not_subscribed',
         credits: userData.credits ?? 0,
         stripeCustomerId: userData.stripeCustomerId ?? null,
@@ -107,9 +147,9 @@ export class UserRepository implements IUserRepository {
         sourceChannel: userData.sourceChannel ?? null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        manualSubscriptionOverride: false,
+        manualSubscriptionOverride: manualOverrideValue,
         lastCreditRefresh: null,
-      };
+      } as NewUser;
 
       // Insert user
       await this.db.insert(users).values(newUser);
@@ -199,5 +239,36 @@ export class UserRepository implements IUserRepository {
       }
       throw new Error(`Failed to delete user: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+
+  /**
+   * Update user's Stripe customer ID
+   */
+  async updateStripeCustomerId(userId: string, customerId: string): Promise<void> {
+    await this.update(userId, { stripeCustomerId: customerId });
+  }
+
+  /**
+   * Update user's subscription status and related Stripe data
+   */
+  async updateSubscriptionStatus(
+    userId: string,
+    status: string,
+    customerId?: string,
+    subscriptionId?: string
+  ): Promise<void> {
+    const updates: Partial<User> = {
+      subscriptionStatus: status,
+    };
+
+    if (customerId) {
+      updates.stripeCustomerId = customerId;
+    }
+
+    if (subscriptionId) {
+      updates.stripeSubscriptionId = subscriptionId;
+    }
+
+    await this.update(userId, updates);
   }
 }

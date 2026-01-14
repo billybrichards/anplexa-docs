@@ -4,6 +4,8 @@ sidebar_position: 6
 
 # Clean Architecture Transition Plan
 
+> **ℹ️ IN PROGRESS**: This plan describes the Clean Architecture refactoring work completed in Phase 2. For current architecture implementation details, see [Backend Architecture](../architecture/backend-api.md) and [Architecture Overview](../architecture/overview.md).
+
 A comprehensive roadmap for transforming the Anplexa platform from a monolithic structure to a layered Clean Architecture, improving testability, maintainability, and scalability.
 
 ## Executive Summary

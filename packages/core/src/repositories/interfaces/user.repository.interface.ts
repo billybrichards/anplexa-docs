@@ -31,11 +31,22 @@ export interface CreateUserData {
 
 export interface IUserRepository {
   /**
-   * Query Methods
+   * Query Methods (new naming convention)
    */
   getById(id: string): Promise<User | null>;
   getByEmail(email: string): Promise<User | null>;
+  getByStripeCustomerId(customerId: string): Promise<User | null>;
+  getByStripeSubscriptionId(subscriptionId: string): Promise<User | null>;
   getAll(options?: PaginationOptions): Promise<User[]>;
+
+  /**
+   * Query Methods (legacy aliases - kept for backwards compatibility)
+   */
+  findById?(id: string): Promise<User | null>;
+  findByEmail?(email: string): Promise<User | null>;
+  findByStripeCustomerId?(customerId: string): Promise<User | null>;
+  findByStripeSubscriptionId?(subscriptionId: string): Promise<User | null>;
+  emailExists?(email: string): Promise<boolean>;
 
   /**
    * Command Methods
@@ -43,4 +54,11 @@ export interface IUserRepository {
   create(userData: CreateUserData): Promise<User>;
   update(id: string, updates: Partial<User>): Promise<User>;
   delete(id: string): Promise<void>;
+  save?(user: User): Promise<User>;
+
+  /**
+   * Stripe-specific methods
+   */
+  updateStripeCustomerId?(userId: string, customerId: string): Promise<void>;
+  updateSubscriptionStatus?(userId: string, status: string, customerId?: string, subscriptionId?: string): Promise<void>;
 }

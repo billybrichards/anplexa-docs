@@ -78,18 +78,27 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-export interface RegisterResponse extends AuthTokens {
+export interface RegisterResponse {
   message: string;
   user: UserDTO;
+  tokens: AuthTokens;
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface LoginResponse extends AuthTokens {
+export interface LoginResponse {
   message: string;
   user: UserDTO;
+  tokens: AuthTokens;
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface RefreshTokenResponse extends AuthTokens {
+export interface RefreshTokenResponse {
   message: string;
+  tokens: AuthTokens;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface SubscriptionStatusResponse {

@@ -28,7 +28,7 @@ import {
   getCustomer,
   type CheckoutSessionOptions,
 } from '@anplexa/services/stripe';
-import type { UserRepository } from '../../repositories/UserRepository.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 import type Stripe from 'stripe';
 
 export interface CreateCheckoutRequest {
@@ -56,7 +56,7 @@ export class CreateCheckoutUseCaseError extends Error {
 }
 
 export class CreateCheckoutUseCase {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: IUserRepository) {}
 
   /**
    * Execute the use case to create a checkout session
@@ -66,7 +66,7 @@ export class CreateCheckoutUseCase {
     this.validateRequest(request);
 
     // Find user
-    const user = await this.userRepository.findById(request.userId);
+    const user = await this.userRepository.getById(request.userId);
     if (!user) {
       throw new CreateCheckoutUseCaseError('User not found', 'USER_NOT_FOUND');
     }
@@ -141,7 +141,10 @@ export class CreateCheckoutUseCase {
     if (user.stripeCustomerId) {
       try {
         const customer = await getCustomer(user.stripeCustomerId);
-        if (customer && !customer.deleted) {
+        // Check if customer exists and is not deleted
+        // Note: using 'as any' because Stripe types don't properly expose deleted property
+        const isDeleted = 'deleted' in customer ? (customer as any).deleted === true : false;
+        if (customer && !isDeleted) {
           return customer.id;
         }
       } catch (error) {
@@ -162,7 +165,11 @@ export class CreateCheckoutUseCase {
     });
 
     // Update user with new customer ID
-    await this.userRepository.updateStripeCustomerId(user.id, customer.id);
+    if (this.userRepository.updateStripeCustomerId) {
+      await this.userRepository.updateStripeCustomerId(user.id, customer.id);
+    } else {
+      await this.userRepository.update(user.id, { stripeCustomerId: customer.id });
+    }
 
     return customer.id;
   }

@@ -61,8 +61,7 @@
   "dependencies": {
     "@anplexa/contracts": "workspace:*",
     "@anplexa/database": "workspace:*",
-    "@anplexa/services": "workspace:*",
-    "drizzle-orm": "^0.38.3"
+    "@anplexa/services": "workspace:*"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",

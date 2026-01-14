@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 import { sql } from 'drizzle-orm';
-import * as schema from '@anplexa/database';
+import { sqlite as schema } from '@anplexa/database';
 import {
   ConversationRepository,
   ConversationNotFoundError,
@@ -40,6 +40,8 @@ describe('ConversationRepository', () => {
         display_name TEXT,
         chat_name TEXT,
         personality_mode TEXT DEFAULT 'nurturing',
+        preferred_gender TEXT DEFAULT 'female',
+        custom_gender TEXT,
         storage_preference TEXT DEFAULT 'cloud',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -51,6 +53,19 @@ describe('ConversationRepository', () => {
         stripe_subscription_id TEXT,
         account_source TEXT DEFAULT 'frontend',
         last_credit_refresh TEXT,
+        funnel_type TEXT DEFAULT 'direct',
+        persona TEXT,
+        stage TEXT DEFAULT 'new',
+        entry_source TEXT,
+        used_free_messages INTEGER DEFAULT 0,
+        email_opened_1 INTEGER DEFAULT 0,
+        email_opened_2 INTEGER DEFAULT 0,
+        email_opened_3 INTEGER DEFAULT 0,
+        clicked_use_app INTEGER DEFAULT 0,
+        feedback_submitted INTEGER DEFAULT 0,
+        refund_requested INTEGER DEFAULT 0,
+        refund_processed INTEGER DEFAULT 0,
+        last_activity_at TEXT,
         amplexa_funnel TEXT,
         amplexa_funnel_name TEXT,
         amplexa_responses TEXT,

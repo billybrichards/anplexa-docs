@@ -1,10 +1,11 @@
-// Schema exporter - exports both PostgreSQL and SQLite schemas
-// Both schemas export similar table structures and types
-// Use DATABASE_URL environment variable at runtime to determine which to use
+// Schema exporter - exports both PostgreSQL and SQLite schemas separately
+// Import the specific schema needed in your application:
+// - For PostgreSQL: import { postgres as schema } from '@anplexa/database';
+// - For SQLite: import { sqlite as schema } from '@anplexa/database';
 
-// Re-export SQLite schema by default (most compatible for testing)
-export * from './sqlite.js';
+// Export both schemas as named exports
+export * as postgres from './postgres.js';
+export * as sqlite from './sqlite.js';
 
-// Note: Both PostgreSQL and SQLite schemas export compatible types
-// The actual schema used at runtime is determined based on DATABASE_URL
-// in your application initialization code
+// Note: Choose the appropriate schema based on your database type
+// This prevents type mismatches between SQLite and PostgreSQL Drizzle instances

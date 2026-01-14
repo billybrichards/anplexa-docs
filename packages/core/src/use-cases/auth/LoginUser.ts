@@ -8,8 +8,8 @@
  * 4. Returns access and refresh tokens
  */
 
-import type { IUserRepository } from '../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../repositories/ISessionRepository';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
 
 export interface LoginUserRequest {

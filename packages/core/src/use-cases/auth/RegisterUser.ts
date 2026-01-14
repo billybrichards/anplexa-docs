@@ -9,7 +9,7 @@
  * 5. Returns user data
  */
 
-import type { IUserRepository } from '../../repositories/IUserRepository';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 import { ValidationError } from '../../domain/errors/ValidationError';
 
 export interface RegisterUserRequest {
@@ -22,6 +22,8 @@ export interface RegisterUserResponse {
   userId: string;
   email: string;
   displayName?: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export class RegisterUser {

@@ -91,8 +91,10 @@ export class CreateConversationUseCase {
       }
     }
 
-    // Create conversation
+    // Create conversation with generated ID
+    const { randomUUID } = await import('crypto');
     const conversation = await this.conversationRepository.create({
+      id: randomUUID(),
       userId: input.userId,
       title: input.title,
     });

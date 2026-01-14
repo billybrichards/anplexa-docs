@@ -4,7 +4,9 @@ sidebar_position: 4
 
 # Marketing Funnel Architecture
 
-Deep-dive into the Funnel-Forge application architecture, conversion flow, and persona system.
+> **ℹ️ NEEDS UPDATE**: This guide references legacy `Funnel-Forge/` repository structure. The application is now at `apps/funnel/` in the monorepo. Directory paths and structure need updating.
+
+Deep-dive into the funnel application architecture, conversion flow, and persona system.
 
 ## Current Architecture
 

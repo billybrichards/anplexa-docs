@@ -9,3 +9,8 @@ export { User } from './User';
 export { Conversation } from './Conversation';
 export { Message, type MessageRole } from './Message';
 export { Session } from './Session';
+export { PasswordResetToken } from './PasswordResetToken';
+export { ApiUsage } from './ApiUsage';
+export { UserFeedback } from './UserFeedback';
+export { ApiKey } from './ApiKey';
+export { FunnelApiKey } from './FunnelApiKey';

@@ -5,13 +5,12 @@
  * This is part of the infrastructure layer in Clean Architecture.
  */
 
-import { eq, lt } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import type { Database } from '@anplexa/database';
-import { sessions } from '@anplexa/database';
+import { sessions, eq, lt } from '@anplexa/database';
+import { Session } from '../domain/entities/Session.js';
 import type {
   ISessionRepository,
-  Session,
   CreateSessionData,
 } from './interfaces/session.repository.interface.js';
 
@@ -166,10 +165,12 @@ export class SessionRepository implements ISessionRepository {
   }
 
   /**
-   * Maps a database row to a Session entity
+   * Maps a database row to a Session domain entity
+   *
+   * Converts database string timestamps to Date objects for domain layer
    *
    * @param row - The raw database row
-   * @returns Session entity with proper typing
+   * @returns Session domain entity
    */
   private mapToSession(row: {
     id: string;
@@ -178,13 +179,14 @@ export class SessionRepository implements ISessionRepository {
     expiresAt: string;
     createdAt: string | null;
   }): Session {
-    return {
-      id: row.id,
-      userId: row.userId,
-      refreshToken: row.refreshToken,
-      expiresAt: row.expiresAt,
-      createdAt: row.createdAt || new Date().toISOString(),
-    };
+    return new Session(
+      row.id,
+      row.userId,
+      row.refreshToken,
+      new Date(row.expiresAt),
+      row.createdAt ? new Date(row.createdAt) : new Date(),
+      true // isActive
+    );
   }
 
 }

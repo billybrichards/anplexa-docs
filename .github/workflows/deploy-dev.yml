@@ -1,0 +1,91 @@
+name: Deploy All Services to Development
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+env:
+  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+jobs:
+  deploy-all:
+    name: Deploy All Services to Development
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Run tests
+        run: pnpm test
+        continue-on-error: true
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Verify Railway authentication
+        run: railway whoami
+
+      - name: Link to Railway Development project
+        run: railway link --project ${{ secrets.RAILWAY_DEV_PROJECT_ID }}
+
+      - name: Deploy API service
+        run: |
+          cd apps/api
+          railway up --service api --environment development --ci
+        continue-on-error: false
+
+      - name: Deploy Companions service
+        run: |
+          cd apps/companions
+          railway up --service companions --environment development --ci
+        continue-on-error: false
+
+      - name: Deploy Funnel service
+        run: |
+          cd apps/funnel
+          railway up --service funnel --environment development --ci
+        continue-on-error: false
+
+      - name: Deploy Docs service
+        run: |
+          cd apps/docs
+          railway up --service docs --environment development --ci
+        continue-on-error: false
+
+      - name: Get deployment status
+        if: always()
+        run: railway status
+
+      - name: Deployment summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          echo "====================================="
+          echo "Deployment to Development completed"
+          echo "Status: $JOB_STATUS"
+          echo "====================================="

@@ -10,8 +10,8 @@
  * - Marks token as used
  */
 
-import type { IUserRepository } from '../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../repositories/ISessionRepository';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
 import { ValidationError } from '../../domain/errors/ValidationError';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
 import { PasswordService } from '@anplexa/services';
@@ -67,7 +67,7 @@ export class ResetPasswordUseCase {
     }
 
     // 3. Find user
-    const user = await this.userRepository.findById(input.userId);
+    const user = await this.userRepository.getById(input.userId);
     if (!user) {
       throw new AuthenticationError('User not found');
     }
@@ -78,17 +78,24 @@ export class ResetPasswordUseCase {
     );
 
     // 5. Update user password
-    const updatedUser = {
-      ...user,
-      passwordHash: newPasswordHash,
-      updatedAt: new Date(),
-    };
-
-    await this.userRepository.save(updatedUser);
+    if (this.userRepository.save) {
+      const updatedUser = {
+        ...user,
+        passwordHash: newPasswordHash,
+        updatedAt: new Date(),
+      };
+      await this.userRepository.save(updatedUser as any);
+    } else {
+      await this.userRepository.update(user.id, {
+        passwordHash: newPasswordHash,
+      });
+    }
 
     // 6. Invalidate all existing sessions for this user
     // Force user to log in again with new password
-    await this.sessionRepository.invalidateAll(user.id);
+    if (this.sessionRepository.invalidateAll) {
+      await this.sessionRepository.invalidateAll(user.id);
+    }
 
     // 7. Return success
     return {

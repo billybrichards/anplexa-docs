@@ -31,6 +31,7 @@ export interface CreateConversationData {
  */
 export interface IConversationRepository {
   // Query methods
+  getAll(): Promise<Conversation[]>;
   getById(id: string): Promise<Conversation | null>;
   getByUserId(userId: string, options?: PaginationOptions): Promise<Conversation[]>;
   searchByContent(userId: string, searchTerm: string): Promise<Conversation[]>;

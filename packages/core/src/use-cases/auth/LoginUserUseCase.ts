@@ -9,8 +9,8 @@
  * - Creates new session
  */
 
-import type { IUserRepository } from '../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../repositories/ISessionRepository';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
 import { Session } from '../../domain/entities/Session';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
 import { ValidationError } from '../../domain/errors/ValidationError';
@@ -29,7 +29,7 @@ export interface LoginUserOutput {
     displayName: string | null;
     isAdmin: boolean;
     credits: number;
-    createdAt: Date;
+    createdAt: string;
   };
   tokens: TokenPair;
 }
@@ -60,7 +60,7 @@ export class LoginUserUseCase {
     this.validateInput(input);
 
     // 2. Find user by email
-    const user = await this.userRepository.findByEmail(
+    const user = await this.userRepository.getByEmail(
       input.email.toLowerCase().trim()
     );
 
@@ -87,18 +87,12 @@ export class LoginUserUseCase {
     );
 
     // 5. Create new session
-    const sessionId = this.jwtService.generateId();
     const expiresAt = this.jwtService.getRefreshExpiryDate();
-    const session = Session.create({
-      id: sessionId,
+    await this.sessionRepository.create({
       userId: user.id,
       refreshToken: tokens.refreshToken,
-      expiresAt,
-      createdAt: new Date(),
-      isActive: true,
+      expiresAt: expiresAt.toISOString(),
     });
-
-    await this.sessionRepository.save(session);
 
     // 6. Return user data and tokens
     return {

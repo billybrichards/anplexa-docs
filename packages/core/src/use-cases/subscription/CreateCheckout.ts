@@ -8,7 +8,7 @@
  * 4. Returns checkout URL
  */
 
-import type { IUserRepository } from '../../repositories/IUserRepository';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 
 export interface CreateCheckoutRequest {
   userId: string;

@@ -5,9 +5,8 @@
  * Handles conversation persistence with PostgreSQL and SQLite support.
  */
 
-import { eq, and, desc, sql } from 'drizzle-orm';
 import type { Database } from '@anplexa/database';
-import { conversations, messages } from '@anplexa/database';
+import { conversations, messages, eq, and, desc, sql } from '@anplexa/database';
 import type {
   IConversationRepository,
   CreateConversationData,
@@ -37,6 +36,25 @@ export class ConversationRepositoryError extends Error {
  */
 export class ConversationRepository implements IConversationRepository {
   constructor(private readonly db: Database) {}
+
+  /**
+   * Get all conversations
+   */
+  async getAll(): Promise<Conversation[]> {
+    try {
+      const result = await this.db
+        .select()
+        .from(conversations)
+        .orderBy(desc(conversations.updatedAt));
+
+      return result;
+    } catch (error) {
+      throw new ConversationRepositoryError(
+        'Failed to get all conversations',
+        error as Error
+      );
+    }
+  }
 
   /**
    * Get a conversation by ID

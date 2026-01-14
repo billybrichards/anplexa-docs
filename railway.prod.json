@@ -1,70 +1,20 @@
 {
-  "projectName": "anplexa-prod",
-  "projectId": "INSERT_PROD_PROJECT_ID",
-  "environment": "production",
-  "services": {
-    "api": {
-      "name": "api",
-      "source": "apps/api",
-      "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=api",
-      "startCommand": "pnpm start --filter=api",
-      "replicas": 2,
-      "environmentVariables": {
-        "NODE_ENV": "production",
-        "DATABASE_URL": "${{postgres.DATABASE_URL}}",
-        "REDIS_URL": "${{redis.REDIS_URL}}",
-        "PORT": "3000",
-        "LOG_LEVEL": "info"
-      }
-    },
-    "companions": {
-      "name": "companions",
-      "source": "apps/companions",
-      "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=companions",
-      "startCommand": "pnpm start --filter=companions",
-      "replicas": 2,
-      "environmentVariables": {
-        "NODE_ENV": "production",
-        "DATABASE_URL": "${{postgres.DATABASE_URL}}",
-        "NEXT_PUBLIC_API_URL": "https://api.anplexa.com",
-        "PORT": "3001"
-      }
-    },
-    "funnel": {
-      "name": "funnel",
-      "source": "apps/funnel",
-      "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=funnel",
-      "startCommand": "pnpm start --filter=funnel",
-      "replicas": 2,
-      "environmentVariables": {
-        "NODE_ENV": "production",
-        "DATABASE_URL": "${{postgres.DATABASE_URL}}",
-        "NEXT_PUBLIC_API_URL": "https://api.anplexa.com",
-        "PORT": "3002"
-      }
-    },
-    "docs": {
-      "name": "docs",
-      "source": "apps/docs",
-      "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=docs",
-      "startCommand": "pnpm start --filter=docs",
-      "replicas": 1,
-      "environmentVariables": {
-        "NODE_ENV": "production",
-        "PORT": "3003"
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksPlan": {
+      "phases": {
+        "setup": {
+          "nixPkgs": ["nodejs-18_x", "pnpm"]
+        },
+        "install": {
+          "cmds": ["pnpm install --frozen-lockfile"]
+        }
       }
     }
   },
-  "databases": {
-    "postgres": {
-      "type": "postgresql",
-      "name": "postgres",
-      "version": "latest"
-    },
-    "redis": {
-      "type": "redis",
-      "name": "redis",
-      "version": "latest"
-    }
+  "deploy": {
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
   }
 }

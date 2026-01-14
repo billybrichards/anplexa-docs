@@ -8,7 +8,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { users, type User } from '@anplexa/database/schema/sqlite';
+import { sqlite as schema } from '@anplexa/database';
+import type { User } from '@anplexa/database';
 import { UserRepository } from '../user.repository.js';
 import type { CreateUserData } from '../interfaces/user.repository.interface.js';
 
@@ -37,7 +38,7 @@ describe('UserRepository', () => {
     sqliteDb = new Database(':memory:');
 
     // Initialize Drizzle with the SQLite connection and schema
-    db = drizzle(sqliteDb, { schema: { users } });
+    db = drizzle(sqliteDb, { schema });
 
     // Create the users table - must match schema from @anplexa/database
     sqliteDb.exec(`
@@ -48,6 +49,8 @@ describe('UserRepository', () => {
         display_name TEXT,
         chat_name TEXT,
         personality_mode TEXT DEFAULT 'nurturing',
+        preferred_gender TEXT DEFAULT 'female',
+        custom_gender TEXT,
         storage_preference TEXT DEFAULT 'cloud',
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -59,6 +62,19 @@ describe('UserRepository', () => {
         stripe_subscription_id TEXT,
         account_source TEXT DEFAULT 'frontend',
         last_credit_refresh TEXT,
+        funnel_type TEXT DEFAULT 'direct',
+        persona TEXT,
+        stage TEXT DEFAULT 'new',
+        entry_source TEXT,
+        used_free_messages INTEGER DEFAULT 0,
+        email_opened_1 INTEGER DEFAULT 0,
+        email_opened_2 INTEGER DEFAULT 0,
+        email_opened_3 INTEGER DEFAULT 0,
+        clicked_use_app INTEGER DEFAULT 0,
+        feedback_submitted INTEGER DEFAULT 0,
+        refund_requested INTEGER DEFAULT 0,
+        refund_processed INTEGER DEFAULT 0,
+        last_activity_at TEXT,
         amplexa_funnel TEXT,
         amplexa_funnel_name TEXT,
         amplexa_responses TEXT,
