@@ -4,6 +4,11 @@ sidebar_position: 2
 
 # Environment Setup
 
+> **ℹ️ NEEDS UPDATE**: This guide references legacy app names. Update in progress:
+> - `2-terminal-companion` → `apps/api`
+> - `v0-ai-companion-prototype` → `apps/companions`
+> - `Funnel-Forge` → `apps/funnel`
+
 Complete reference for environment variables across all Anplexa applications.
 
 ## Overview

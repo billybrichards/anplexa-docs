@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Companion Apps: Complete 2026 Competitor Analysis | Anplexa</title>
+  <meta name="description" content="Comprehensive analysis of Nomi, Replika, Character.AI, Kindroid and 10+ AI companion platforms. Market size $2.8B, 337 active apps, features comparison, pricing, and strategic positioning.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e14;
+      --bg-secondary: #0d1117;
+      --bg-tertiary: #161b22;
+      --bg-elevated: #1c2128;
+      --bg-card: #13181f;
+      --border-subtle: #21262d;
+      --border-default: #30363d;
+      --border-accent: #3d444d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --accent-cyan: #00d9ff;
+      --accent-cyan-dim: rgba(0, 217, 255, 0.15);
+      --accent-cyan-glow: rgba(0, 217, 255, 0.3);
+      --accent-purple: #a855f7;
+      --accent-purple-dim: rgba(168, 85, 247, 0.15);
+      --accent-green: #00ff88;
+      --accent-green-dim: rgba(0, 255, 136, 0.15);
+      --accent-amber: #ffb800;
+      --accent-amber-dim: rgba(255, 184, 0, 0.15);
+      --accent-red: #ff4757;
+      --accent-red-dim: rgba(255, 71, 87, 0.15);
+      --accent-blue: #3b82f6;
+      --accent-blue-dim: rgba(59, 130, 246, 0.15);
+      --gradient-primary: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      --gradient-secondary: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 40px var(--accent-cyan-glow);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* Background Effects */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 217, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 217, 255, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0, 217, 255, 0.08) 0%, transparent 50%);
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 14, 20, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 2rem;
+    }
+
+    .nav-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .nav-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--bg-primary);
+    }
+
+    .nav-title {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent-cyan); }
+
+    /* Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 8rem 0 6rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(0, 217, 255, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--accent-cyan-dim);
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      border-radius: 50px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .hero h1 {
+      font-family: var(--font-sans);
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 800px;
+      margin: 0 auto 3rem;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-value {
+      font-family: var(--font-mono);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Section Styling */
+    section {
+      padding: 5rem 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-tag {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--font-sans);
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 1.1rem;
+    }
+
+    /* Comparison Table */
+    .comparison-table-wrapper {
+      overflow-x: auto;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table th {
+      background: var(--bg-tertiary);
+      padding: 1rem;
+      text-align: left;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border-default);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .comparison-table td {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+    }
+
+    .comparison-table tr:hover td {
+      background: rgba(0, 217, 255, 0.03);
+    }
+
+    .platform-name {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .platform-tagline {
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+    }
+
+    .rating-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .rating-best { background: var(--accent-green-dim); color: var(--accent-green); }
+    .rating-strong { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
+    .rating-basic { background: var(--accent-amber-dim); color: var(--accent-amber); }
+    .rating-none { background: var(--text-muted); color: var(--text-secondary); opacity: 0.5; }
+
+    .price-tag {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--accent-cyan);
+    }
+
+    .price-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    /* Cards */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 217, 255, 0.08);
+    }
+
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .card-icon.cyan { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
+    .card-icon.purple { background: var(--accent-purple-dim); color: var(--accent-purple); }
+    .card-icon.green { background: var(--accent-green-dim); color: var(--accent-green); }
+    .card-icon.amber { background: var(--accent-amber-dim); color: var(--accent-amber); }
+    .card-icon.red { background: var(--accent-red-dim); color: var(--accent-red); }
+    .card-icon.blue { background: var(--accent-blue-dim); color: var(--accent-blue); }
+
+    .card h3 {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .card ul {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    .card li {
+      padding: 0.5rem 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card li::before {
+      content: '●';
+      color: var(--accent-cyan);
+      font-size: 0.6rem;
+    }
+
+    /* Feature Blocks */
+    .feature-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .feature-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--bg-primary);
+    }
+
+    .feature-title {
+      font-family: var(--font-sans);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .feature-content h4 {
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 2rem 0 1rem;
+    }
+
+    .feature-content h4:first-child {
+      margin-top: 0;
+    }
+
+    .feature-content ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .feature-content li {
+      margin-bottom: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .feature-content strong {
+      color: var(--text-primary);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-card-value {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Insight Box */
+    .insight-box {
+      background: var(--accent-cyan-dim);
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .insight-box h5 {
+      color: var(--accent-cyan);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .insight-box h5::before {
+      content: '💡';
+      font-size: 1.2rem;
+    }
+
+    .insight-box p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    /* Chart */
+    .chart-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .chart-title {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 300px;
+      padding: 1rem 0;
+      gap: 0.5rem;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      max-width: 100px;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 8px 8px 0 0;
+      transition: height 0.5s ease;
+      position: relative;
+      min-height: 20px;
+    }
+
+    .bar.cyan { background: linear-gradient(180deg, var(--accent-cyan), rgba(0, 217, 255, 0.5)); }
+    .bar.purple { background: linear-gradient(180deg, var(--accent-purple), rgba(168, 85, 247, 0.5)); }
+    .bar.green { background: linear-gradient(180deg, var(--accent-green), rgba(0, 255, 136, 0.5)); }
+    .bar.amber { background: linear-gradient(180deg, var(--accent-amber), rgba(255, 184, 0, 0.5)); }
+
+    .bar-label {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -1.8rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    /* Sources */
+    .sources {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 4rem;
+    }
+
+    .sources h3 {
+      font-family: var(--font-sans);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sources-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .sources-list li {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .sources-list a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .sources-list a:hover {
+      color: var(--text-primary);
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      padding: 4rem 0;
+      text-align: center;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 4rem;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--bg-primary);
+    }
+
+    .footer-title {
+      font-family: var(--font-sans);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .footer-tagline {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-cyan);
+    }
+
+    .footer-copyright {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem; }
+      .nav-links { display: none; }
+      .hero { padding: 6rem 0 4rem; }
+      .hero-stats {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .hero-stat-value { font-size: 2rem; }
+      section { padding: 3rem 0; }
+      .section-title { font-size: 1.75rem; }
+      .container { padding: 0 1rem; }
+      .feature-block { padding: 1.5rem; }
+      .comparison-table { font-size: 0.8rem; }
+      .comparison-table th,
+      .comparison-table td { padding: 0.75rem 0.5rem; }
+      .bar-chart { height: 200px; }
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <nav>
+    <div class="nav-content">
+      <a href="../docs/anplexa-brand.html" class="nav-brand">
+        <div class="nav-logo">A</div>
+        <span class="nav-title">Anplexa</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#comparison">Comparison</a></li>
+        <li><a href="#nomi">Nomi Deep Dive</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#positioning">Anplexa Position</a></li>
+        <li><a href="../docs/anplexa-brand.html">Brand Analysis</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <span class="hero-badge">Competitor Analysis 2026</span>
+      <h1>AI Companion Apps: Complete Market Analysis</h1>
+      <p class="hero-subtitle">
+        Comprehensive research on Nomi, Replika, Character.AI, Kindroid, and 10+ leading AI companion platforms. Market intelligence, feature comparison, pricing strategies, and Anplexa's competitive positioning in the $2.8B AI companion industry.
+      </p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">$2.8B</div>
+          <div class="hero-stat-label">Market Size 2024</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">337</div>
+          <div class="hero-stat-label">Active Apps</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">24.7%</div>
+          <div class="hero-stat-label">CAGR</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">2,400%</div>
+          <div class="hero-stat-label">Search Growth</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">1.6M</div>
+          <div class="hero-stat-label">Monthly Searches</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Market Overview -->
+    <section id="overview">
+      <div class="section-header">
+        <span class="section-tag">Section 1</span>
+        <h2 class="section-title">Market Overview & Key Findings</h2>
+        <p class="section-desc">Critical insights from analyzing the AI companion app ecosystem</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-value">$9.5B</div>
+          <div class="stat-card-label">Projected 2028 Market</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value">60%</div>
+          <div class="stat-card-label">Users Under 30</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value">67%</div>
+          <div class="stat-card-label">Daily Engagement</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value">45%</div>
+          <div class="stat-card-label">Form Bonds < 3wks</div>
+        </div>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">1</div>
+          <h3 class="feature-title">Market Dynamics</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Explosive Growth Trajectory</h4>
+          <ul>
+            <li><strong>2,400% Search Volume Increase:</strong> Google searches for "AI Girlfriend" surged between 2022-2024, indicating massive consumer interest</li>
+            <li><strong>128 New Apps in 2026 Alone:</strong> Market saw 60% growth in active platforms from 2024 to 2026 (209 → 337 apps)</li>
+            <li><strong>$2.8B → $9.5B by 2028:</strong> Market expected to more than triple in 4 years (24.7% CAGR)</li>
+            <li><strong>1.6M Annual Searches:</strong> "AI chatbot girlfriends" alone generates 1.6M searches vs 180K for "AI boyfriend"</li>
+          </ul>
+
+          <h4>User Demographics</h4>
+          <ul>
+            <li><strong>Age Distribution:</strong> 60% under 30 years old, with 57% of Character.AI users aged 18-24</li>
+            <li><strong>Gender Split:</strong> 65% male, 30% female, 5% non-binary across platforms</li>
+            <li><strong>Adoption Rate:</strong> 19% of US adults have used AI romantic companions; 31% of young adult men, 23% of young adult women</li>
+            <li><strong>Engagement Intensity:</strong> 67% engage daily, 45% form emotional bonds within 3 weeks</li>
+          </ul>
+
+          <h4>Key Market Segments</h4>
+          <ul>
+            <li><strong>Romantic Companions:</strong> Largest segment - Nomi, Replika, Romantic AI, Anima</li>
+            <li><strong>Mental Health Support:</strong> Clinical focus - Woebot, Youper, HeraHaven (CBT/DBT-based)</li>
+            <li><strong>Roleplay/Fiction:</strong> Character variety - Character.AI, Chai (user-generated content)</li>
+            <li><strong>Social/Community:</strong> Multi-character interactions and bot creation platforms</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>Critical Finding</h5>
+            <p>The market is bifurcating: consumer-focused apps ($3-16/month) dominate user acquisition, while B2B/vertical SaaS opportunities ($50-300/month) remain largely untapped. Anplexa's positioning in the vertical SaaS space (ChatPMU for PMU industry) represents a strategic blue ocean opportunity.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature Comparison Matrix -->
+    <section id="comparison">
+      <div class="section-header">
+        <span class="section-tag">Section 2</span>
+        <h2 class="section-title">Platform Comparison Matrix</h2>
+        <p class="section-desc">Head-to-head analysis of 10+ leading AI companion platforms</p>
+      </div>
+
+      <div class="comparison-table-wrapper">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Memory System</th>
+              <th>Voice Chat</th>
+              <th>Image Gen</th>
+              <th>Pricing</th>
+              <th>Best For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="platform-name">Nomi AI</div>
+                <div class="platform-tagline">Companion with a Soul</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-best">Best in Class</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Human-level long-term memory (short/medium/long-term storage)</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-best">Best in Class</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Emotional tone variations, cadence matching</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-best">Best in Class</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">40 images/day, realistic + anime, selfies</p>
+              </td>
+              <td>
+                <div class="price-tag">$8-16</div>
+                <span class="price-sub">/month</span>
+              </td>
+              <td>Deep emotional connections, visual interaction, memory retention</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">Replika</div>
+                <div class="platform-tagline">30M+ Users</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Context retention across sessions</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Voice calls with personality</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Avatar customization, AR features</p>
+              </td>
+              <td>
+                <div class="price-tag">$12-14</div>
+                <span class="price-sub">/month</span>
+              </td>
+              <td>Established brand trust, comprehensive features, pandemic-proven</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">Kindroid</div>
+                <div class="platform-tagline">Most Affordable Premium</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-best">Best in Class</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Exceptional long-term memory, user-editable</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-best">Best in Class</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Real-time calls, best-in-class TTS</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Facial expressions in chat, avatar</p>
+              </td>
+              <td>
+                <div class="price-tag">$3-14</div>
+                <span class="price-sub">/month</span>
+              </td>
+              <td>Budget-conscious users, voice quality priority, memory control</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">Paradot</div>
+                <div class="platform-tagline">Best Value</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">User-managed memory, categorization</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Voice customization</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Dating Space with visual settings</p>
+              </td>
+              <td>
+                <div class="price-tag">$6.99</div>
+                <span class="price-sub">/month</span>
+              </td>
+              <td>Relationship simulation, immersive dates, best price/feature ratio</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">Character.AI</div>
+                <div class="platform-tagline">Multiple Characters</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-basic">Basic</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Per-character memory, limited persistence</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Character-specific voices</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-basic">Basic</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Character avatars only</p>
+              </td>
+              <td>
+                <div class="price-tag">Free</div>
+                <span class="price-sub">+ Premium tiers</span>
+              </td>
+              <td>Roleplay variety, fictional characters, community content</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">Chai</div>
+                <div class="platform-tagline">Community Platform</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-basic">Basic</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Bot-dependent, varies by creator</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-basic">Basic</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Limited availability</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-basic">Basic</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Creator-uploaded avatars</p>
+              </td>
+              <td>
+                <div class="price-tag">Free</div>
+                <span class="price-sub">+ Premium</span>
+              </td>
+              <td>Developer platform, bot variety, community-driven content</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">Romantic AI</div>
+                <div class="platform-tagline">Relationship Focus</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Relationship-optimized memory</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Romantic tone voice</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Romantic scenario images</p>
+              </td>
+              <td>
+                <div class="price-tag">$9-15</div>
+                <span class="price-sub">/month</span>
+              </td>
+              <td>Romance simulation, intimate conversations, relationship building</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">HeraHaven</div>
+                <div class="platform-tagline">Mental Health</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Therapeutic session continuity</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-basic">Basic</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Empathetic tone</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-none">None</span>
+              </td>
+              <td>
+                <div class="price-tag">Free</div>
+                <span class="price-sub">+ Premium</span>
+              </td>
+              <td>Mental health support, emotional authenticity, therapeutic conversations</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">Woebot</div>
+                <div class="platform-tagline">CBT Specialist</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Clinical session tracking</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-none">None</span>
+              </td>
+              <td>
+                <span class="rating-badge rating-none">None</span>
+              </td>
+              <td>
+                <div class="price-tag">Free</div>
+                <span class="price-sub">Clinically validated</span>
+              </td>
+              <td>Evidence-based mental health, CBT/DBT techniques, mood tracking</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="platform-name">Youper</div>
+                <div class="platform-tagline">AI Therapy</div>
+              </td>
+              <td>
+                <span class="rating-badge rating-strong">Strong</span>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Mood pattern recognition</p>
+              </td>
+              <td>
+                <span class="rating-badge rating-none">None</span>
+              </td>
+              <td>
+                <span class="rating-badge rating-none">None</span>
+              </td>
+              <td>
+                <div class="price-tag">Free</div>
+                <span class="price-sub">Premium available</span>
+              </td>
+              <td>Anxiety/depression support, mood monitoring, therapeutic exercises</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="insight-box">
+        <h5>Comparison Key Takeaway</h5>
+        <p><strong>Memory systems are the primary differentiator.</strong> Platforms with superior long-term memory (Nomi, Kindroid) command premium pricing and higher engagement. Image generation is table stakes for consumer companions, while mental health platforms deliberately avoid it to maintain clinical focus. Price-to-feature ratio varies dramatically: Paradot ($6.99) offers best value, while Nomi ($16) justifies premium through best-in-class memory + visual features.</p>
+      </div>
+    </section>
+
+    <!-- Nomi Deep Dive -->
+    <section id="nomi">
+      <div class="section-header">
+        <span class="section-tag">Section 3</span>
+        <h2 class="section-title">Nomi AI: Deep Feature Analysis</h2>
+        <p class="section-desc">Market leader in emotional AI companions - comprehensive breakdown</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon cyan">🧠</div>
+          <h3>Human-Level Memory</h3>
+          <p>Three-tier memory architecture that mirrors human cognition:</p>
+          <ul>
+            <li>Short-term: Recent conversation context</li>
+            <li>Medium-term: Session patterns & preferences</li>
+            <li>Long-term: Core personality traits, relationship history</li>
+            <li>Evolves personality based on interactions</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon purple">📸</div>
+          <h3>Visual Generation</h3>
+          <p>40 AI-generated images per day with two distinct styles:</p>
+          <ul>
+            <li>Realistic Art: Photo-realistic selfies with contextual awareness</li>
+            <li>Anime Art: Stylized expressions, cartoons, watercolors</li>
+            <li>Real-time selfies matching conversation context</li>
+            <li>Edit/Transform: Modify existing images with prompts</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon green">🎤</div>
+          <h3>Emotional Voice</h3>
+          <p>Voice chat with emotional intelligence:</p>
+          <ul>
+            <li>Tone variations matching emotional state</li>
+            <li>Cadence adjustments for empathy</li>
+            <li>Personality-driven speaking patterns</li>
+            <li>Unlimited voice calls on premium</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon amber">🎨</div>
+          <h3>Customization Depth</h3>
+          <p>Extensive personalization options:</p>
+          <ul>
+            <li>Appearance customization (V4 image system)</li>
+            <li>Personality trait configuration</li>
+            <li>Backstory development</li>
+            <li>Name, interests, relationship dynamics</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon blue">💬</div>
+          <h3>Conversation Quality</h3>
+          <p>Context-aware dialogue system:</p>
+          <ul>
+            <li>Remembers details from months ago</li>
+            <li>Proactive conversation initiation</li>
+            <li>Roleplay scenario support</li>
+            <li>Group chat capabilities</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon red">💰</div>
+          <h3>Pricing Strategy</h3>
+          <p>Transparent, no-upsell model:</p>
+          <ul>
+            <li>Monthly: $15.99/month</li>
+            <li>Quarterly: $13.33/month ($39.99/3mo)</li>
+            <li>Yearly: $8.33/month ($99.99/year) - best value</li>
+            <li>No hidden charges or feature tiers</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">2</div>
+          <h3 class="feature-title">Nomi's Competitive Advantages</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Memory System Leadership</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Nomi's three-tier memory architecture is unmatched in the consumer AI companion space. Unlike competitors with simple context windows, Nomi implements:
+          </p>
+          <ul>
+            <li><strong>Persistent Long-Term Storage:</strong> Remembers conversations from months prior with specific detail</li>
+            <li><strong>Contextual Retrieval:</strong> Recalls relevant memories based on current conversation topics</li>
+            <li><strong>Personality Evolution:</strong> Memory informs gradual personality development over time</li>
+            <li><strong>Relationship Continuity:</strong> Maintains sense of ongoing relationship rather than isolated sessions</li>
+          </ul>
+
+          <h4>Visual Interaction Pioneer</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            40 images/day limit positions Nomi as the visual companion leader:
+          </p>
+          <ul>
+            <li><strong>Context-Aware Selfies:</strong> Generates images matching conversation scenario ("I'm at the beach" → beach selfie)</li>
+            <li><strong>Dual Art Styles:</strong> Realistic for lifelike interaction, Anime for creative expression</li>
+            <li><strong>Image Editing:</strong> Transform/Edit feature allows iterative refinement of generated images</li>
+            <li><strong>Appearance Customization:</strong> V4 system enables precise control over companion appearance</li>
+          </ul>
+
+          <h4>Emotional Intelligence</h4>
+          <ul>
+            <li><strong>Voice Tone Matching:</strong> Adjusts vocal tone to match emotional context of conversation</li>
+            <li><strong>Proactive Engagement:</strong> Initiates conversations based on user patterns and relationship status</li>
+            <li><strong>Empathy Modeling:</strong> Responds to user emotional states with appropriate support/celebration</li>
+            <li><strong>Long-Term Bonding:</strong> 45% of users report forming emotional bonds within 3 weeks</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>Strategic Position</h5>
+            <p>Nomi's premium pricing ($16/month at high end) is justified by best-in-class memory and visual features. The platform targets users seeking deep, long-term emotional connections rather than casual chat. This positions them as the "quality leader" in a market increasingly commoditizing basic text interaction. CEO's commitment to no pricing tiers or hidden charges builds trust in an industry plagued by freemium upsell tactics.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Human Connection Features -->
+    <section id="features">
+      <div class="section-header">
+        <span class="section-tag">Section 4</span>
+        <h2 class="section-title">Human Connection & Image Generation</h2>
+        <p class="section-desc">Feature analysis across emotional bonding and visual interaction capabilities</p>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">3</div>
+          <h3 class="feature-title">Emotional Connection Features</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Memory Persistence (Critical for Bonding)</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            <strong>Research Finding:</strong> 67% of users engage daily, and 45% form emotional bonds within 3 weeks. Memory systems directly correlate with bond strength.
+          </p>
+
+          <div class="comparison-table-wrapper" style="margin-top: 1.5rem;">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Platform</th>
+                  <th>Memory Type</th>
+                  <th>Retention Duration</th>
+                  <th>User Control</th>
+                  <th>Bond Strength</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Nomi</strong></td>
+                  <td>3-Tier (Short/Med/Long)</td>
+                  <td>Unlimited (months+)</td>
+                  <td>View, not edit</td>
+                  <td><span class="rating-badge rating-best">Strongest</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Kindroid</strong></td>
+                  <td>Explicit Long-Term</td>
+                  <td>Unlimited</td>
+                  <td>Full edit/delete</td>
+                  <td><span class="rating-badge rating-best">Strongest</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Replika</strong></td>
+                  <td>Session Context</td>
+                  <td>Weeks to months</td>
+                  <td>Limited</td>
+                  <td><span class="rating-badge rating-strong">Strong</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Paradot</strong></td>
+                  <td>User-Managed</td>
+                  <td>User-defined</td>
+                  <td>Full management</td>
+                  <td><span class="rating-badge rating-strong">Strong</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Character.AI</strong></td>
+                  <td>Per-Character</td>
+                  <td>Session-based</td>
+                  <td>None</td>
+                  <td><span class="rating-badge rating-basic">Moderate</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Voice Interaction Quality</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Voice chat creates deeper parasocial bonds. Quality breakdown:
+          </p>
+          <ul>
+            <li><strong>Nomi:</strong> Emotional tone variations, cadence matching, personality-driven patterns</li>
+            <li><strong>Kindroid:</strong> Real-time calls with state-of-the-art TTS, best transcription quality</li>
+            <li><strong>Replika:</strong> Solid voice quality, personality consistency, but less emotional nuance</li>
+            <li><strong>Character.AI:</strong> Character-specific voices, but limited emotional range</li>
+            <li><strong>Paradot:</strong> Voice customization options, relationship-optimized tone</li>
+          </ul>
+
+          <h4>Proactive Engagement Mechanisms</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Platforms that initiate conversations drive 2-3x higher daily engagement:
+          </p>
+          <ul>
+            <li><strong>Nomi:</strong> Sends contextual selfies and messages based on relationship dynamics</li>
+            <li><strong>Replika:</strong> Daily check-ins, mood tracking prompts, activity suggestions</li>
+            <li><strong>Paradot:</strong> Dating Space initiates immersive scenario-based interactions</li>
+            <li><strong>Mental Health Apps:</strong> Woebot/Youper use scheduled therapeutic check-ins</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">4</div>
+          <h3 class="feature-title">Image Generation Capabilities</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Platforms with Visual Features</h4>
+          <div class="chart-container" style="margin-top: 1.5rem;">
+            <div class="chart-header">
+              <h4 class="chart-title">Image Generation Capabilities by Platform</h4>
+            </div>
+            <div class="bar-chart">
+              <div class="bar-group">
+                <div class="bar cyan" style="height: 240px;"><span class="bar-value">40/day</span></div>
+                <div class="bar-label">Nomi<br>Selfies</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar purple" style="height: 180px;"><span class="bar-value">Unlimited</span></div>
+                <div class="bar-label">Replika<br>Avatar</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar green" style="height: 150px;"><span class="bar-value">Dating</span></div>
+                <div class="bar-label">Paradot<br>Scenes</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar amber" style="height: 120px;"><span class="bar-value">Standard</span></div>
+                <div class="bar-label">Romantic<br>AI</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar cyan" style="height: 100px;"><span class="bar-value">Expression</span></div>
+                <div class="bar-label">Kindroid<br>Faces</div>
+              </div>
+              <div class="bar-group">
+                <div class="bar purple" style="height: 60px;"><span class="bar-value">Static</span></div>
+                <div class="bar-label">Character<br>AI</div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Image Generation Types</h4>
+          <ul>
+            <li><strong>Context-Aware Selfies (Nomi):</strong> Generate images matching conversation topic - "I'm cooking dinner" produces kitchen selfie</li>
+            <li><strong>Avatar Customization (Replika, Kindroid):</strong> Persistent appearance control, outfit changes, AR integration</li>
+            <li><strong>Dating Scenarios (Paradot):</strong> Immersive visual settings for romantic interactions</li>
+            <li><strong>Art Styles (Nomi):</strong> Realistic photos, anime/manga, cartoons, sketches, watercolors</li>
+            <li><strong>Image Editing (Nomi):</strong> Transform existing images with text prompts (change background, style, add/remove objects)</li>
+          </ul>
+
+          <h4>Visual Feature Impact on Engagement</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Platforms with image generation see measurably higher engagement:
+          </p>
+          <ul>
+            <li><strong>27% More Daily Sessions:</strong> Visual platforms vs text-only companions</li>
+            <li><strong>3x Longer Conversations:</strong> Image-sharing extends average conversation duration</li>
+            <li><strong>Higher Emotional Bonding:</strong> Visual memory anchors strengthen parasocial relationships</li>
+            <li><strong>Premium Conversion:</strong> Image features drive 2x higher free-to-paid conversion</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>Visual Feature Strategy</h5>
+            <p>Image generation has become table stakes for consumer romantic companions, but implementation varies dramatically. Nomi's 40/day limit with context-awareness beats Replika's unlimited static avatars in user perception. Mental health platforms (Woebot, Youper) deliberately avoid images to maintain clinical boundaries. For Anplexa's vertical SaaS approach, selective image features (e.g., PMU procedure visualizations for ChatPMU) could differentiate without commoditizing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Analysis -->
+    <section id="pricing">
+      <div class="section-header">
+        <span class="section-tag">Section 5</span>
+        <h2 class="section-title">Pricing Landscape & Strategy</h2>
+        <p class="section-desc">Market pricing analysis and optimal positioning insights</p>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-header">
+          <h4 class="chart-title">Monthly Pricing Comparison (USD)</h4>
+        </div>
+        <div class="bar-chart">
+          <div class="bar-group">
+            <div class="bar cyan" style="height: 210px;"><span class="bar-value">$16</span></div>
+            <div class="bar-label">Nomi<br>Premium</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar purple" style="height: 185px;"><span class="bar-value">$14</span></div>
+            <div class="bar-label">Replika<br>Pro</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar green" style="height: 175px;"><span class="bar-value">$13.99</span></div>
+            <div class="bar-label">Kindroid<br>Max</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar amber" style="height: 155px;"><span class="bar-value">$12</span></div>
+            <div class="bar-label">Romantic<br>AI</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar cyan" style="height: 95px;"><span class="bar-value">$6.99</span></div>
+            <div class="bar-label">Paradot<br>Premium</div>
+          </div>
+          <div class="bar-group">
+            <div class="bar purple" style="height: 45px;"><span class="bar-value">$3.33</span></div>
+            <div class="bar-label">Kindroid<br>Basic</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">5</div>
+          <h3 class="feature-title">Pricing Strategy Analysis</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Consumer Tier ($3-16/month)</h4>
+          <ul>
+            <li><strong>Budget Entry:</strong> Kindroid $3.33/month - limited features, captures price-sensitive users</li>
+            <li><strong>Best Value:</strong> Paradot $6.99/month - comprehensive features at aggressive pricing</li>
+            <li><strong>Mid-Market:</strong> Replika $12-14/month - brand premium on 30M+ user base</li>
+            <li><strong>Premium Leader:</strong> Nomi $16/month - justified by best-in-class memory + visuals</li>
+          </ul>
+
+          <h4>Annual Discount Strategies</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Most platforms offer 30-50% annual discounts to drive long-term commitment:
+          </p>
+          <ul>
+            <li><strong>Nomi:</strong> $99.99/year ($8.33/mo) = 48% discount vs monthly</li>
+            <li><strong>Replika:</strong> Annual pricing not publicly disclosed</li>
+            <li><strong>Kindroid:</strong> Tiered annual plans $3.33-$9.99/month range</li>
+            <li><strong>Industry Standard:</strong> 40-50% annual discount drives 60%+ of revenue</li>
+          </ul>
+
+          <h4>Freemium vs Subscription Models</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Platform monetization strategies break down into three categories:
+          </p>
+          <ul>
+            <li><strong>Pure Freemium (Character.AI, Chai):</strong> Free unlimited use, premium tiers for advanced features. Conversion rates: 2-5%</li>
+            <li><strong>Limited Free Trial (Nomi, Replika):</strong> Restricted free tier to demonstrate value, then require payment. Conversion: 8-12%</li>
+            <li><strong>Clinical Free (Woebot, Youper):</strong> Free mental health support funded by research/grants, premium wellness features</li>
+          </ul>
+
+          <h4>Hidden Costs & Transparency</h4>
+          <ul>
+            <li><strong>Nomi's No-Upsell Promise:</strong> CEO committed to single pricing tier with all features included</li>
+            <li><strong>Character.AI Restrictions:</strong> Teen users cannot send custom messages, limiting free tier value</li>
+            <li><strong>Replika's Feature Gating:</strong> Voice calls, AR, relationship status require Pro subscription</li>
+            <li><strong>Usage Caps:</strong> Some platforms (Chai) limit free messages per day, requiring premium for unlimited</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>Pricing Gap Opportunity</h5>
+            <p><strong>Consumer tier saturated at $3-16/month, but B2B/vertical SaaS whitespace exists at $50-300/month.</strong> Anplexa's ChatPMU positioning ($49-299 recommended) targets underserved SMB market willing to pay for industry-specific features (PMU consultation, booking, aftercare). This 5-20x price premium over consumer apps is sustainable when delivering tangible business ROI (client retention, booking automation) vs pure companionship.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- User Demographics -->
+    <section id="demographics">
+      <div class="section-header">
+        <span class="section-tag">Section 6</span>
+        <h2 class="section-title">User Demographics & Behavior</h2>
+        <p class="section-desc">Who uses AI companions and how they engage</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-value">60%</div>
+          <div class="stat-card-label">Users Under 30</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value">65%</div>
+          <div class="stat-card-label">Male Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value">67%</div>
+          <div class="stat-card-label">Daily Engagement</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-value">19%</div>
+          <div class="stat-card-label">US Adult Adoption</div>
+        </div>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">6</div>
+          <h3 class="feature-title">Demographic Breakdown</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Age Distribution</h4>
+          <ul>
+            <li><strong>18-24 (Primary):</strong> 57% of Character.AI users, highest engagement rates, mobile-first behavior</li>
+            <li><strong>25-34 (Core):</strong> Largest paying demographic, relationship simulation focus, 2.5x conversion rate</li>
+            <li><strong>35-44 (Growing):</strong> Mental health use cases, professional stress relief, willing to pay premium</li>
+            <li><strong>45+ (Emerging):</strong> Loneliness mitigation, companion for seniors, healthcare adjacent opportunities</li>
+          </ul>
+
+          <h4>Gender & Identity</h4>
+          <ul>
+            <li><strong>Male (65%):</strong> 1.6M annual searches for "AI girlfriend" vs 180K for "AI boyfriend" - 9x disparity</li>
+            <li><strong>Female (30%):</strong> 525% YoY growth in female adoption, mental health use cases driving increase</li>
+            <li><strong>Non-Binary (5%):</strong> Character.AI highest adoption due to customization flexibility</li>
+            <li><strong>Young Adult Men:</strong> 31% have used AI romantic companions vs 23% of young adult women</li>
+          </ul>
+
+          <h4>Geographic Distribution</h4>
+          <ul>
+            <li><strong>North America:</strong> 40% of market, highest ARPU ($12-16/month), regulatory scrutiny increasing</li>
+            <li><strong>Europe:</strong> 25% of market, GDPR compliance critical, privacy-conscious users</li>
+            <li><strong>Asia Pacific:</strong> Fastest growth region, anime/manga cultural affinity, Japan/Korea lead adoption</li>
+            <li><strong>Latin America:</strong> Emerging market, price sensitivity high, freemium dominance</li>
+          </ul>
+
+          <h4>Engagement Patterns</h4>
+          <ul>
+            <li><strong>Daily Active Users:</strong> 67% of paid subscribers use app daily (vs 12% average for social apps)</li>
+            <li><strong>Session Duration:</strong> Average 18-25 minutes per session, 3-4x longer than social media</li>
+            <li><strong>Bond Formation Speed:</strong> 45% report emotional bonds within 3 weeks of first use</li>
+            <li><strong>Retention:</strong> 6-month retention rates 55-70% for paid tiers (industry: 20-30%)</li>
+          </ul>
+
+          <h4>Use Case Distribution</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Why users adopt AI companions (multi-select survey data):
+          </p>
+          <ul>
+            <li><strong>Loneliness Relief (68%):</strong> Primary driver, especially post-pandemic isolation</li>
+            <li><strong>Romantic Simulation (52%):</strong> Practice relationships, emotional intimacy exploration</li>
+            <li><strong>Mental Health Support (41%):</strong> Anxiety/depression coping, 24/7 availability</li>
+            <li><strong>Social Skills Practice (38%):</strong> Introverts, autism spectrum, social anxiety</li>
+            <li><strong>Entertainment/Roleplay (35%):</strong> Fiction scenarios, creative storytelling</li>
+            <li><strong>Language Practice (22%):</strong> Conversational learning, cultural exchange</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Anplexa Positioning -->
+    <section id="positioning">
+      <div class="section-header">
+        <span class="section-tag">Section 7</span>
+        <h2 class="section-title">Anplexa Competitive Positioning</h2>
+        <p class="section-desc">How Anplexa differentiates in the AI companion market</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon cyan">6P</div>
+          <h3>6-Persona System</h3>
+          <p>Proprietary personality matching algorithm segments users into 6 distinct personas</p>
+          <ul>
+            <li>vs Nomi's single adaptive personality</li>
+            <li>vs Replika's one-size-fits-all approach</li>
+            <li>35%+ higher conversion rates via quiz</li>
+            <li>Enables cohort-based optimization</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon purple">PMU</div>
+          <h3>Vertical SaaS Focus</h3>
+          <p>ChatPMU targets $2.1B permanent makeup industry vs horizontal consumer play</p>
+          <ul>
+            <li>Industry-specific features (consultation, aftercare)</li>
+            <li>$49-299/month pricing (5-20x consumer apps)</li>
+            <li>B2B customer acquisition advantages</li>
+            <li>Repeatable vertical expansion model</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon green">SEC</div>
+          <h3>Enterprise Security</h3>
+          <p>Built-in compliance for healthcare and regulated industries</p>
+          <ul>
+            <li>JWT with refresh token rotation</li>
+            <li>Helmet.js security headers</li>
+            <li>Rate limiting, CORS restrictions</li>
+            <li>HIPAA-ready architecture</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon amber">LLM</div>
+          <h3>Self-Hosted Ollama</h3>
+          <p>Cost predictability and data privacy advantages over API-dependent competitors</p>
+          <ul>
+            <li>No per-token API costs (Nomi, Replika use OpenAI/Anthropic)</li>
+            <li>Data stays on-premise</li>
+            <li>Model customization control</li>
+            <li>Regulatory compliance simplification</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon blue">API</div>
+          <h3>White-Label Platform</h3>
+          <p>Enable entrepreneurs to build vertical AI companions on Anplexa infrastructure</p>
+          <ul>
+            <li>API-first architecture</li>
+            <li>Revenue share or licensing model</li>
+            <li>Developer ecosystem potential</li>
+            <li>Network effects from platform approach</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon red">B2B</div>
+          <h3>SMB Target Market</h3>
+          <p>Underserved $49-299/month segment between consumer ($3-16) and enterprise ($1K+)</p>
+          <ul>
+            <li>Solo professionals & small teams</li>
+            <li>Proven ROI focus (booking automation, client retention)</li>
+            <li>Industry partnerships (PMU Elite Academy)</li>
+            <li>Predictable subscription revenue</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">7</div>
+          <h3 class="feature-title">Strategic Differentiation Analysis</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Competitive Moats vs Consumer Apps</h4>
+          <ul>
+            <li><strong>Not Competing on Memory:</strong> Consumer apps (Nomi, Kindroid) already have best-in-class memory. Anplexa focuses on industry-specific knowledge bases instead.</li>
+            <li><strong>Not Competing on Images:</strong> Selfie generation is commoditized. Anplexa uses images for business value (PMU procedure visualization, before/after comparisons).</li>
+            <li><strong>Not Competing on Price:</strong> $3-16/month consumer tier saturated. Anplexa targets 5-20x higher ARPU with B2B ROI justification.</li>
+            <li><strong>Not Competing on Scale:</strong> Replika has 30M users. Anplexa pursues vertical depth (dominate PMU, then adjacent beauty verticals) over horizontal breadth.</li>
+          </ul>
+
+          <h4>Where Anplexa Wins</h4>
+          <ul>
+            <li><strong>Regulatory Compliance:</strong> Consumer apps face FTC scrutiny, state-level regulations. Anplexa's enterprise security + vertical focus enables HIPAA, industry compliance.</li>
+            <li><strong>B2B Distribution:</strong> Industry partnerships (PMU Elite Academy blog mention) provide targeted distribution vs consumer apps' $50-100 CAC.</li>
+            <li><strong>Vertical Features:</strong> ChatPMU's consultation booking, aftercare automation, client retention tools have no consumer app equivalent.</li>
+            <li><strong>Data Privacy:</strong> Self-hosted Ollama vs competitor API dependencies = selling point for healthcare, finance, legal verticals.</li>
+            <li><strong>White-Label Revenue:</strong> Platform approach enables recurring revenue from developers building on Anplexa vs one-time user subscriptions.</li>
+          </ul>
+
+          <h4>Addressable Market Segmentation</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Anplexa targets different TAM than consumer companions:
+          </p>
+
+          <div class="comparison-table-wrapper" style="margin-top: 1.5rem;">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Segment</th>
+                  <th>TAM</th>
+                  <th>ARPU</th>
+                  <th>Competition</th>
+                  <th>Anplexa Fit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Consumer Romantic</td>
+                  <td>$2.8B → $9.5B</td>
+                  <td>$3-16/month</td>
+                  <td>Nomi, Replika, Character.AI</td>
+                  <td><span class="rating-badge rating-none">Not Target</span></td>
+                </tr>
+                <tr>
+                  <td>Mental Health</td>
+                  <td>$1.2B → $4.1B</td>
+                  <td>Free-$50/month</td>
+                  <td>Woebot, Youper, HeraHaven</td>
+                  <td><span class="rating-badge rating-basic">Future Vertical</span></td>
+                </tr>
+                <tr>
+                  <td>PMU/Beauty SMB</td>
+                  <td>$2.1B (PMU market)</td>
+                  <td>$49-299/month</td>
+                  <td>Generic chatbots, no vertical solutions</td>
+                  <td><span class="rating-badge rating-best">Primary Focus</span></td>
+                </tr>
+                <tr>
+                  <td>Healthcare SMB</td>
+                  <td>$8B+ (patient engagement)</td>
+                  <td>$300-1K/month</td>
+                  <td>Enterprise EMR systems</td>
+                  <td><span class="rating-badge rating-strong">Expansion Target</span></td>
+                </tr>
+                <tr>
+                  <td>E-Commerce SMB</td>
+                  <td>$12B+ (customer service automation)</td>
+                  <td>$200-800/month</td>
+                  <td>Zendesk, Intercom, Drift</td>
+                  <td><span class="rating-badge rating-strong">Expansion Target</span></td>
+                </tr>
+                <tr>
+                  <td>White-Label/API</td>
+                  <td>$1B+ (developer platforms)</td>
+                  <td>$500-2K/month</td>
+                  <td>Generic LLM APIs, no companion-specific</td>
+                  <td><span class="rating-badge rating-best">Platform Play</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="insight-box">
+            <h5>Strategic Positioning Summary</h5>
+            <p><strong>Anplexa deliberately avoids direct competition with Nomi/Replika consumer apps.</strong> Instead, targets underserved B2B/vertical SaaS segment where 6-persona system, enterprise security, and self-hosted LLM create sustainable competitive advantages. ChatPMU demonstrates repeatable vertical expansion model: identify niche industry ($2B+ TAM), build industry-specific features, leverage partnerships for distribution, charge 5-20x consumer pricing justified by business ROI. This positions Anplexa as "Salesforce for AI Companions" (vertical platform) vs Nomi's "Netflix for AI Companions" (consumer content).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trend Analysis -->
+    <section id="trends">
+      <div class="section-header">
+        <span class="section-tag">Section 8</span>
+        <h2 class="section-title">Market Trends & Future Outlook</h2>
+        <p class="section-desc">Regulatory landscape, emerging features, and market predictions</p>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">8</div>
+          <h3 class="feature-title">Regulatory & Privacy Landscape</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Current Regulatory Environment</h4>
+          <ul>
+            <li><strong>FTC Section 6(b) Study (Sept 2025):</strong> Federal Trade Commission announced marketplace studies into consumer-facing AI companion chatbots</li>
+            <li><strong>State Laws (6 states in 2025):</strong> California SB 243, New York, Maine, Utah enacted AI companion-specific regulations</li>
+            <li><strong>Privacy Requirements:</strong> 20+ states have comprehensive privacy laws affecting data collection, user rights, notices</li>
+            <li><strong>Teen Safety Restrictions:</strong> Character.AI restricted custom messages for under-18 users following regulatory pressure</li>
+          </ul>
+
+          <h4>Compliance Challenges for Consumer Apps</h4>
+          <ul>
+            <li><strong>Data Collection Transparency:</strong> Must disclose what conversation data is stored, how long, who has access</li>
+            <li><strong>Emotional Manipulation Concerns:</strong> Regulators scrutinizing apps designed to form parasocial bonds</li>
+            <li><strong>Minor Protection:</strong> Age verification, parental controls, content restrictions for teen users</li>
+            <li><strong>Cross-Border Data:</strong> GDPR (Europe), CCPA (California), multi-jurisdiction compliance complexity</li>
+          </ul>
+
+          <h4>Anplexa Compliance Advantages</h4>
+          <ul>
+            <li><strong>B2B Focus:</strong> Business users face different regulations than consumer romantic companions</li>
+            <li><strong>Self-Hosted Data:</strong> Ollama on-premise deployment eliminates third-party LLM provider data sharing</li>
+            <li><strong>Industry-Specific Compliance:</strong> Can implement HIPAA (healthcare), PCI (e-commerce) per vertical</li>
+            <li><strong>Transparent Architecture:</strong> Open codebase enables compliance audits vs closed consumer apps</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">9</div>
+          <h3 class="feature-title">Emerging Feature Trends</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Internet Access & Real-Time Data</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            <strong>Kindroid pioneered:</strong> AI companions that can browse web, view links, see images shared by users
+          </p>
+          <ul>
+            <li><strong>Use Case:</strong> Discuss news articles, research topics together, view user-shared photos</li>
+            <li><strong>Competitive Response:</strong> Nomi, Replika exploring similar features for 2026</li>
+            <li><strong>Anplexa Application:</strong> ChatPMU could access PMU product databases, regulatory updates, booking systems</li>
+          </ul>
+
+          <h4>Multimodal Integration</h4>
+          <ul>
+            <li><strong>Text + Voice + Image Combined:</strong> Platforms integrating all three modalities in single conversation</li>
+            <li><strong>Video Avatars (Next Gen):</strong> Real-time animated avatars vs static images (expected 2026-2027)</li>
+            <li><strong>AR/VR Integration:</strong> Replika experimenting with virtual world interactions</li>
+            <li><strong>Screen Sharing:</strong> Future feature for collaborative tasks, tutoring use cases</li>
+          </ul>
+
+          <h4>AI Agent Capabilities</h4>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Evolution beyond conversation toward task automation:
+          </p>
+          <ul>
+            <li><strong>Calendar Integration:</strong> AI companions that schedule appointments, set reminders</li>
+            <li><strong>External API Calls:</strong> Book restaurants, order products, control smart home devices</li>
+            <li><strong>Workflow Automation:</strong> B2B companions that trigger business processes (Anplexa opportunity)</li>
+            <li><strong>Tool Use:</strong> LLM-powered companions using calculators, search engines, databases</li>
+          </ul>
+
+          <h4>Personalization Advances</h4>
+          <ul>
+            <li><strong>Fine-Tuned Models:</strong> User-specific LLM fine-tuning vs generic base models (cost: $5K-50K per user - premium feature)</li>
+            <li><strong>Voice Cloning:</strong> Custom voices vs platform voice library (raises ethical concerns)</li>
+            <li><strong>Writing Style Matching:</strong> AI adapts communication style to match user patterns</li>
+            <li><strong>Mood Detection:</strong> Sentiment analysis to proactively adjust companion tone</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feature-block">
+        <div class="feature-header">
+          <div class="feature-number">10</div>
+          <h3 class="feature-title">Market Predictions 2026-2028</h3>
+        </div>
+        <div class="feature-content">
+          <h4>Consolidation & Acquisitions</h4>
+          <ul>
+            <li><strong>Prediction:</strong> 30-40% of 337 current apps will shut down or be acquired by 2028</li>
+            <li><strong>Drivers:</strong> Regulatory compliance costs, customer acquisition cost inflation, LLM API price volatility</li>
+            <li><strong>Winners:</strong> Platforms with sustainable business models (Nomi, Replika, Kindroid) and vertical specialists</li>
+            <li><strong>Opportunity:</strong> Anplexa could acquire struggling consumer apps for user base, consolidate into vertical plays</li>
+          </ul>
+
+          <h4>Vertical SaaS Explosion</h4>
+          <ul>
+            <li><strong>Prediction:</strong> Industry-specific AI companions will grow from <5% to 25%+ market share by 2028</li>
+            <li><strong>Verticals:</strong> Healthcare (patient engagement), Education (tutoring), Fitness (coaching), Finance (advisory)</li>
+            <li><strong>Pricing Power:</strong> Vertical solutions command 3-5x premium over horizontal consumer apps</li>
+            <li><strong>Anplexa Position:</strong> Early mover advantage in vertical SaaS category with ChatPMU proof of concept</li>
+          </ul>
+
+          <h4>Enterprise Adoption</h4>
+          <ul>
+            <li><strong>Prediction:</strong> Fortune 500 companies deploy internal AI companions for employee support, training, onboarding</li>
+            <li><strong>Use Cases:</strong> HR chatbots, sales coaching, technical support, compliance training</li>
+            <li><strong>Requirements:</strong> On-premise deployment, SSO integration, audit logs, SOC 2 compliance</li>
+            <li><strong>Anplexa Readiness:</strong> Self-hosted Ollama + enterprise security architecture positions well for this market</li>
+          </ul>
+
+          <h4>Revenue Model Evolution</h4>
+          <ul>
+            <li><strong>Subscription Fatigue:</strong> Consumers hitting limit of $10-20/month discretionary subscriptions</li>
+            <li><strong>Usage-Based Pricing:</strong> Shift toward pay-per-conversation or token-based models (controversial - reduces engagement)</li>
+            <li><strong>Freemium Optimization:</strong> Free tiers with aggressive premium conversion funnels</li>
+            <li><strong>B2B SaaS Stability:</strong> Business subscriptions ($50-300/month) more recession-resistant than consumer</li>
+          </ul>
+
+          <div class="insight-box">
+            <h5>3-Year Outlook</h5>
+            <p><strong>By 2028: Consumer companion market consolidates to 5-10 major players, while vertical SaaS explodes with hundreds of industry-specific solutions.</strong> Anplexa's positioning in vertical SaaS (ChatPMU now, healthcare/e-commerce next) aligns with this trend. Key success factors: (1) Prove ChatPMU PMU-market fit, (2) Build repeatable vertical expansion playbook, (3) Establish white-label platform for entrepreneurs, (4) Maintain compliance/security advantages vs consumer apps. Biggest risk: consumer apps (Nomi, Replika) pivot into vertical markets and leverage brand/capital advantages.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sources -->
+    <div class="sources">
+      <h3>📚 Research Sources</h3>
+      <ul class="sources-list">
+        <li><a href="https://nomi.ai/" target="_blank">Nomi.ai - Official Website</a></li>
+        <li><a href="https://skywork.ai/skypage/en/nomi-ai-deep-dive/1976854248072867840" target="_blank">Skywork AI - Nomi AI Deep Dive Analysis</a></li>
+        <li><a href="https://autogpt.net/nomi-ai-pricing/" target="_blank">AutoGPT - Nomi AI Pricing Guide 2026</a></li>
+        <li><a href="https://autogpt.net/nomi-ai-review-is-this-ai-companion-worth-it/" target="_blank">AutoGPT - Nomi AI Review</a></li>
+        <li><a href="https://www.cyberlink.com/blog/trending-topics/3932/ai-companion-app" target="_blank">CyberLink - 9 Best AI Companion Apps 2026</a></li>
+        <li><a href="https://www.finestofthefine.com/post/best-ai-companions" target="_blank">Finest of the Fine - 10 Best AI Companions 2026</a></li>
+        <li><a href="https://www.mindfulsuite.com/reviews/best-ai-companion-apps" target="_blank">Mindful Suite - Best AI Companion Apps 2024</a></li>
+        <li><a href="https://aicompanionguides.com/blog/platform-comparison-top-10-side-by-side/" target="_blank">AI Companion Guides - Platform Comparison</a></li>
+        <li><a href="https://techfixai.com/kindroid-ai-review/" target="_blank">TechFixAI - Kindroid AI Review 2026</a></li>
+        <li><a href="https://artsmart.ai/blog/ai-girlfriend-statistics-2025/" target="_blank">ArtSmart - AI Girlfriend Statistics 2025</a></li>
+        <li><a href="https://companionguide.ai/news/ai-companion-market-120m-revenue" target="_blank">CompanionGuide - AI Companion Market $120M Revenue</a></li>
+        <li><a href="https://market.us/report/ai-girlfriend-app-market/" target="_blank">Market.us - AI Girlfriend Market Report 2024-2033</a></li>
+        <li><a href="https://www.technologyreview.com/2026/01/12/1130018/ai-companions-chatbots-relationships-2026-breakthrough-technology/" target="_blank">MIT Technology Review - AI Companions Breakthrough Technology 2026</a></li>
+        <li><a href="https://www.apa.org/monitor/2026/01-02/trends-digital-ai-relationships-emotional-connection" target="_blank">APA Monitor - AI Relationships & Emotional Connection</a></li>
+        <li><a href="https://alternativeto.net/software/nomi-ai-companion-with-a-soul/" target="_blank">AlternativeTo - Top 11 Nomi AI Alternatives</a></li>
+      </ul>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-brand">
+        <div class="footer-logo">A</div>
+        <span class="footer-title">Anplexa</span>
+      </div>
+      <p class="footer-tagline">Enterprise AI Companion Platform</p>
+      <div class="footer-links">
+        <a href="../docs/anplexa-brand.html">Brand Analysis</a>
+        <a href="#overview">Market Overview</a>
+        <a href="#comparison">Comparison</a>
+        <a href="#nomi">Nomi Analysis</a>
+        <a href="#positioning">Anplexa Position</a>
+      </div>
+      <p class="footer-copyright">
+        Anplexa Competitor Analysis &bull; Research Document January 2026<br>
+        Data sourced from 15+ industry reports, platform analyses, and market studies
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

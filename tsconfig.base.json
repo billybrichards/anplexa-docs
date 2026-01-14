@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "paths": {
+      "@anplexa/contracts": ["./packages/contracts/src"],
+      "@anplexa/contracts/*": ["./packages/contracts/src/*"],
+      "@anplexa/config": ["./packages/config/src"],
+      "@anplexa/config/*": ["./packages/config/src/*"],
+      "@anplexa/database": ["./packages/database/src"],
+      "@anplexa/database/*": ["./packages/database/src/*"],
+      "@anplexa/core": ["./packages/core/src"],
+      "@anplexa/core/*": ["./packages/core/src/*"],
+      "@anplexa/services": ["./packages/services/src"],
+      "@anplexa/services/*": ["./packages/services/src/*"],
+      "@anplexa/ui": ["./packages/ui/src"],
+      "@anplexa/ui/*": ["./packages/ui/src/*"],
+      "@anplexa/testing": ["./packages/testing/src"],
+      "@anplexa/testing/*": ["./packages/testing/src/*"]
+    },
+    "baseUrl": "."
+  },
+  "exclude": ["node_modules", "dist", "build", ".next", ".turbo"]
+}

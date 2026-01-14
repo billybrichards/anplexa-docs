@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "skipLibCheck": true,
+    "emitDeclarationOnly": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "baseUrl": ".",
+    "paths": {
+      "@anplexa/contracts": ["../contracts/dist"],
+      "@anplexa/contracts/*": ["../contracts/dist/*"],
+      "@anplexa/database": ["../database/dist"],
+      "@anplexa/database/*": ["../database/dist/*"],
+      "@anplexa/services": ["../services/dist"],
+      "@anplexa/services/*": ["../services/dist/*"]
+    }
+  },
+  "references": [
+    { "path": "../contracts" },
+    { "path": "../database" },
+    { "path": "../services" }
+  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "@anplexa/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema/sqlite": {
+      "types": "./dist/schema/sqlite.d.ts",
+      "default": "./dist/schema/sqlite.js"
+    },
+    "./schema/postgres": {
+      "types": "./dist/schema/postgres.d.ts",
+      "default": "./dist/schema/postgres.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.38.3",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^20.14.0",
+    "@types/pg": "^8.11.6",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.24.0",
+    "typescript": "^5.7.2",
+    "vitest": "^1.2.0"
+  }
+}
