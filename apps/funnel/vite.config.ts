@@ -32,5 +32,13 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
     },
+    // Prevent port conflicts in CI by disabling watch mode features
+    watch: false,
+    // Use unique port for each test run
+    server: {
+      deps: {
+        inline: ['@testing-library/react'],
+      },
+    },
   },
 });
