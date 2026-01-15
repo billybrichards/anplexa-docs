@@ -111,7 +111,7 @@ export class ResetPasswordUseCase {
    */
   private async validateInput(input: ResetPasswordInput): Promise<void> {
     // Validate token
-    if (!input.token || typeof input.token !== 'string') {
+    if (typeof input.token !== 'string' || input.token === null || input.token === undefined) {
       throw new ValidationError('Reset token is required', 'token');
     }
 

@@ -266,7 +266,7 @@ describe('ResetPasswordUseCase', () => {
         errors: [],
       });
 
-      // Act & Assert - Empty string triggers "is required"
+      // Act & Assert - Empty string triggers "cannot be empty"
       await expect(
         useCase.execute({
           token: '',
@@ -283,7 +283,7 @@ describe('ResetPasswordUseCase', () => {
           userId: 'user-123',
           newPassword: 'NewPassword123!',
         })
-      ).rejects.toThrow('Reset token is required');
+      ).rejects.toThrow('Reset token cannot be empty');
 
       expect(mockPasswordService.verifyPassword).not.toHaveBeenCalled();
     });

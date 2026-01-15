@@ -57,7 +57,7 @@ describe('ResetPasswordUseCase', () => {
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
-      save: vi.fn(),
+      save: undefined as any, // Start with undefined to test update path
     };
 
     mockSessionRepository = {
@@ -122,12 +122,12 @@ describe('ResetPasswordUseCase', () => {
     });
 
     it('should use save method if available instead of update', async () => {
-      // Setup mocks
-      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(mockUserRepository.save).mockResolvedValue({
+      // Setup mocks - add save method for this test
+      mockUserRepository.save = vi.fn().mockResolvedValue({
         ...mockUser,
         passwordHash: 'new-hashed-password',
       });
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
       mockPasswordService.validatePasswordStrength.mockReturnValue({
         valid: true,
         errors: [],
@@ -229,6 +229,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
+      mockPasswordService.verifyPassword.mockResolvedValue(true);
 
       await expect(useCase.execute(validInput)).rejects.toThrow('Database error');
     });

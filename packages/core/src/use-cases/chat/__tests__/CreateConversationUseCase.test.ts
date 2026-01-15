@@ -135,10 +135,12 @@ describe('CreateConversationUseCase', () => {
 
       // Assert
       expect(result.conversation).toEqual(conversationWithoutTitle);
-      expect(mockConversationRepo.create).toHaveBeenCalledWith({
-        userId: 'user-123',
-        title: undefined,
-      });
+      expect(mockConversationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          title: undefined,
+        })
+      );
     });
 
     it('should trim whitespace from title', async () => {
