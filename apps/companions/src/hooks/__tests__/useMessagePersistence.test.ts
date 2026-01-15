@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { useMessagePersistence } from '../useMessagePersistence';
 import { apiClient } from '../../lib/adapters/api/api-client';
 import { storageService } from '../../lib/adapters/storage/storage-service';
@@ -58,7 +58,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      const saved = await result.current.saveMessage(mockMessage);
+      let saved: MessageDTO | undefined;
+      await act(async () => {
+        saved = await result.current.saveMessage(mockMessage);
+      });
 
       expect(apiClient.post).toHaveBeenCalledWith(
         '/chat/messages',
@@ -84,15 +87,18 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      const savePromise = result.current.saveMessage(mockMessage);
+      let savePromise: Promise<MessageDTO>;
+      act(() => {
+        savePromise = result.current.saveMessage(mockMessage);
+      });
 
       expect(result.current.isSaving).toBe(true);
 
-      await waitFor(() => {
-        expect(result.current.isSaving).toBe(false);
+      await act(async () => {
+        await savePromise;
       });
 
-      await savePromise;
+      expect(result.current.isSaving).toBe(false);
     });
 
     it('should handle save errors', async () => {
@@ -103,7 +109,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      await expect(result.current.saveMessage(mockMessage)).rejects.toThrow('Save failed');
+      await act(async () => {
+        await expect(result.current.saveMessage(mockMessage)).rejects.toThrow('Save failed');
+      });
+
       expect(result.current.error).toBeTruthy();
       expect(result.current.error?.message).toBe('Save failed');
     });
@@ -124,7 +133,9 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId, onSaveSuccess })
       );
 
-      await result.current.saveMessage(mockMessage);
+      await act(async () => {
+        await result.current.saveMessage(mockMessage);
+      });
 
       expect(onSaveSuccess).toHaveBeenCalledWith(mockMessage);
     });
@@ -138,11 +149,13 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId, onSaveError })
       );
 
-      try {
-        await result.current.saveMessage(mockMessage);
-      } catch {
-        // Expected
-      }
+      await act(async () => {
+        try {
+          await result.current.saveMessage(mockMessage);
+        } catch {
+          // Expected
+        }
+      });
 
       expect(onSaveError).toHaveBeenCalledWith(expect.any(Error));
     });
@@ -160,7 +173,9 @@ describe('useMessagePersistence', () => {
         })
       );
 
-      await result.current.saveMessage(mockMessage);
+      await act(async () => {
+        await result.current.saveMessage(mockMessage);
+      });
 
       expect(storageService.set).toHaveBeenCalledWith(
         expect.stringContaining('messages_'),
@@ -179,7 +194,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      const loaded = await result.current.loadMessages();
+      let loaded: Message[] = [];
+      await act(async () => {
+        loaded = await result.current.loadMessages();
+      });
 
       expect(apiClient.get).toHaveBeenCalledWith(
         `/chat/conversations/${conversationId}/messages`,
@@ -202,15 +220,18 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      const loadPromise = result.current.loadMessages();
+      let loadPromise: Promise<Message[]>;
+      act(() => {
+        loadPromise = result.current.loadMessages();
+      });
 
       expect(result.current.isLoading).toBe(true);
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
+      await act(async () => {
+        await loadPromise;
       });
 
-      await loadPromise;
+      expect(result.current.isLoading).toBe(false);
     });
 
     it('should handle load errors', async () => {
@@ -221,7 +242,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      await expect(result.current.loadMessages()).rejects.toThrow('Load failed');
+      await act(async () => {
+        await expect(result.current.loadMessages()).rejects.toThrow('Load failed');
+      });
+
       expect(result.current.error).toBeTruthy();
     });
 
@@ -243,7 +267,9 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId, onLoadSuccess })
       );
 
-      await result.current.loadMessages();
+      await act(async () => {
+        await result.current.loadMessages();
+      });
 
       expect(onLoadSuccess).toHaveBeenCalledWith(expect.any(Array));
     });
@@ -263,7 +289,10 @@ describe('useMessagePersistence', () => {
         })
       );
 
-      const loaded = await result.current.loadMessages();
+      let loaded: Message[] = [];
+      await act(async () => {
+        loaded = await result.current.loadMessages();
+      });
 
       expect(loaded).toEqual(cachedMessages);
       expect(apiClient.get).not.toHaveBeenCalled();
@@ -280,7 +309,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId: 'other-conv', userId })
       );
 
-      const loaded = await result.current.loadMessagesForConversation(conversationId);
+      let loaded: Message[] = [];
+      await act(async () => {
+        loaded = await result.current.loadMessagesForConversation(conversationId);
+      });
 
       expect(apiClient.get).toHaveBeenCalledWith(
         `/chat/conversations/${conversationId}/messages`,
@@ -298,7 +330,9 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      await result.current.deleteMessage('msg-1');
+      await act(async () => {
+        await result.current.deleteMessage('msg-1');
+      });
 
       expect(apiClient.delete).toHaveBeenCalledWith('/chat/messages/msg-1');
     });
@@ -311,7 +345,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      await expect(result.current.deleteMessage('msg-1')).rejects.toThrow('Delete failed');
+      await act(async () => {
+        await expect(result.current.deleteMessage('msg-1')).rejects.toThrow('Delete failed');
+      });
+
       expect(result.current.error).toBeTruthy();
     });
 
@@ -329,7 +366,9 @@ describe('useMessagePersistence', () => {
         })
       );
 
-      await result.current.deleteMessage('msg-1');
+      await act(async () => {
+        await result.current.deleteMessage('msg-1');
+      });
 
       expect(storageService.set).toHaveBeenCalledWith(
         expect.stringContaining('messages_'),
@@ -347,15 +386,19 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      try {
-        await result.current.saveMessage(mockMessage);
-      } catch {
-        // Expected
-      }
+      await act(async () => {
+        try {
+          await result.current.saveMessage(mockMessage);
+        } catch {
+          // Expected
+        }
+      });
 
       expect(result.current.error).toBeTruthy();
 
-      result.current.clearError();
+      act(() => {
+        result.current.clearError();
+      });
 
       expect(result.current.error).toBeNull();
     });
