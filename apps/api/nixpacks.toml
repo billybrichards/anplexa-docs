@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["nodejs_18", "pnpm"]
+
+[phases.install]
+cmds = ["cd ../.. && pnpm install --frozen-lockfile"]
+
+[phases.build]
+cmds = ["cd ../.. && pnpm build --filter=@anplexa/api"]
+
+[start]
+cmd = "pnpm start"
