@@ -1,3 +1,5 @@
+'use client';
+
 // Cosmic Companion Landing Page
 export default function CompanionPage() {
   return (

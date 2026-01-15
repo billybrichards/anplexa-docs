@@ -1,3 +1,5 @@
+'use client';
+
 // Business Solutions Landing Page
 export default function BusinessPage() {
   return (

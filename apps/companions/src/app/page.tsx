@@ -1,3 +1,5 @@
+'use client';
+
 // Anplexa Companions - Next.js App
 import Link from 'next/link';
 
