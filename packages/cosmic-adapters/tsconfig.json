@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "skipLibCheck": true
+  },
+  "references": [
+    { "path": "../cosmic-companion" },
+    { "path": "../database" },
+    { "path": "../services" }
+  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

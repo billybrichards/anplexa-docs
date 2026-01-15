@@ -366,3 +366,6 @@ export type FunnelApiKey = typeof funnelApiKeys.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type NewContactSubmission = typeof contactSubmissions.$inferInsert;
 export type ExchangeToken = typeof exchangeTokens.$inferSelect;
+
+// Export Cosmic Companion schema
+export * from './cosmic-postgres.js';
