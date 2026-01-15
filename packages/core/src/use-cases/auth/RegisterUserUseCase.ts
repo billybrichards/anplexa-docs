@@ -88,13 +88,27 @@ export class RegisterUserUseCase {
       savedUser.isAdmin
     );
 
-    // 7. Create session
-    const expiresAt = this.jwtService.getRefreshExpiryDate();
-    await this.sessionRepository.create({
-      userId: savedUser.id,
-      refreshToken: tokens.refreshToken,
-      expiresAt: expiresAt.toISOString(),
-    });
+    // 7. Create session with rollback on failure
+    // If session creation fails after user was created, we need to rollback
+    // the user creation to maintain data consistency
+    try {
+      const expiresAt = this.jwtService.getRefreshExpiryDate();
+      await this.sessionRepository.create({
+        userId: savedUser.id,
+        refreshToken: tokens.refreshToken,
+        expiresAt: expiresAt.toISOString(),
+      });
+    } catch (sessionError) {
+      // Rollback: delete the created user since session creation failed
+      try {
+        await this.userRepository.delete(savedUser.id);
+      } catch (rollbackError) {
+        // Log rollback failure but throw the original session error
+        // In production, this would be logged to monitoring
+        console.error('Failed to rollback user creation:', rollbackError);
+      }
+      throw sessionError;
+    }
 
     // 8. Return user data and tokens
     return {

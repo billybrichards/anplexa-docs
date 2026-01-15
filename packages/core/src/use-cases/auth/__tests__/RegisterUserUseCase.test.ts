@@ -571,4 +571,109 @@ describe('RegisterUserUseCase', () => {
       await expect(promise2).rejects.toThrow('Email already registered');
     });
   });
+
+  describe('Transaction rollback scenarios', () => {
+    it('should rollback user creation if session creation fails', async () => {
+      // Arrange
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
+      vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockJwtService.generateId)
+        .mockReturnValueOnce('user-123')
+        .mockReturnValueOnce('session-123');
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
+      vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
+        new Date('2024-12-31')
+      );
+
+      // User creation succeeds
+      vi.mocked(mockUserRepo.create).mockResolvedValue(mockUser);
+
+      // Session creation fails
+      const sessionError = new Error('Session creation failed');
+      vi.mocked(mockSessionRepo.create).mockRejectedValue(sessionError);
+
+      // Act & Assert - The operation should fail
+      await expect(
+        useCase.execute({
+          email: 'test@example.com',
+          password: 'SecurePassword123!',
+        })
+      ).rejects.toThrow('Session creation failed');
+
+      // Verify the user was created
+      expect(mockUserRepo.create).toHaveBeenCalledTimes(1);
+
+      // Verify session creation was attempted
+      expect(mockSessionRepo.create).toHaveBeenCalledTimes(1);
+
+      // The user should be deleted (rolled back) after session creation fails
+      // NOTE: This test documents expected behavior. The current implementation
+      // does NOT perform rollback. This test will fail until the use case is
+      // updated to implement proper transaction handling/rollback.
+      expect(mockUserRepo.delete).toHaveBeenCalledWith('user-123');
+    });
+
+    it('should not rollback if user creation fails before session creation', async () => {
+      // Arrange
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
+      vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockJwtService.generateId).mockReturnValueOnce('user-123');
+
+      // User creation fails
+      const userError = new Error('User creation failed');
+      vi.mocked(mockUserRepo.create).mockRejectedValue(userError);
+
+      // Act & Assert
+      await expect(
+        useCase.execute({
+          email: 'test@example.com',
+          password: 'SecurePassword123!',
+        })
+      ).rejects.toThrow('User creation failed');
+
+      // Session creation should not be attempted
+      expect(mockSessionRepo.create).not.toHaveBeenCalled();
+
+      // No rollback should be needed since user was never created
+      expect(mockUserRepo.delete).not.toHaveBeenCalled();
+    });
+
+    it('should propagate session creation error to caller', async () => {
+      // Arrange
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
+      vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockJwtService.generateId)
+        .mockReturnValueOnce('user-123')
+        .mockReturnValueOnce('session-123');
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
+      vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
+        new Date('2024-12-31')
+      );
+      vi.mocked(mockUserRepo.create).mockResolvedValue(mockUser);
+
+      // Session creation fails with a specific error
+      const sessionError = new Error('Database connection lost');
+      vi.mocked(mockSessionRepo.create).mockRejectedValue(sessionError);
+
+      // Act & Assert
+      await expect(
+        useCase.execute({
+          email: 'test@example.com',
+          password: 'SecurePassword123!',
+        })
+      ).rejects.toThrow('Database connection lost');
+    });
+  });
 });

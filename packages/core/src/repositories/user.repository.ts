@@ -7,12 +7,19 @@
  */
 
 import type { Database } from '@anplexa/database';
-import { users, type User, type NewUser, eq } from '@anplexa/database';
+import { users, type User, eq } from '@anplexa/database';
 import type {
   IUserRepository,
   CreateUserData,
   PaginationOptions,
 } from './interfaces/user.repository.interface.js';
+import {
+  createUserWithSQLiteBooleans,
+  prepareUpdateData,
+} from '../utils/sqlite-type-mapper.js';
+
+/** Maximum limit for queries when offset is used without an explicit limit */
+const MAX_QUERY_LIMIT = 1_000_000;
 
 export class UserRepository implements IUserRepository {
   constructor(private readonly db: Database) {}
@@ -100,7 +107,7 @@ export class UserRepository implements IUserRepository {
       if (options?.offset !== undefined) {
         // If offset is used without limit, we need a large default limit
         if (options?.limit === undefined) {
-          query = query.limit(1000000); // Large number to effectively get all
+          query = query.limit(MAX_QUERY_LIMIT);
         }
         query = query.offset(options.offset);
       }
@@ -122,14 +129,9 @@ export class UserRepository implements IUserRepository {
         throw new Error(`User with email ${userData.email} already exists`);
       }
 
-      // Prepare user data with defaults
-      // Note: Using 'as any' because Drizzle's $inferInsert only includes notNull() fields
-      // but the schema accepts all optional fields
-
-      // Build the user data object - use 'as any' to allow integer values
-      // for boolean fields (SQLite compatibility: 0/1 instead of false/true)
-      // All boolean fields must be explicitly set to integers to avoid SQLite binding errors
-      const newUser = {
+      // Prepare user data with defaults and SQLite-compatible boolean conversions
+      // Uses type-safe utility to convert boolean fields to SQLite integers (0/1)
+      const baseUserData = {
         id: userData.id,
         email: userData.email,
         passwordHash: userData.passwordHash,
@@ -137,7 +139,7 @@ export class UserRepository implements IUserRepository {
         chatName: userData.chatName ?? null,
         personalityMode: userData.personalityMode ?? 'nurturing',
         storagePreference: userData.storagePreference ?? 'cloud',
-        isAdmin: userData.isAdmin ? 1 : 0,
+        isAdmin: userData.isAdmin ?? false,
         subscriptionStatus: userData.subscriptionStatus ?? 'not_subscribed',
         credits: userData.credits ?? 0,
         stripeCustomerId: userData.stripeCustomerId ?? null,
@@ -146,17 +148,20 @@ export class UserRepository implements IUserRepository {
         sourceChannel: userData.sourceChannel ?? null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        manualSubscriptionOverride: 0,
+        manualSubscriptionOverride: false,
         lastCreditRefresh: null,
-        // CRM boolean fields - explicitly set to integers for SQLite compatibility
-        emailOpened1: 0,
-        emailOpened2: 0,
-        emailOpened3: 0,
-        clickedUseApp: 0,
-        feedbackSubmitted: 0,
-        refundRequested: 0,
-        refundProcessed: 0,
-      } as any;
+        // CRM boolean fields - defaults to false
+        emailOpened1: false,
+        emailOpened2: false,
+        emailOpened3: false,
+        clickedUseApp: false,
+        feedbackSubmitted: false,
+        refundRequested: false,
+        refundProcessed: false,
+      };
+
+      // Convert boolean fields to SQLite-compatible integers using type-safe utility
+      const newUser = createUserWithSQLiteBooleans(baseUserData);
 
       // Insert user
       await this.db.insert(users).values(newUser);
@@ -195,37 +200,12 @@ export class UserRepository implements IUserRepository {
         }
       }
 
-      // Prepare update data with timestamp
-      const updateData = {
+      // Prepare update data with timestamp and SQLite-compatible boolean conversions
+      // Uses type-safe utility to convert boolean fields to integers and remove undefined values
+      const cleanedUpdateData = prepareUpdateData({
         ...updates,
         updatedAt: new Date().toISOString(),
-      };
-
-      // List of boolean fields that need to be converted to integers for SQLite
-      const booleanFields = [
-        'isAdmin',
-        'manualSubscriptionOverride',
-        'emailOpened1',
-        'emailOpened2',
-        'emailOpened3',
-        'clickedUseApp',
-        'feedbackSubmitted',
-        'refundRequested',
-        'refundProcessed',
-      ];
-
-      // Remove undefined values and convert booleans to integers for SQLite compatibility
-      const cleanedUpdateData = Object.fromEntries(
-        Object.entries(updateData)
-          .filter(([_, value]) => value !== undefined)
-          .map(([key, value]) => {
-            // Convert boolean fields to integers (0/1)
-            if (booleanFields.includes(key) && typeof value === 'boolean') {
-              return [key, value ? 1 : 0];
-            }
-            return [key, value];
-          })
-      );
+      });
 
       // Update user
       await this.db

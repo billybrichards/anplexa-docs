@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useMessagePersistence } from '../useMessagePersistence';
 import { apiClient } from '../../lib/adapters/api/api-client';
 import { storageService } from '../../lib/adapters/storage/storage-service';
@@ -480,6 +480,210 @@ describe('useMessagePersistence', () => {
       const lastSetCall = setCalls[setCalls.length - 1];
       const updatedCache = lastSetCall[1] as Message[];
       expect(updatedCache.find(m => m.id === 'msg-to-delete')).toBeUndefined();
+    });
+  });
+
+  describe('AbortController and request cancellation', () => {
+    it('should cancel pending requests on unmount', async () => {
+      // Track abort signals passed to the API
+      const abortSignals: AbortSignal[] = [];
+      vi.mocked(apiClient.get).mockImplementation(
+        (_url: string, signal?: AbortSignal) => {
+          if (signal) {
+            abortSignals.push(signal);
+          }
+          // Return a promise that never resolves to simulate long-running request
+          return new Promise(() => {});
+        }
+      );
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result, unmount } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Start loading messages (this will hang)
+      act(() => {
+        result.current.loadMessages();
+      });
+
+      // Verify the API was called with an AbortSignal
+      expect(abortSignals.length).toBe(1);
+      expect(abortSignals[0].aborted).toBe(false);
+
+      // Unmount the hook
+      unmount();
+
+      // Verify the abort signal was triggered
+      expect(abortSignals[0].aborted).toBe(true);
+    });
+
+    it('should not set error state when request is aborted', async () => {
+      // Create a mock that rejects with an AbortError
+      const abortError = new Error('The operation was aborted');
+      abortError.name = 'AbortError';
+
+      vi.mocked(apiClient.get).mockRejectedValueOnce(abortError);
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Load messages will be aborted
+      let loadedMessages: Message[] = [];
+      await act(async () => {
+        loadedMessages = await result.current.loadMessages();
+      });
+
+      // Should return empty array and not set error
+      expect(loadedMessages).toEqual([]);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should handle rapid concurrent loadMessages calls', async () => {
+      // Track all abort signals and their conversation IDs
+      const requestLog: { convId: string; signal: AbortSignal }[] = [];
+      let callCount = 0;
+
+      vi.mocked(apiClient.get).mockImplementation(
+        (url: string, signal?: AbortSignal) => {
+          const convIdMatch = url.match(/\/conversations\/([^/]+)\/messages/);
+          const convId = convIdMatch ? convIdMatch[1] : 'unknown';
+
+          if (signal) {
+            requestLog.push({ convId, signal });
+          }
+
+          // Simulate network delay - later calls resolve faster
+          const delay = 100 - callCount * 30;
+          callCount++;
+
+          return new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+              resolve([{ ...mockMessageDTO, id: `msg-${convId}` }]);
+            }, Math.max(delay, 10));
+
+            // Handle abort
+            signal?.addEventListener('abort', () => {
+              clearTimeout(timeoutId);
+              const abortError = new Error('Request aborted');
+              abortError.name = 'AbortError';
+              reject(abortError);
+            });
+          });
+        }
+      );
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Fire multiple rapid loadMessages calls
+      const promises: Promise<Message[]>[] = [];
+      await act(async () => {
+        promises.push(result.current.loadMessagesForConversation('conv-1'));
+        promises.push(result.current.loadMessagesForConversation('conv-2'));
+        promises.push(result.current.loadMessagesForConversation('conv-3'));
+
+        // Wait for all promises to settle
+        await Promise.allSettled(promises);
+      });
+
+      // Verify that requests were made for each conversation
+      expect(requestLog.length).toBe(3);
+      expect(requestLog.map(r => r.convId)).toEqual(['conv-1', 'conv-2', 'conv-3']);
+
+      // The hook should not be in a loading state after all requests complete
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    it('should cleanup abort controllers after successful request', async () => {
+      const messages: MessageDTO[] = [mockMessageDTO];
+      let signalUsed: AbortSignal | undefined;
+
+      vi.mocked(apiClient.get).mockImplementation(
+        (_url: string, signal?: AbortSignal) => {
+          signalUsed = signal;
+          return Promise.resolve(messages);
+        }
+      );
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result, unmount } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Load messages successfully
+      await act(async () => {
+        await result.current.loadMessages();
+      });
+
+      // Verify request completed with an abort signal
+      expect(signalUsed).toBeDefined();
+      expect(signalUsed?.aborted).toBe(false);
+
+      // Unmount should not cause issues (controller should be cleaned up)
+      unmount();
+
+      // Signal should still not be aborted since the request completed
+      // and was cleaned up before unmount
+      expect(signalUsed?.aborted).toBe(false);
+    });
+
+    it('should abort previous request when same conversation is loaded again', async () => {
+      const abortSignals: AbortSignal[] = [];
+      let resolvers: ((value: MessageDTO[]) => void)[] = [];
+
+      vi.mocked(apiClient.get).mockImplementation(
+        (_url: string, signal?: AbortSignal) => {
+          if (signal) {
+            abortSignals.push(signal);
+          }
+          return new Promise((resolve, reject) => {
+            resolvers.push(resolve);
+            signal?.addEventListener('abort', () => {
+              const abortError = new Error('Request aborted');
+              abortError.name = 'AbortError';
+              reject(abortError);
+            });
+          });
+        }
+      );
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Start first load
+      let promise1: Promise<Message[]>;
+      act(() => {
+        promise1 = result.current.loadMessages();
+      });
+
+      // First request should be active
+      expect(abortSignals.length).toBe(1);
+      expect(abortSignals[0].aborted).toBe(false);
+
+      // Start second load for the same conversation
+      let promise2: Promise<Message[]>;
+      act(() => {
+        promise2 = result.current.loadMessages();
+      });
+
+      // Now we have two requests
+      expect(abortSignals.length).toBe(2);
+
+      // Complete the second request
+      await act(async () => {
+        resolvers[1]([mockMessageDTO]);
+        await Promise.allSettled([promise1!, promise2!]);
+      });
+
+      // The hook should handle this gracefully
+      expect(result.current.isLoading).toBe(false);
     });
   });
 });

@@ -143,20 +143,6 @@ export function useMessagePersistence(
   );
 
   /**
-   * Load messages for the current conversation
-   *
-   * @returns Array of messages for the conversation
-   * @throws Error if load fails
-   */
-  const loadMessages = useCallback(async (): Promise<Message[]> => {
-    if (!options.conversationId) {
-      throw new Error('conversationId is required to load messages');
-    }
-
-    return loadMessagesForConversation(options.conversationId);
-  }, [options.conversationId]);
-
-  /**
    * Load messages for a specific conversation
    *
    * @param conversationId - The conversation ID to load messages for
@@ -224,6 +210,20 @@ export function useMessagePersistence(
     },
     [options]
   );
+
+  /**
+   * Load messages for the current conversation
+   *
+   * @returns Array of messages for the conversation
+   * @throws Error if load fails
+   */
+  const loadMessages = useCallback(async (): Promise<Message[]> => {
+    if (!options.conversationId) {
+      throw new Error('conversationId is required to load messages');
+    }
+
+    return loadMessagesForConversation(options.conversationId);
+  }, [options.conversationId, loadMessagesForConversation]);
 
   /**
    * Delete a message

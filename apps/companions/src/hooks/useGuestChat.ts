@@ -30,6 +30,7 @@ export interface Conversation {
 export interface UseGuestChatOptions {
   userId?: string;
   onUpgradePrompt?: () => void;
+  onPersistError?: (error: Error) => void;
 }
 
 export interface UseGuestChatReturn {
@@ -42,6 +43,8 @@ export interface UseGuestChatReturn {
   guestMessageCount: number;
   guestConversation: Conversation | null;
   saveGuestConversation: (conversation: Conversation) => void;
+  error: Error | null;
+  clearError: () => void;
 }
 
 /**
@@ -89,13 +92,31 @@ const GUEST_MESSAGE_LIMIT = 6;
  * ```
  */
 export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
-  const { userId, onUpgradePrompt } = options;
+  const { userId, onUpgradePrompt, onPersistError } = options;
 
   // State management
   const [guestMessages, setGuestMessages] = useState<Message[]>([]);
   const [guestConversation, setGuestConversation] = useState<Conversation | null>(null);
   const [guestMessageCount, setGuestMessageCount] = useState(0);
   const [, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  /**
+   * Clear the current error state
+   */
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  /**
+   * Helper to handle storage errors consistently
+   */
+  const handleStorageError = useCallback((err: unknown, operation: string): void => {
+    const storageError = err instanceof Error ? err : new Error(`Failed to ${operation}`);
+    console.error(`Failed to ${operation}:`, storageError);
+    setError(storageError);
+    onPersistError?.(storageError);
+  }, [onPersistError]);
 
   // Track whether upgrade prompt has been shown to avoid multiple triggers
   const upgradePromptShownRef = useRef(false);
@@ -120,31 +141,31 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
       if (typeof window !== 'undefined') {
         return localStorage.getItem(key);
       }
-    } catch (error) {
-      console.error(`Failed to get item from localStorage (${key}):`, error);
+    } catch (err) {
+      handleStorageError(err, `get item from localStorage (${key})`);
     }
     return null;
-  }, []);
+  }, [handleStorageError]);
 
   const safeSetItem = useCallback((key: string, value: string): void => {
     try {
       if (typeof window !== 'undefined') {
         localStorage.setItem(key, value);
       }
-    } catch (error) {
-      console.error(`Failed to set item in localStorage (${key}):`, error);
+    } catch (err) {
+      handleStorageError(err, `set item in localStorage (${key})`);
     }
-  }, []);
+  }, [handleStorageError]);
 
   const safeRemoveItem = useCallback((key: string): void => {
     try {
       if (typeof window !== 'undefined') {
         localStorage.removeItem(key);
       }
-    } catch (error) {
-      console.error(`Failed to remove item from localStorage (${key}):`, error);
+    } catch (err) {
+      handleStorageError(err, `remove item from localStorage (${key})`);
     }
-  }, []);
+  }, [handleStorageError]);
 
   /**
    * Load guest messages from localStorage
@@ -315,5 +336,7 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
     guestMessageCount,
     guestConversation,
     saveGuestConversation,
+    error,
+    clearError,
   };
 }
