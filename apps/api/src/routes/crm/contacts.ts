@@ -12,6 +12,7 @@ import { eq, desc, and } from 'drizzle-orm';
 import type { Container, EmailScheduler } from '../../container.js';
 import { requireAdminAuth } from './middleware.js';
 import { renderContactsPage, renderContactDetailPage } from './templates.js';
+import { emailQueue, emailLogs } from '@anplexa/database';
 
 export function createContactRoutes(container: Container): Router {
   const router = Router();
@@ -70,7 +71,6 @@ export function createContactRoutes(container: Container): Router {
     try {
       const { userRepository } = container.cradle;
       const db = container.resolve('db');
-      const { emailQueue, emailLogs } = require('@anplexa/database');
 
       const { userId } = req.params;
 
@@ -122,7 +122,6 @@ export function createContactRoutes(container: Container): Router {
     async (req: Request, res: Response) => {
       try {
         const db = container.resolve('db');
-        const { emailQueue } = require('@anplexa/database');
 
         const { id } = req.params;
 

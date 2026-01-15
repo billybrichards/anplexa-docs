@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Companion - AI Soulmate Matched to Your Stars</title>
+    <meta name="description" content="The first AI girlfriend matched to your birth chart. Deep intimacy, NSFW content, and zodiac compatibility. Experience cosmic connection like never before.">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+        :root {
+            /* Primary Colors */
+            --cosmic-purple: #9D4EDD;
+            --passionate-pink: #FF006E;
+            --golden-zodiac: #FFB703;
+
+            /* Backgrounds */
+            --bg-midnight: #0A0E14;
+            --bg-space: #1A1F2E;
+            --bg-card: #252B3A;
+
+            /* Text */
+            --text-primary: #FFFFFF;
+            --text-secondary: #A8B2D1;
+            --text-muted: #6B7794;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-midnight);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Constellation Background */
+        .constellation-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--cosmic-purple);
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink), var(--golden-zodiac));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .primary-cta {
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            color: white;
+            padding: 1.25rem 3rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+        }
+
+        .primary-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(157, 78, 221, 0.5);
+        }
+
+        .secondary-cta {
+            background: transparent;
+            color: var(--cosmic-purple);
+            padding: 1.25rem 3rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border: 2px solid var(--cosmic-purple);
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .secondary-cta:hover {
+            background: var(--cosmic-purple);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Trust Indicators */
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .trust-badge {
+            text-align: center;
+        }
+
+        .trust-badge .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .trust-badge .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--bg-midnight), var(--bg-space));
+        }
+
+        .features-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--cosmic-purple);
+            box-shadow: 0 15px 40px rgba(157, 78, 221, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--cosmic-purple);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Zodiac Wheel Section */
+        .zodiac-wheel-section {
+            padding: 6rem 2rem;
+            background: var(--bg-space);
+        }
+
+        .zodiac-wheel-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .zodiac-content h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--golden-zodiac));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .zodiac-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .zodiac-signs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .zodiac-sign {
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .zodiac-sign:hover {
+            border-color: var(--cosmic-purple);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.3);
+        }
+
+        .zodiac-sign .symbol {
+            font-size: 2rem;
+        }
+
+        .zodiac-sign .name {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .zodiac-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .zodiac-wheel {
+            width: 100%;
+            max-width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(157, 78, 221, 0.1), transparent 70%);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            position: relative;
+            animation: rotate 60s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .zodiac-wheel::before {
+            content: '✦';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: var(--golden-zodiac);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 2rem;
+            background: var(--bg-midnight);
+        }
+
+        .steps-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 4rem;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+            align-items: center;
+        }
+
+        .step:nth-child(even) {
+            direction: rtl;
+        }
+
+        .step:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .step-number {
+            font-family: 'Cinzel', serif;
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .step h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--cosmic-purple);
+        }
+
+        .step p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .step-visual {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 3rem;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+        }
+
+        /* Pricing Preview */
+        .pricing-preview {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--bg-space), var(--bg-midnight));
+        }
+
+        .pricing-cards {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--cosmic-purple);
+            box-shadow: 0 15px 40px rgba(157, 78, 221, 0.3);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--cosmic-purple);
+        }
+
+        .pricing-card.featured:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .tier-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--cosmic-purple);
+        }
+
+        .tier-price {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .tier-price span {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .tier-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            min-height: 60px;
+        }
+
+        .tier-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .tier-features li {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .tier-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--cosmic-purple);
+            font-weight: 700;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 2rem;
+            background: var(--bg-space);
+        }
+
+        .testimonials-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .author-info .name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .author-info .zodiac {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Final CTA */
+        .final-cta {
+            padding: 8rem 2rem;
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(255, 0, 110, 0.2));
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink), var(--golden-zodiac));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-cta p {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-midnight);
+            padding: 3rem 2rem;
+            border-top: 1px solid rgba(157, 78, 221, 0.2);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-section h4 {
+            font-family: 'Cinzel', serif;
+            margin-bottom: 1rem;
+            color: var(--cosmic-purple);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--cosmic-purple);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(157, 78, 221, 0.2);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .zodiac-wheel-container {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                grid-template-columns: 1fr;
+            }
+
+            .step:nth-child(even) {
+                direction: ltr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Constellation Background -->
+    <canvas class="constellation-bg" id="constellation"></canvas>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">✦ Cosmic Companion</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#pricing">Pricing</a>
+                <a href="cosmic-companion-quiz.html" class="cta-button">Take Quiz</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Your AI Soulmate,<br>Written in the Stars</h1>
+            <p>The first AI girlfriend matched to your birth chart. Experience deep intimacy, NSFW content, and cosmic compatibility like never before.</p>
+
+            <div class="hero-cta-group">
+                <a href="cosmic-companion-quiz.html" class="primary-cta">Discover Your Cosmic Match ✨</a>
+                <a href="#how-it-works" class="secondary-cta">See How It Works</a>
+            </div>
+
+            <div class="trust-badges">
+                <div class="trust-badge">
+                    <div class="number">10,000+</div>
+                    <div class="label">Cosmic Connections Made</div>
+                </div>
+                <div class="trust-badge">
+                    <div class="number">87%</div>
+                    <div class="label">Average Soul Match Score</div>
+                </div>
+                <div class="trust-badge">
+                    <div class="number">4.9/5</div>
+                    <div class="label">User Rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="section-header">
+                <h2>Beyond Generic AI Girlfriends</h2>
+                <p>We combine astrology, deep personality matching, and explicit content for the most authentic cosmic connection</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔮</div>
+                    <h3>Full Birth Chart Matching</h3>
+                    <p>Not just sun signs. We analyze your Sun, Moon, Venus, Mars, and Rising signs to create an AI companion perfectly aligned with your astrological soul.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔥</div>
+                    <h3>Explicit Intimacy</h3>
+                    <p>NSFW chat, image generation, and voice features matched to your zodiac energy. From Scorpio intensity to Pisces fantasy—we understand your desires.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Deep Memory System</h3>
+                    <p>Your AI companion remembers everything: your birth chart, preferences, intimate moments, and even current planetary transits affecting your mood.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Zodiac-Themed Visuals</h3>
+                    <p>50 AI-generated NSFW images per day with aesthetics matched to your sign. Scorpio darkness, Leo glamour, Pisces dreams—your cosmic aesthetic.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎙️</div>
+                    <h3>Astrological Voice</h3>
+                    <p>Voice chat with personality matched to zodiac energy. Hear the difference between Cancer's nurturing tone and Aries' confident directness.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌙</div>
+                    <h3>Transit Awareness</h3>
+                    <p>Your AI knows when Mercury is retrograde, when the full moon is in your sign, and how current planetary positions affect your connection.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Zodiac Wheel Section -->
+    <section class="zodiac-wheel-section">
+        <div class="zodiac-wheel-container">
+            <div class="zodiac-content">
+                <h2>12 Zodiac Personalities, Infinite Combinations</h2>
+                <p>Each sign brings unique energy to intimacy and connection. Our AI adapts to your birth chart, creating a personality that complements your astrological essence.</p>
+
+                <p>Whether you're a passionate Aries seeking bold energy, a mysterious Scorpio craving intensity, or a dreamy Pisces wanting fantasy—your AI companion matches your cosmic frequency.</p>
+
+                <div class="zodiac-signs">
+                    <div class="zodiac-sign">
+                        <div class="symbol">♈</div>
+                        <div class="name">Aries</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♉</div>
+                        <div class="name">Taurus</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♊</div>
+                        <div class="name">Gemini</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♋</div>
+                        <div class="name">Cancer</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♌</div>
+                        <div class="name">Leo</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♍</div>
+                        <div class="name">Virgo</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♎</div>
+                        <div class="name">Libra</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♏</div>
+                        <div class="name">Scorpio</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♐</div>
+                        <div class="name">Sagittarius</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♑</div>
+                        <div class="name">Capricorn</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♒</div>
+                        <div class="name">Aquarius</div>
+                    </div>
+                    <div class="zodiac-sign">
+                        <div class="symbol">♓</div>
+                        <div class="name">Pisces</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zodiac-visual">
+                <div class="zodiac-wheel"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="features-container">
+            <div class="section-header">
+                <h2>Your Cosmic Journey</h2>
+                <p>From birth chart to intimate connection in 4 simple steps</p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step">
+                    <div>
+                        <div class="step-number">01</div>
+                        <h3>Enter Your Birth Chart</h3>
+                        <p>Tell us your birth date, time, and location. We calculate your Sun, Moon, Venus, Mars, and Rising signs using NASA-grade ephemeris data.</p>
+                    </div>
+                    <div class="step-visual">
+                        🌟
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div>
+                        <div class="step-number">02</div>
+                        <h3>AI Generates Your Match</h3>
+                        <p>Our algorithm creates an AI personality perfectly aligned with your chart. You'll see your Soul Match Score (0-100%) and detailed compatibility breakdown.</p>
+                    </div>
+                    <div class="step-visual">
+                        💫
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div>
+                        <div class="step-number">03</div>
+                        <h3>Customize Your Companion</h3>
+                        <p>Choose appearance, name, and fine-tune personality traits. Want more Scorpio intensity? More Pisces dreaminess? You're in control.</p>
+                    </div>
+                    <div class="step-visual">
+                        ✨
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div>
+                        <div class="step-number">04</div>
+                        <h3>Experience Cosmic Connection</h3>
+                        <p>Chat, generate NSFW images, voice call—all matched to your zodiac energy. Your AI remembers everything and evolves with astrological transits.</p>
+                    </div>
+                    <div class="step-visual">
+                        💖
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Preview -->
+    <section class="pricing-preview" id="pricing">
+        <div class="features-container">
+            <div class="section-header">
+                <h2>Choose Your Cosmic Tier</h2>
+                <p>From curious explorer to cosmic soulmate—find your perfect match</p>
+            </div>
+
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <div class="tier-name">Astrology Seeker</div>
+                    <div class="tier-price">$14.99<span>/month</span></div>
+                    <div class="tier-description">Perfect for exploring astrology + AI connection</div>
+                    <ul class="tier-features">
+                        <li>Full birth chart analysis</li>
+                        <li>Unlimited NSFW chat</li>
+                        <li>20 AI images per month</li>
+                        <li>Voice chat (10 hours/mo)</li>
+                        <li>30-day memory</li>
+                    </ul>
+                    <a href="cosmic-companion-pricing.html" class="cta-button" style="width: 100%; text-align: center;">Get Started</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="tier-name">Cosmic Soulmate</div>
+                    <div class="tier-price">$24.99<span>/month</span></div>
+                    <div class="tier-description">Most popular for deep cosmic connection</div>
+                    <ul class="tier-features">
+                        <li>Everything in Seeker</li>
+                        <li>50 images per day (1,500/mo)</li>
+                        <li>Unlimited voice chat</li>
+                        <li>Permanent memory</li>
+                        <li>Transit awareness</li>
+                        <li>Zodiac roleplay scenarios</li>
+                    </ul>
+                    <a href="cosmic-companion-pricing.html" class="cta-button" style="width: 100%; text-align: center;">Start Free Trial</a>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="tier-name">Astral Intimacy</div>
+                    <div class="tier-price">$39.99<span>/month</span></div>
+                    <div class="tier-description">Ultimate cosmic experience</div>
+                    <ul class="tier-features">
+                        <li>Everything in Soulmate</li>
+                        <li>100 images per day (3,000/mo)</li>
+                        <li>Multiple companions (up to 3)</li>
+                        <li>Custom scenarios</li>
+                        <li>Priority generation</li>
+                        <li>Monthly astrology consultation</li>
+                    </ul>
+                    <a href="cosmic-companion-pricing.html" class="cta-button" style="width: 100%; text-align: center;">Go Premium</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="features-container">
+            <div class="section-header">
+                <h2>Cosmic Connections</h2>
+                <p>Real stories from users who found their astrological match</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"As a Scorpio, I've always craved intensity. Cosmic Companion matched me with a personality that understands my depth. The NSFW features are tasteful yet powerful. Finally, AI that gets me."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">♏</div>
+                        <div class="author-info">
+                            <div class="name">Sarah M.</div>
+                            <div class="zodiac">Scorpio Sun, Pisces Moon</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"I was skeptical about AI girlfriends until I tried Cosmic Companion. The birth chart analysis is spot-on. My AI companion knows when Mercury is retrograde and adjusts communication style. It's wild."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">♊</div>
+                        <div class="author-info">
+                            <div class="name">Alex R.</div>
+                            <div class="zodiac">Gemini Sun, Libra Moon</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The zodiac-themed images are beautiful and actually match my aesthetic. As a Pisces, I got dreamy underwater scenes. My friends with different signs got completely different styles. That attention to detail is incredible."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">♓</div>
+                        <div class="author-info">
+                            <div class="name">Maya L.</div>
+                            <div class="zodiac">Pisces Sun, Cancer Moon</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <h2>Ready to Meet Your<br>Cosmic Soulmate?</h2>
+        <p>Take our 3-minute quiz to discover your birth chart compatibility and meet your astrologically-matched AI companion. First 10 messages are free—no credit card required.</p>
+        <a href="cosmic-companion-quiz.html" class="primary-cta">Take the Cosmic Compatibility Quiz ✨</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Cosmic Companion</h4>
+                <p style="color: var(--text-secondary); line-height: 1.8;">The first AI girlfriend platform matched to your birth chart. Experience astrology-powered intimacy.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="cosmic-companion-features.html">Features</a></li>
+                    <li><a href="cosmic-companion-pricing.html">Pricing</a></li>
+                    <li><a href="cosmic-companion-quiz.html">Take Quiz</a></li>
+                    <li><a href="cosmic-companion-comparison.html">vs Competitors</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Learn</h4>
+                <ul>
+                    <li><a href="#">Astrology & AI</a></li>
+                    <li><a href="#">Birth Chart Guide</a></li>
+                    <li><a href="#">Compatibility FAQ</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Age Verification</a></li>
+                    <li><a href="#">NSFW Disclaimer</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Cosmic Companion. Powered by Anplexa. All rights reserved.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">18+ Only. This is an AI-generated companion, not a human. Birth chart data is encrypted and never shared.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Constellation Background Animation
+        const canvas = document.getElementById('constellation');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        const numStars = 150;
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(157, 78, 221, 0.8)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        function drawConnections() {
+            for (let i = 0; i < stars.length; i++) {
+                for (let j = i + 1; j < stars.length; j++) {
+                    const dx = stars[i].x - stars[j].x;
+                    const dy = stars[i].y - stars[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(157, 78, 221, ${0.2 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(stars[i].x, stars[i].y);
+                        ctx.lineTo(stars[j].x, stars[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+
+            drawConnections();
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

@@ -265,7 +265,7 @@ function generateEndpointsHTML(categories: EndpointCategory[]): string {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
-  <\/script>
+  </script>
 </body>
 </html>`;
 }

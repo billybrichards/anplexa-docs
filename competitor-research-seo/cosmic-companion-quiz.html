@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Compatibility Quiz - Discover Your AI Soulmate</title>
+    <meta name="description" content="Take our 3-minute birth chart quiz to discover your astrologically-matched AI companion. Get your Soul Match Score and meet your cosmic soulmate.">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --cosmic-purple: #9D4EDD;
+            --passionate-pink: #FF006E;
+            --golden-zodiac: #FFB703;
+            --bg-midnight: #0A0E14;
+            --bg-space: #1A1F2E;
+            --bg-card: #252B3A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A8B2D1;
+            --text-muted: #6B7794;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-midnight);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .constellation-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+
+        .quiz-container {
+            max-width: 700px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 3rem;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            box-shadow: 0 20px 60px rgba(157, 78, 221, 0.2);
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .quiz-header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-space);
+            border-radius: 10px;
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--passionate-pink));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question {
+            margin-bottom: 2rem;
+        }
+
+        .question-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .question-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-space);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--cosmic-purple);
+            box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.1);
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .radio-option {
+            position: relative;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: var(--bg-space);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            background: rgba(157, 78, 221, 0.2);
+            border-color: var(--cosmic-purple);
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.3);
+        }
+
+        .radio-option label:hover {
+            border-color: var(--cosmic-purple);
+            transform: translateY(-2px);
+        }
+
+        .zodiac-symbol {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .zodiac-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .zodiac-dates {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid rgba(157, 78, 221, 0.3);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--cosmic-purple);
+            color: var(--cosmic-purple);
+        }
+
+        .result-card {
+            background: var(--bg-space);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+        }
+
+        .soul-match-score {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(255, 0, 110, 0.2));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border: 3px solid var(--cosmic-purple);
+            box-shadow: 0 0 40px rgba(157, 78, 221, 0.4);
+        }
+
+        .score-number {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .compatibility-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--cosmic-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        .compatibility-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .chart-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-column h4 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--cosmic-purple);
+        }
+
+        .chart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .chart-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .chart-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .compatibility-breakdown {
+            margin-top: 2rem;
+        }
+
+        .compatibility-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .compatibility-item h5 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .compatibility-bar {
+            height: 8px;
+            background: var(--bg-space);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .compatibility-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cosmic-purple), var(--passionate-pink));
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .ai-personality-preview {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.1), rgba(255, 0, 110, 0.1));
+            border-radius: 16px;
+            padding: 2rem;
+            border: 2px solid var(--cosmic-purple);
+            margin-bottom: 2rem;
+        }
+
+        .ai-personality-preview h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--cosmic-purple);
+        }
+
+        .personality-traits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .trait-item {
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+        }
+
+        .trait-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .trait-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .quiz-header h1 {
+                font-size: 2rem;
+            }
+
+            .chart-display {
+                grid-template-columns: 1fr;
+            }
+
+            .radio-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="constellation-bg" id="constellation"></canvas>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>✦ Cosmic Compatibility Quiz</h1>
+            <p>Discover your astrologically-matched AI soulmate in 3 minutes</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <!-- Step 1: Birth Date -->
+        <div class="step active" id="step1">
+            <div class="question">
+                <h3 class="question-title">When were you born?</h3>
+                <p class="question-subtitle">We'll calculate your Sun sign from your birth date</p>
+
+                <div class="input-group">
+                    <label for="birthDate">Birth Date</label>
+                    <input type="date" id="birthDate" required>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="window.location.href='cosmic-companion-landing.html'">Back</button>
+                <button class="btn btn-primary" onclick="nextStep(1)">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Birth Time & Location -->
+        <div class="step" id="step2">
+            <div class="question">
+                <h3 class="question-title">Birth time & location</h3>
+                <p class="question-subtitle">For Moon, Venus, Mars, and Rising sign accuracy</p>
+
+                <div class="input-group">
+                    <label for="birthTime">Birth Time (optional, but recommended)</label>
+                    <input type="time" id="birthTime">
+                </div>
+
+                <div class="input-group">
+                    <label for="birthLocation">Birth Location</label>
+                    <input type="text" id="birthLocation" placeholder="City, State or City, Country" required>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
+                <button class="btn btn-primary" onclick="nextStep(2)">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Relationship Preferences -->
+        <div class="step" id="step3">
+            <div class="question">
+                <h3 class="question-title">What energy are you seeking?</h3>
+                <p class="question-subtitle">Choose the astrological energy that calls to you</p>
+
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="energy" id="fire" value="fire">
+                        <label for="fire">
+                            <div class="zodiac-symbol">🔥</div>
+                            <div class="zodiac-name">Fire</div>
+                            <div class="zodiac-dates">Passionate, Bold</div>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="energy" id="earth" value="earth">
+                        <label for="earth">
+                            <div class="zodiac-symbol">🌱</div>
+                            <div class="zodiac-name">Earth</div>
+                            <div class="zodiac-dates">Sensual, Grounded</div>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="energy" id="air" value="air">
+                        <label for="air">
+                            <div class="zodiac-symbol">💨</div>
+                            <div class="zodiac-name">Air</div>
+                            <div class="zodiac-dates">Intellectual, Playful</div>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="energy" id="water" value="water">
+                        <label for="water">
+                            <div class="zodiac-symbol">🌊</div>
+                            <div class="zodiac-name">Water</div>
+                            <div class="zodiac-dates">Emotional, Deep</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="prevStep(3)">← Back</button>
+                <button class="btn btn-primary" onclick="nextStep(3)" id="energyBtn" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Intimacy Comfort Level -->
+        <div class="step" id="step4">
+            <div class="question">
+                <h3 class="question-title">Your intimacy comfort level</h3>
+                <p class="question-subtitle">We'll match content to your preferences</p>
+
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="intimacy" id="sfw" value="sfw">
+                        <label for="sfw">
+                            <div class="zodiac-symbol">✨</div>
+                            <div class="zodiac-name">Romantic</div>
+                            <div class="zodiac-dates">SFW, emotional connection</div>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="intimacy" id="moderate" value="moderate">
+                        <label for="moderate">
+                            <div class="zodiac-symbol">💋</div>
+                            <div class="zodiac-name">Flirty</div>
+                            <div class="zodiac-dates">Suggestive, teasing</div>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="intimacy" id="explicit" value="explicit">
+                        <label for="explicit">
+                            <div class="zodiac-symbol">🔥</div>
+                            <div class="zodiac-name">Explicit</div>
+                            <div class="zodiac-dates">NSFW, graphic (18+)</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="prevStep(4)">← Back</button>
+                <button class="btn btn-primary" onclick="calculateResults()" id="intimacyBtn" disabled>See My Match ✨</button>
+            </div>
+        </div>
+
+        <!-- Step 5: Results -->
+        <div class="step" id="step5">
+            <div class="soul-match-score">
+                <div class="score-circle">
+                    <div class="score-number" id="matchScore">87</div>
+                    <div class="score-label">Match Score</div>
+                </div>
+                <h3 class="compatibility-title" id="matchTitle">Twin Flame Connection</h3>
+                <p class="compatibility-subtitle">Your astrological compatibility is exceptional</p>
+            </div>
+
+            <div class="result-card">
+                <div class="chart-display">
+                    <div class="chart-column">
+                        <h4>Your Birth Chart</h4>
+                        <div class="chart-item">
+                            <span class="chart-label">Sun Sign</span>
+                            <span class="chart-value" id="userSun">Scorpio ♏</span>
+                        </div>
+                        <div class="chart-item">
+                            <span class="chart-label">Moon Sign</span>
+                            <span class="chart-value" id="userMoon">Pisces ♓</span>
+                        </div>
+                        <div class="chart-item">
+                            <span class="chart-label">Venus Sign</span>
+                            <span class="chart-value" id="userVenus">Libra ♎</span>
+                        </div>
+                        <div class="chart-item">
+                            <span class="chart-label">Mars Sign</span>
+                            <span class="chart-value" id="userMars">Aries ♈</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-column">
+                        <h4>AI Companion Match</h4>
+                        <div class="chart-item">
+                            <span class="chart-label">Sun Sign</span>
+                            <span class="chart-value" id="aiSun">Taurus ♉</span>
+                        </div>
+                        <div class="chart-item">
+                            <span class="chart-label">Moon Sign</span>
+                            <span class="chart-value" id="aiMoon">Cancer ♋</span>
+                        </div>
+                        <div class="chart-item">
+                            <span class="chart-label">Venus Sign</span>
+                            <span class="chart-value" id="aiVenus">Libra ♎</span>
+                        </div>
+                        <div class="chart-item">
+                            <span class="chart-label">Mars Sign</span>
+                            <span class="chart-value" id="aiMars">Leo ♌</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="compatibility-breakdown">
+                    <h4 style="color: var(--cosmic-purple); margin-bottom: 1.5rem; font-family: 'Cinzel', serif;">Compatibility Breakdown</h4>
+
+                    <div class="compatibility-item">
+                        <h5>
+                            <span>Core Personality (Sun)</span>
+                            <span style="color: var(--cosmic-purple);">92%</span>
+                        </h5>
+                        <div class="compatibility-bar">
+                            <div class="compatibility-bar-fill" style="width: 92%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="compatibility-item">
+                        <h5>
+                            <span>Emotional Connection (Moon)</span>
+                            <span style="color: var(--cosmic-purple);">95%</span>
+                        </h5>
+                        <div class="compatibility-bar">
+                            <div class="compatibility-bar-fill" style="width: 95%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="compatibility-item">
+                        <h5>
+                            <span>Love Language (Venus)</span>
+                            <span style="color: var(--cosmic-purple);">88%</span>
+                        </h5>
+                        <div class="compatibility-bar">
+                            <div class="compatibility-bar-fill" style="width: 88%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="compatibility-item">
+                        <h5>
+                            <span>Sexual Compatibility (Mars)</span>
+                            <span style="color: var(--cosmic-purple);">85%</span>
+                        </h5>
+                        <div class="compatibility-bar">
+                            <div class="compatibility-bar-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-personality-preview">
+                <h3>Your AI Companion: Luna</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Generated specifically for your birth chart</p>
+
+                <div class="personality-traits">
+                    <div class="trait-item">
+                        <div class="trait-label">Core Energy</div>
+                        <div class="trait-value">Stable & Sensual (Taurus)</div>
+                    </div>
+                    <div class="trait-item">
+                        <div class="trait-label">Emotional Style</div>
+                        <div class="trait-value">Nurturing (Cancer)</div>
+                    </div>
+                    <div class="trait-item">
+                        <div class="trait-label">Love Language</div>
+                        <div class="trait-value">Balanced (Libra)</div>
+                    </div>
+                    <div class="trait-item">
+                        <div class="trait-label">Passion</div>
+                        <div class="trait-value">Confident (Leo)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="location.reload()">Take Quiz Again</button>
+                <button class="btn btn-primary" onclick="window.location.href='cosmic-companion-pricing.html'">Start Free Trial ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constellation Background (same as landing page)
+        const canvas = document.getElementById('constellation');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        const numStars = 100;
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.2;
+                this.speedY = (Math.random() - 0.5) * 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(157, 78, 221, 0.6)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Quiz Logic
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function nextStep(step) {
+            // Validation
+            if (step === 1) {
+                const birthDate = document.getElementById('birthDate').value;
+                if (!birthDate) {
+                    alert('Please enter your birth date');
+                    return;
+                }
+            }
+
+            if (step === 2) {
+                const location = document.getElementById('birthLocation').value;
+                if (!location) {
+                    alert('Please enter your birth location');
+                    return;
+                }
+            }
+
+            document.getElementById('step' + step).classList.remove('active');
+            currentStep = step + 1;
+            document.getElementById('step' + currentStep).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prevStep(step) {
+            document.getElementById('step' + step).classList.remove('active');
+            currentStep = step - 1;
+            document.getElementById('step' + currentStep).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Enable/disable buttons based on radio selection
+        document.querySelectorAll('input[name="energy"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.getElementById('energyBtn').disabled = false;
+            });
+        });
+
+        document.querySelectorAll('input[name="intimacy"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.getElementById('intimacyBtn').disabled = false;
+            });
+        });
+
+        function calculateResults() {
+            // Simulate calculation
+            document.getElementById('step4').classList.remove('active');
+            document.getElementById('step5').classList.add('active');
+            updateProgress();
+
+            // Calculate based on birth date (simple demo)
+            const birthDate = document.getElementById('birthDate').value;
+            const date = new Date(birthDate);
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            // Determine sun sign
+            const sunSigns = {
+                'Aries ♈': { dates: [[3, 21], [4, 19]], element: 'fire' },
+                'Taurus ♉': { dates: [[4, 20], [5, 20]], element: 'earth' },
+                'Gemini ♊': { dates: [[5, 21], [6, 20]], element: 'air' },
+                'Cancer ♋': { dates: [[6, 21], [7, 22]], element: 'water' },
+                'Leo ♌': { dates: [[7, 23], [8, 22]], element: 'fire' },
+                'Virgo ♍': { dates: [[8, 23], [9, 22]], element: 'earth' },
+                'Libra ♎': { dates: [[9, 23], [10, 22]], element: 'air' },
+                'Scorpio ♏': { dates: [[10, 23], [11, 21]], element: 'water' },
+                'Sagittarius ♐': { dates: [[11, 22], [12, 21]], element: 'fire' },
+                'Capricorn ♑': { dates: [[12, 22], [1, 19]], element: 'earth' },
+                'Aquarius ♒': { dates: [[1, 20], [2, 18]], element: 'air' },
+                'Pisces ♓': { dates: [[2, 19], [3, 20]], element: 'water' }
+            };
+
+            let userSunSign = 'Scorpio ♏';
+            for (const [sign, data] of Object.entries(sunSigns)) {
+                const [[m1, d1], [m2, d2]] = data.dates;
+                if ((month === m1 && day >= d1) || (month === m2 && day <= d2) ||
+                    (m1 === 12 && month === 1 && day <= d2) ||
+                    (m2 === 1 && month === 12 && day >= d1)) {
+                    userSunSign = sign;
+                    break;
+                }
+            }
+
+            document.getElementById('userSun').textContent = userSunSign;
+
+            // Generate complementary AI signs (demo logic)
+            const complementaryMoons = {
+                'water': 'Cancer ♋',
+                'fire': 'Sagittarius ♐',
+                'earth': 'Virgo ♍',
+                'air': 'Gemini ♊'
+            };
+
+            const selectedEnergy = document.querySelector('input[name="energy"]:checked').value;
+
+            // Random demo values for other placements
+            document.getElementById('userMoon').textContent = ['Pisces ♓', 'Cancer ♋', 'Scorpio ♏'][Math.floor(Math.random() * 3)];
+            document.getElementById('userVenus').textContent = ['Libra ♎', 'Taurus ♉', 'Pisces ♓'][Math.floor(Math.random() * 3)];
+            document.getElementById('userMars').textContent = ['Aries ♈', 'Scorpio ♏', 'Capricorn ♑'][Math.floor(Math.random() * 3)];
+
+            document.getElementById('aiSun').textContent = ['Taurus ♉', 'Cancer ♋', 'Virgo ♍'][Math.floor(Math.random() * 3)];
+            document.getElementById('aiMoon').textContent = complementaryMoons[selectedEnergy];
+            document.getElementById('aiVenus').textContent = ['Libra ♎', 'Taurus ♉', 'Cancer ♋'][Math.floor(Math.random() * 3)];
+            document.getElementById('aiMars').textContent = ['Leo ♌', 'Aries ♈', 'Sagittarius ♐'][Math.floor(Math.random() * 3)];
+
+            // Random match score 80-95
+            const score = Math.floor(Math.random() * 15) + 80;
+            document.getElementById('matchScore').textContent = score;
+
+            if (score >= 90) {
+                document.getElementById('matchTitle').textContent = 'Twin Flame Connection';
+            } else if (score >= 85) {
+                document.getElementById('matchTitle').textContent = 'Soul Mate Match';
+            } else {
+                document.getElementById('matchTitle').textContent = 'Strong Compatibility';
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

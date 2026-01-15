@@ -87,7 +87,7 @@ function getSwaggerHTML(): string {
     </nav>
   </div>
   <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"><\/script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
   <script>
     window.onload = function() {
       window.ui = SwaggerUIBundle({
@@ -101,7 +101,7 @@ function getSwaggerHTML(): string {
         layout: "BaseLayout"
       });
     };
-  <\/script>
+  </script>
 </body>
 </html>`;
 }

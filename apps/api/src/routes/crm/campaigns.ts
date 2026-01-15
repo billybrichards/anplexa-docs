@@ -13,6 +13,8 @@ import { desc } from 'drizzle-orm';
 import type { Container, EmailScheduler } from '../../container.js';
 import { requireAdminAuth } from './middleware.js';
 import { renderEmailQueuePage, renderTemplatesPage } from './templates.js';
+import { emailQueue } from '@anplexa/database';
+import * as emailTemplates from '../../infrastructure/email/emailTemplates.js';
 
 export function createCampaignRoutes(container: Container): Router {
   const router = Router();
@@ -24,7 +26,6 @@ export function createCampaignRoutes(container: Container): Router {
   router.get('/emails', requireAdminAuth, async (_req: Request, res: Response) => {
     try {
       const db = container.resolve('db');
-      const { emailQueue } = require('@anplexa/database');
 
       const emailQueueItems = await db
         .select()
@@ -69,7 +70,6 @@ export function createCampaignRoutes(container: Container): Router {
    */
   router.get('/templates', requireAdminAuth, async (req: Request, res: Response) => {
     try {
-      const emailTemplates = require('../../infrastructure/email/emailTemplates.js');
 
       const selectedTemplate = (req.query.template as string) || 'W1';
       const persona = (req.query.persona as string) || 'curious';
