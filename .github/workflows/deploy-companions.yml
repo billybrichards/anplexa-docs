@@ -12,7 +12,7 @@ env:
 
 jobs:
   deploy-dev:
-    if: github.ref == "refs/heads/develop"
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment:
       name: development
@@ -41,7 +41,7 @@ jobs:
           railway up --service companions --environment development --ci
 
   deploy-prod:
-    if: github.ref == "refs/heads/main"
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: production
