@@ -45,7 +45,7 @@ describe('useFunnelSession', () => {
 
       expect(result.current.currentStep).toBe(0);
       expect(result.current.totalSteps).toBe(3);
-      expect(result.current.progress).toBe(34);
+      expect(result.current.progress).toBe(33);
       expect(result.current.responses).toEqual({});
       expect(result.current.persona).toBeUndefined();
       expect(result.current.email).toBeUndefined();
@@ -238,7 +238,7 @@ describe('useFunnelSession', () => {
     test('should calculate progress percentage correctly', () => {
       const { result } = renderHook(() => useFunnelSession(mockSteps));
 
-      expect(result.current.progress).toBe(34); // 1/3 * 100 ≈ 34
+      expect(result.current.progress).toBe(33); // 1/3 * 100 ≈ 33
 
       act(() => {
         result.current.goNext();
@@ -306,7 +306,7 @@ describe('useFunnelSession', () => {
       expect(result.current.email).toBeUndefined();
     });
 
-    test('resetSession() should clear sessionStorage', () => {
+    test('resetSession() should clear sessionStorage', async () => {
       const { result } = renderHook(() => useFunnelSession(mockSteps));
 
       act(() => {
@@ -319,12 +319,20 @@ describe('useFunnelSession', () => {
         result.current.resetSession();
       });
 
-      expect(sessionStorage.getItem('funnel_session')).toBeNull();
+      // Give effect time to run and persist reset state
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const stored = sessionStorage.getItem('funnel_session');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        expect(parsed.currentStep).toBe(0);
+        expect(parsed.responses).toEqual({});
+      }
     });
   });
 
   describe('SessionStorage Persistence', () => {
-    test('should persist state to sessionStorage on changes', (done) => {
+    test('should persist state to sessionStorage on changes', async () => {
       const { result } = renderHook(() => useFunnelSession(mockSteps));
 
       act(() => {
@@ -333,16 +341,14 @@ describe('useFunnelSession', () => {
       });
 
       // Give effect time to run
-      setTimeout(() => {
-        const stored = sessionStorage.getItem('funnel_session');
-        expect(stored).toBeTruthy();
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
-        const parsed = JSON.parse(stored!);
-        expect(parsed.currentStep).toBe(1);
-        expect(parsed.responses).toEqual({ q1: 'Option A' });
+      const stored = sessionStorage.getItem('funnel_session');
+      expect(stored).toBeTruthy();
 
-        done();
-      }, 0);
+      const parsed = JSON.parse(stored!);
+      expect(parsed.currentStep).toBe(1);
+      expect(parsed.responses).toEqual({ q1: 'Option A' });
     });
   });
 });

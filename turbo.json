@@ -13,7 +13,7 @@
     },
     "test": {
       "cache": true,
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**", "test-results/**", ".vitest/**"]
     },
     "dev": {
       "cache": false,
