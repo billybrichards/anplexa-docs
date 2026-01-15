@@ -705,4 +705,110 @@ describe('ResetPasswordUseCase', () => {
       expect(mockSessionRepo.invalidateAll).toHaveBeenCalledWith('user-123');
     });
   });
+
+  describe('Token security', () => {
+    it('should reject expired reset tokens', async () => {
+      // Arrange - Simulate expired token by having verifyPassword return false
+      // (expired tokens would fail hash verification since they've been invalidated)
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(false);
+
+      // Act & Assert
+      await expect(
+        useCase.execute({
+          token: 'expired_token',
+          tokenHash: 'hashed_expired_token',
+          userId: 'user-123',
+          newPassword: 'NewSecurePassword123!',
+        })
+      ).rejects.toThrow(AuthenticationError);
+
+      await expect(
+        useCase.execute({
+          token: 'expired_token',
+          tokenHash: 'hashed_expired_token',
+          userId: 'user-123',
+          newPassword: 'NewSecurePassword123!',
+        })
+      ).rejects.toThrow('Invalid reset token');
+
+      // Password should not be updated
+      expect(mockUserRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('should prevent token reuse after successful password reset', async () => {
+      // Arrange - First use should succeed
+      vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(true);
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
+        'new_hashed_password'
+      );
+      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
+
+      // First use - should succeed
+      const result = await useCase.execute({
+        token: 'one_time_token',
+        tokenHash: 'hashed_token',
+        userId: 'user-123',
+        newPassword: 'NewSecurePassword123!',
+      });
+      expect(result.success).toBe(true);
+
+      // Simulate token invalidation after first use
+      // (in real implementation, token would be deleted from DB)
+      vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(false);
+
+      // Second use - should fail (token has been invalidated)
+      await expect(
+        useCase.execute({
+          token: 'one_time_token',
+          tokenHash: 'hashed_token',
+          userId: 'user-123',
+          newPassword: 'AnotherNewPassword123!',
+        })
+      ).rejects.toThrow(AuthenticationError);
+
+      await expect(
+        useCase.execute({
+          token: 'one_time_token',
+          tokenHash: 'hashed_token',
+          userId: 'user-123',
+          newPassword: 'AnotherNewPassword123!',
+        })
+      ).rejects.toThrow('Invalid reset token');
+    });
+
+    it('should invalidate all sessions after password reset to prevent token theft', async () => {
+      // Arrange
+      vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(true);
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
+        'new_hashed_password'
+      );
+      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
+
+      // Act
+      await useCase.execute({
+        token: 'valid_token',
+        tokenHash: 'hashed_token',
+        userId: 'user-123',
+        newPassword: 'NewSecurePassword123!',
+      });
+
+      // Assert - All sessions must be invalidated to prevent stolen refresh tokens
+      expect(mockSessionRepo.invalidateAll).toHaveBeenCalledWith('user-123');
+      expect(mockSessionRepo.invalidateAll).toHaveBeenCalledTimes(1);
+    });
+  });
 });

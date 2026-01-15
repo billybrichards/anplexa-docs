@@ -152,8 +152,10 @@ describe('useMessagePersistence', () => {
       await act(async () => {
         try {
           await result.current.saveMessage(mockMessage);
-        } catch {
-          // Expected
+          expect.fail('Expected saveMessage to throw an error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Error);
+          expect((e as Error).message).toBe('Save failed');
         }
       });
 
@@ -389,8 +391,10 @@ describe('useMessagePersistence', () => {
       await act(async () => {
         try {
           await result.current.saveMessage(mockMessage);
-        } catch {
-          // Expected
+          expect.fail('Expected saveMessage to throw an error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Error);
+          expect((e as Error).message).toBe('Test error');
         }
       });
 
@@ -401,6 +405,81 @@ describe('useMessagePersistence', () => {
       });
 
       expect(result.current.error).toBeNull();
+    });
+  });
+
+  describe('cache invalidation', () => {
+    it('should invalidate cache after saveMessage', async () => {
+      // Setup initial cached messages
+      const cachedMessages: Message[] = [
+        { ...mockMessage, id: 'old-msg', content: 'Old cached message' },
+      ];
+      vi.mocked(storageService.get).mockReturnValue(cachedMessages);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockMessageDTO);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({
+          conversationId,
+          userId,
+          enableLocalCache: true,
+          cacheKey: 'test-cache',
+        })
+      );
+
+      // Save a new message
+      await act(async () => {
+        await result.current.saveMessage(mockMessage);
+      });
+
+      // Verify cache was updated with the new message
+      expect(storageService.set).toHaveBeenCalledWith(
+        expect.stringContaining('messages_'),
+        expect.arrayContaining([
+          expect.objectContaining({ id: mockMessage.id }),
+        ])
+      );
+    });
+
+    it('should invalidate cache after deleteMessage', async () => {
+      // Setup initial cached messages with two messages
+      const messageToDelete: Message = {
+        id: 'msg-to-delete',
+        conversationId,
+        role: 'user',
+        content: 'Message to delete',
+        createdAt: new Date().toISOString(),
+      };
+      const cachedMessages: Message[] = [mockMessage, messageToDelete];
+      vi.mocked(storageService.get).mockReturnValue(cachedMessages);
+      vi.mocked(apiClient.delete).mockResolvedValueOnce(undefined);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({
+          conversationId,
+          userId,
+          enableLocalCache: true,
+          cacheKey: 'test-cache',
+        })
+      );
+
+      // Delete one message
+      await act(async () => {
+        await result.current.deleteMessage('msg-to-delete');
+      });
+
+      // Verify cache was updated without the deleted message
+      expect(storageService.set).toHaveBeenCalledWith(
+        expect.stringContaining('messages_'),
+        expect.arrayContaining([
+          expect.objectContaining({ id: mockMessage.id }),
+        ])
+      );
+
+      // Verify the deleted message is not in the cache
+      const setCalls = vi.mocked(storageService.set).mock.calls;
+      const lastSetCall = setCalls[setCalls.length - 1];
+      const updatedCache = lastSetCall[1] as Message[];
+      expect(updatedCache.find(m => m.id === 'msg-to-delete')).toBeUndefined();
     });
   });
 });

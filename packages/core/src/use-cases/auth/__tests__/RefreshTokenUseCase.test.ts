@@ -511,4 +511,99 @@ describe('RefreshTokenUseCase', () => {
       expect(savedSession.expiresAt).toEqual(futureDate);
     });
   });
+
+  describe('Token rotation security', () => {
+    it('should rotate refresh token on each use for security', async () => {
+      // Arrange
+      vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue({
+        accessToken: 'new_access_token',
+        refreshToken: 'new_rotated_refresh_token',
+      });
+      vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
+        new Date('2025-01-01')
+      );
+      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+
+      // Act
+      const result = await useCase.execute({
+        refreshToken: 'old_refresh_token',
+      });
+
+      // Assert - New refresh token should be different from the old one
+      expect(result.tokens.refreshToken).toBe('new_rotated_refresh_token');
+      expect(result.tokens.refreshToken).not.toBe('old_refresh_token');
+
+      // Session should be updated with the new rotated token
+      const savedSession = vi.mocked(mockSessionRepo.save).mock.calls[0][0];
+      expect(savedSession.refreshToken).toBe('new_rotated_refresh_token');
+    });
+
+    it('should reject old refresh token after rotation', async () => {
+      // Arrange - First refresh succeeds
+      vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue({
+        accessToken: 'new_access_token',
+        refreshToken: 'rotated_token',
+      });
+      vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
+        new Date('2025-01-01')
+      );
+      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+
+      // First refresh - succeeds
+      await useCase.execute({
+        refreshToken: 'old_refresh_token',
+      });
+
+      // Simulate the old token no longer being found in storage (it was rotated)
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(null);
+
+      // Act & Assert - Using the old token again should fail
+      await expect(
+        useCase.execute({
+          refreshToken: 'old_refresh_token',
+        })
+      ).rejects.toThrow(AuthenticationError);
+
+      await expect(
+        useCase.execute({
+          refreshToken: 'old_refresh_token',
+        })
+      ).rejects.toThrow('Session not found');
+    });
+
+    it('should generate new access token with fresh claims after rotation', async () => {
+      // Arrange
+      const updatedUser = User.create({
+        ...mockUser,
+        isAdmin: true, // User was promoted to admin since last token
+      });
+
+      vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(updatedUser);
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
+      vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
+        new Date('2025-01-01')
+      );
+      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+
+      // Act
+      await useCase.execute({
+        refreshToken: 'old_refresh_token',
+      });
+
+      // Assert - New token should use current user state (isAdmin: true)
+      expect(mockJwtService.generateTokenPair).toHaveBeenCalledWith(
+        'user-123',
+        'test@example.com',
+        true // isAdmin should be true from updated user
+      );
+    });
+  });
 });

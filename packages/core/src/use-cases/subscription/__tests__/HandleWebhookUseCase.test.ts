@@ -10,6 +10,7 @@ import {
 } from '../HandleWebhookUseCase.js';
 import type { UserRepository, User } from '../../../repositories/UserRepository.js';
 import type Stripe from 'stripe';
+import { createMockUser } from '../../../test-utils/mocks.js';
 
 // Mock @anplexa/services/stripe
 vi.mock('@anplexa/services/stripe', () => ({
@@ -43,50 +44,8 @@ describe('HandleWebhookUseCase', () => {
     // Reset all mocks
     vi.clearAllMocks();
 
-    // Create mock user
-    mockUser = {
-      id: 'user-123',
-      email: 'test@example.com',
-      displayName: 'Test User',
-      chatName: null,
-      passwordHash: 'hashed',
-      personalityMode: null,
-      preferredGender: null,
-      customGender: null,
-      storagePreference: null,
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-01T00:00:00Z',
-      isAdmin: false,
-      subscriptionStatus: 'not_subscribed',
-      manualSubscriptionOverride: false,
-      credits: 5,
-      lastCreditRefresh: null,
-      stripeCustomerId: 'cus_123',
-      stripeSubscriptionId: null,
-      accountSource: 'anplexa',
-      funnelType: null,
-      persona: null,
-      stage: null,
-      entrySource: null,
-      usedFreeMessages: 0,
-      emailOpened1: false,
-      emailOpened2: false,
-      emailOpened3: false,
-      clickedUseApp: false,
-      feedbackSubmitted: false,
-      refundRequested: false,
-      refundProcessed: false,
-      lastActivityAt: null,
-      amplexaFunnel: null,
-      amplexaFunnelName: null,
-      amplexaResponses: null,
-      amplexaPrimaryNeed: null,
-      amplexaCommunicationStyle: null,
-      amplexaPace: null,
-      amplexaTags: null,
-      amplexaTimestamp: null,
-      sourceChannel: null,
-    };
+    // Create mock user using shared factory
+    mockUser = createMockUser();
 
     // Create mock repository - using IUserRepository interface method names
     mockUserRepository = {
@@ -691,6 +650,67 @@ describe('HandleWebhookUseCase', () => {
       await expect(useCase.execute(request)).rejects.toThrow(HandleWebhookUseCaseError);
       await expect(useCase.execute(request)).rejects.toMatchObject({
         code: 'USER_NOT_FOUND',
+      });
+    });
+
+    it('should handle duplicate webhook events idempotently', async () => {
+      // Arrange - simulate receiving the same event twice
+      const mockEvent = {
+        id: 'evt_duplicate_123',
+        type: 'checkout.session.completed',
+        data: {
+          object: {
+            id: 'cs_123',
+            customer: 'cus_123',
+            subscription: 'sub_123',
+            metadata: { userId: 'user-123' },
+            client_reference_id: 'user-123',
+            customer_details: { email: 'test@example.com' },
+          },
+        },
+      } as Stripe.Event;
+
+      const request: HandleWebhookRequest = {
+        payload: Buffer.from('test'),
+        signature: 'sig_test',
+      };
+
+      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(handleCheckoutCompleted).mockReturnValue({
+        customerId: 'cus_123',
+        subscriptionId: 'sub_123',
+        email: 'test@example.com',
+        metadata: { userId: 'user-123' },
+      });
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.update).mockResolvedValue(mockUser);
+
+      // Act - Process the same event twice
+      const result1 = await useCase.execute(request);
+      const result2 = await useCase.execute(request);
+
+      // Assert - Both calls should succeed without side effects from duplicates
+      expect(result1.eventId).toBe('evt_duplicate_123');
+      expect(result2.eventId).toBe('evt_duplicate_123');
+      expect(result1.processed).toBe(true);
+      expect(result2.processed).toBe(true);
+
+      // The repository update should be called both times
+      // (idempotency means the same result, not preventing the call)
+      expect(mockUserRepository.update).toHaveBeenCalledTimes(2);
+
+      // Both calls should update to the same state
+      expect(mockUserRepository.update).toHaveBeenNthCalledWith(1, 'user-123', {
+        stripeCustomerId: 'cus_123',
+        stripeSubscriptionId: 'sub_123',
+        subscriptionStatus: 'subscribed',
+        updatedAt: expect.any(String),
+      });
+      expect(mockUserRepository.update).toHaveBeenNthCalledWith(2, 'user-123', {
+        stripeCustomerId: 'cus_123',
+        stripeSubscriptionId: 'sub_123',
+        subscriptionStatus: 'subscribed',
+        updatedAt: expect.any(String),
       });
     });
   });

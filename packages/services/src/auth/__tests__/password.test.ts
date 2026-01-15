@@ -184,7 +184,7 @@ describe('PasswordService', () => {
 
       expect(result.key).toMatch(/^tc_[A-Za-z0-9]{32}$/);
       expect(result.keyPrefix).toBe(result.key.substring(0, 8));
-      expect(result.keyPrefix).toBe('tc_' + result.key.substring(3, 6));
+      expect(result.keyPrefix).toBe('tc_' + result.key.substring(3, 8));
     });
 
     it('should generate different keys each time', async () => {
