@@ -17,7 +17,7 @@ vi.mock('resend', () => ({
 
 describe('Email Client', () => {
   beforeEach(() => {
-    emailClient.clearCache();
+    emailClient.clearEmailCache();
     process.env.RESEND_API_KEY = 're_test_123456789';
     process.env.RESEND_FROM_EMAIL = 'noreply@anplexa.com';
   });
@@ -46,13 +46,13 @@ describe('Email Client', () => {
 
   it('should clear cache', async () => {
     await emailClient.getFromEmail();
-    emailClient.clearCache();
+    emailClient.clearEmailCache();
     const email = await emailClient.getFromEmail();
     expect(email).toBe('noreply@anplexa.com');
   });
 
   it('should throw error if no credentials configured', async () => {
-    emailClient.clearCache();
+    emailClient.clearEmailCache();
     delete process.env.RESEND_API_KEY;
     delete process.env.RESEND_FROM_EMAIL;
     delete process.env.REPLIT_CONNECTORS_HOSTNAME;
@@ -181,7 +181,7 @@ describe('Email Templates', () => {
 
 describe('Email Service (Resend)', () => {
   beforeEach(() => {
-    emailClient.clearCache();
+    emailClient.clearEmailCache();
     process.env.RESEND_API_KEY = 're_test_123456789';
     process.env.RESEND_FROM_EMAIL = 'noreply@anplexa.com';
   });
@@ -271,7 +271,7 @@ describe('Email Service (Resend)', () => {
 
 describe('Email Integration', () => {
   beforeEach(() => {
-    emailClient.clearCache();
+    emailClient.clearEmailCache();
     process.env.RESEND_API_KEY = 're_test_123456789';
     process.env.RESEND_FROM_EMAIL = 'noreply@anplexa.com';
   });
