@@ -159,7 +159,7 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
         try {
           const parsed = JSON.parse(storedMessages);
           const messages = Array.isArray(parsed)
-            ? parsed.map((msg: any) => ({
+            ? parsed.map((msg: Omit<Message, 'createdAt'> & { createdAt: string }) => ({
                 ...msg,
                 createdAt: new Date(msg.createdAt),
               }))

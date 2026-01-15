@@ -34,7 +34,7 @@ const FUNNEL_STEPS = [
   },
   {
     id: 'q3',
-    text: 'What's your ideal pace?',
+    text: "What's your ideal pace?",
     options: [
       { text: 'Slow & steady', emoji: '🐢' },
       { text: 'Flexible', emoji: '🌊' },

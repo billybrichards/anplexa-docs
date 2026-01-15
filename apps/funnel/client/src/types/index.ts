@@ -55,7 +55,7 @@ export interface FunnelSessionState {
   currentStep: number;
   totalSteps: number;
   progress: number;
-  responses: Record<string, any>;
+  responses: Record<string, string>;
   persona?: Persona;
   email?: string;
 }
