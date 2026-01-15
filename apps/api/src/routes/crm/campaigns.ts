@@ -12,9 +12,8 @@ import { Router, type Request, type Response } from 'express';
 import { desc } from 'drizzle-orm';
 import type { Container, EmailScheduler } from '../../container.js';
 import { requireAdminAuth } from './middleware.js';
-import { renderEmailQueuePage, renderTemplatesPage } from './templates.js';
+import { renderEmailQueuePage } from './templates.js';
 import { emailQueue } from '@anplexa/database';
-import * as emailTemplates from '../../infrastructure/email/emailTemplates.js';
 
 export function createCampaignRoutes(container: Container): Router {
   const router = Router();
@@ -67,26 +66,12 @@ export function createCampaignRoutes(container: Container): Router {
   /**
    * GET /crm/templates
    * Display email templates with preview
+   * TODO: Implement email templates module
    */
-  router.get('/templates', requireAdminAuth, async (req: Request, res: Response) => {
+  router.get('/templates', requireAdminAuth, async (_req: Request, res: Response) => {
     try {
-
-      const selectedTemplate = (req.query.template as string) || 'W1';
-      const persona = (req.query.persona as string) || 'curious';
-
-      const preview = emailTemplates.getEmailPreview(selectedTemplate, 'preview-user', persona);
-      const htmlBase64 = Buffer.from(preview.html).toString('base64');
-      const templateList = emailTemplates.TEMPLATE_LIST;
-
-      const html = renderTemplatesPage({
-        selectedTemplate,
-        persona,
-        preview,
-        htmlBase64,
-        templateList,
-      });
-
-      res.send(html);
+      // Email templates module not yet implemented
+      res.status(501).send('Email templates feature coming soon');
     } catch (error) {
       console.error('CRM templates page error:', error);
       res.status(500).send('Failed to load templates');
