@@ -634,7 +634,7 @@ describe('useMessagePersistence', () => {
 
     it('should abort previous request when same conversation is loaded again', async () => {
       const abortSignals: AbortSignal[] = [];
-      let resolvers: ((value: MessageDTO[]) => void)[] = [];
+      const resolvers: ((value: MessageDTO[]) => void)[] = [];
 
       vi.mocked(apiClient.get).mockImplementation(
         (_url: string, signal?: AbortSignal) => {
