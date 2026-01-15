@@ -2,7 +2,7 @@
 nixPkgs = ["nodejs_18", "pnpm"]
 
 [phases.install]
-cmds = ["cd ../.. && pnpm install --frozen-lockfile"]
+cmds = ["cd ../.. && pnpm install --frozen-lockfile --no-strict-peer-deps"]
 
 [phases.build]
 cmds = ["cd ../.. && pnpm build --filter=@anplexa/funnel"]
