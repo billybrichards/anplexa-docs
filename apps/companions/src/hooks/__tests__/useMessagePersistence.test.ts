@@ -678,13 +678,17 @@ describe('useMessagePersistence', () => {
       // Now we have two requests
       expect(abortSignals.length).toBe(2);
 
-      // Complete the second request
+      // Complete both requests to avoid hanging
       await act(async () => {
+        // Resolve first request (it wasn't aborted)
+        resolvers[0]([mockMessageDTO]);
+        // Resolve second request
         resolvers[1]([mockMessageDTO]);
-        await Promise.allSettled([promise1!, promise2!]);
+        // Wait for both to complete
+        await Promise.all([promise1!, promise2!]);
       });
 
-        // The hook should handle this gracefully
+        // The hook should handle multiple concurrent requests gracefully
         expect(result.current.isLoading).toBe(false);
       },
       10000
