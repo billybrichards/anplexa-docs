@@ -2,7 +2,8 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=@anplexa/api",
+    "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=@anplexa/api...",
+    "nixpacksConfigPath": "apps/api/nixpacks.toml",
     "watchPatterns": [
       "apps/api/**",
       "packages/core/**",
@@ -12,7 +13,7 @@
     ]
   },
   "deploy": {
-    "startCommand": "node dist/index.js",
+    "startCommand": "cd apps/api && node dist/index.js",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",

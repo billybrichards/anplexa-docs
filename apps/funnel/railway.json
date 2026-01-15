@@ -3,12 +3,13 @@
   "build": {
     "builder": "NIXPACKS",
     "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=@anplexa/funnel",
+    "nixpacksConfigPath": "apps/funnel/nixpacks.toml",
     "watchPatterns": [
       "apps/funnel/**"
     ]
   },
   "deploy": {
-    "startCommand": "pnpm preview --port $PORT --host 0.0.0.0",
+    "startCommand": "cd apps/funnel && pnpm preview --port ${PORT:-3002} --host 0.0.0.0",
     "healthcheckPath": "/",
     "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE",

@@ -1,11 +1,16 @@
+# Railway nixpacks configuration for @anplexa/companions
+# This file is used when Railway deploys from monorepo root
+
 [phases.setup]
-nixPkgs = ["nodejs_18", "pnpm"]
+nixPkgs = ["nodejs_20", "pnpm"]
 
 [phases.install]
 cmds = ["pnpm install --frozen-lockfile"]
 
 [phases.build]
-cmds = ["pnpm build --filter=@anplexa/companions"]
+# Build only companions and its dependencies (not docs which may have different Node requirements)
+cmds = ["pnpm build --filter=@anplexa/companions..."]
 
 [start]
-cmd = "pnpm start"
+# Run Next.js from the apps/companions directory
+cmd = "cd apps/companions && pnpm start"
