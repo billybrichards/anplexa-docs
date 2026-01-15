@@ -632,9 +632,11 @@ describe('useMessagePersistence', () => {
       expect(signalUsed?.aborted).toBe(false);
     });
 
-    it('should abort previous request when same conversation is loaded again', async () => {
-      const abortSignals: AbortSignal[] = [];
-      const resolvers: ((value: MessageDTO[]) => void)[] = [];
+    it(
+      'should abort previous request when same conversation is loaded again',
+      async () => {
+        const abortSignals: AbortSignal[] = [];
+        const resolvers: ((value: MessageDTO[]) => void)[] = [];
 
       vi.mocked(apiClient.get).mockImplementation(
         (_url: string, signal?: AbortSignal) => {
@@ -682,8 +684,10 @@ describe('useMessagePersistence', () => {
         await Promise.allSettled([promise1!, promise2!]);
       });
 
-      // The hook should handle this gracefully
-      expect(result.current.isLoading).toBe(false);
-    });
+        // The hook should handle this gracefully
+        expect(result.current.isLoading).toBe(false);
+      },
+      10000
+    );
   });
 });

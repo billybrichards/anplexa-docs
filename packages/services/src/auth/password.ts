@@ -145,7 +145,7 @@ export class PasswordService {
     }
 
     if (password.length < this.minLength) {
-      errors.push(`Password must be at least ${this.minLength} characters`);
+      errors.push(`Password must be at least ${this.minLength} characters long`);
     } else {
       score += 20;
     }
