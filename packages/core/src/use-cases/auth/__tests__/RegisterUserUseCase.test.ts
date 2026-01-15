@@ -48,22 +48,44 @@ describe('RegisterUserUseCase', () => {
   });
 
   beforeEach(() => {
-    // Setup mock repositories
+    // Setup mock repositories with method names matching the interfaces
     mockUserRepo = {
+      // Query methods (new naming convention)
+      getById: vi.fn(),
+      getByEmail: vi.fn(),
+      getByStripeCustomerId: vi.fn(),
+      getByStripeSubscriptionId: vi.fn(),
+      getAll: vi.fn(),
+      // Legacy aliases
       findById: vi.fn(),
       findByEmail: vi.fn(),
-      save: vi.fn(),
-      delete: vi.fn(),
+      findByStripeCustomerId: vi.fn(),
+      findByStripeSubscriptionId: vi.fn(),
       emailExists: vi.fn(),
+      // Command methods
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      save: vi.fn(),
+      // Stripe methods
+      updateStripeCustomerId: vi.fn(),
+      updateSubscriptionStatus: vi.fn(),
     };
 
     mockSessionRepo = {
+      // New methods
+      getByUserId: vi.fn(),
+      getByRefreshToken: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      deleteExpired: vi.fn(),
+      // Legacy aliases
       findById: vi.fn(),
       findActiveByUserId: vi.fn(),
+      findByRefreshToken: vi.fn(),
       save: vi.fn(),
       invalidate: vi.fn(),
       invalidateAll: vi.fn(),
-      findByRefreshToken: vi.fn(),
     };
 
     // Setup mock services
@@ -92,7 +114,7 @@ describe('RegisterUserUseCase', () => {
   describe('Success scenarios', () => {
     it('should successfully register a new user with all fields', async () => {
       // Arrange
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -105,8 +127,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       const result = await useCase.execute({
@@ -125,12 +147,12 @@ describe('RegisterUserUseCase', () => {
         createdAt: mockUser.createdAt,
       });
       expect(result.tokens).toEqual(mockTokens);
-      expect(mockUserRepo.findByEmail).toHaveBeenCalledWith('test@example.com');
+      expect(mockUserRepo.getByEmail).toHaveBeenCalledWith('test@example.com');
       expect(mockPasswordService.hashPassword).toHaveBeenCalledWith(
         'SecurePassword123!'
       );
-      expect(mockUserRepo.save).toHaveBeenCalled();
-      expect(mockSessionRepo.save).toHaveBeenCalled();
+      expect(mockUserRepo.create).toHaveBeenCalled();
+      expect(mockSessionRepo.create).toHaveBeenCalled();
     });
 
     it('should successfully register a user without display name', async () => {
@@ -139,7 +161,7 @@ describe('RegisterUserUseCase', () => {
         ...mockUser,
         displayName: null,
       });
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -152,8 +174,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(userWithoutName);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(userWithoutName);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       const result = await useCase.execute({
@@ -163,12 +185,12 @@ describe('RegisterUserUseCase', () => {
 
       // Assert
       expect(result.user.displayName).toBeNull();
-      expect(mockUserRepo.save).toHaveBeenCalled();
+      expect(mockUserRepo.create).toHaveBeenCalled();
     });
 
     it('should normalize email to lowercase and trim whitespace', async () => {
       // Arrange
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -181,8 +203,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       await useCase.execute({
@@ -190,15 +212,15 @@ describe('RegisterUserUseCase', () => {
         password: 'SecurePassword123!',
       });
 
-      // Assert - Check that findByEmail was called with normalized email
-      expect(mockUserRepo.findByEmail).toHaveBeenCalledWith('test@example.com');
-      const savedUser = vi.mocked(mockUserRepo.save).mock.calls[0][0];
+      // Assert - Check that getByEmail was called with normalized email
+      expect(mockUserRepo.getByEmail).toHaveBeenCalledWith('test@example.com');
+      const savedUser = vi.mocked(mockUserRepo.create).mock.calls[0][0];
       expect(savedUser.email).toBe('test@example.com');
     });
 
     it('should trim display name whitespace', async () => {
       // Arrange
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -211,8 +233,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       await useCase.execute({
@@ -222,13 +244,13 @@ describe('RegisterUserUseCase', () => {
       });
 
       // Assert
-      const savedUser = vi.mocked(mockUserRepo.save).mock.calls[0][0];
+      const savedUser = vi.mocked(mockUserRepo.create).mock.calls[0][0];
       expect(savedUser.displayName).toBe('Test User');
     });
 
     it('should create user with default 5 credits', async () => {
       // Arrange
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -241,8 +263,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       const result = await useCase.execute({
@@ -254,9 +276,9 @@ describe('RegisterUserUseCase', () => {
       expect(result.user.credits).toBe(5);
     });
 
-    it('should create an active session with correct expiry', async () => {
+    it('should create a session with correct data', async () => {
       // Arrange
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -269,8 +291,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       await useCase.execute({
@@ -278,11 +300,11 @@ describe('RegisterUserUseCase', () => {
         password: 'SecurePassword123!',
       });
 
-      // Assert
-      const savedSession = vi.mocked(mockSessionRepo.save).mock.calls[0][0];
+      // Assert - CreateSessionData has userId, refreshToken, and expiresAt (as ISO string)
+      const savedSession = vi.mocked(mockSessionRepo.create).mock.calls[0][0];
       expect(savedSession.userId).toBe('user-123');
       expect(savedSession.refreshToken).toBe('refresh_token_123');
-      expect(savedSession.isActive).toBe(true);
+      expect(savedSession.expiresAt).toBe('2024-12-31T00:00:00.000Z');
     });
   });
 
@@ -303,7 +325,7 @@ describe('RegisterUserUseCase', () => {
         })
       ).rejects.toThrow('Invalid email format');
 
-      expect(mockUserRepo.findByEmail).not.toHaveBeenCalled();
+      expect(mockUserRepo.getByEmail).not.toHaveBeenCalled();
     });
 
     it('should throw ValidationError for missing email', async () => {
@@ -315,7 +337,7 @@ describe('RegisterUserUseCase', () => {
         })
       ).rejects.toThrow(ValidationError);
 
-      expect(mockUserRepo.findByEmail).not.toHaveBeenCalled();
+      expect(mockUserRepo.getByEmail).not.toHaveBeenCalled();
     });
 
     it('should throw ValidationError for missing password', async () => {
@@ -386,7 +408,7 @@ describe('RegisterUserUseCase', () => {
 
     it('should throw ValidationError if email already exists', async () => {
       // Arrange
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
         errors: [],
@@ -407,7 +429,7 @@ describe('RegisterUserUseCase', () => {
         })
       ).rejects.toThrow('Email already registered');
 
-      expect(mockUserRepo.save).not.toHaveBeenCalled();
+      expect(mockUserRepo.create).not.toHaveBeenCalled();
     });
   });
 
@@ -419,7 +441,7 @@ describe('RegisterUserUseCase', () => {
         ...mockUser,
         displayName: maxLengthName,
       });
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -432,8 +454,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(userWithMaxName);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(userWithMaxName);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       const result = await useCase.execute({
@@ -453,7 +475,7 @@ describe('RegisterUserUseCase', () => {
         ...mockUser,
         email: specialEmail,
       });
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -466,8 +488,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(userWithSpecialEmail);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(userWithSpecialEmail);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       const result = await useCase.execute({
@@ -485,7 +507,7 @@ describe('RegisterUserUseCase', () => {
         ...mockUser,
         displayName: null,
       });
-      vi.mocked(mockUserRepo.findByEmail).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getByEmail).mockResolvedValue(null);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
       vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
         valid: true,
@@ -498,8 +520,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(userWithoutName);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(userWithoutName);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       await useCase.execute({
@@ -509,13 +531,13 @@ describe('RegisterUserUseCase', () => {
       });
 
       // Assert
-      const savedUser = vi.mocked(mockUserRepo.save).mock.calls[0][0];
+      const savedUser = vi.mocked(mockUserRepo.create).mock.calls[0][0];
       expect(savedUser.displayName).toBeNull();
     });
 
     it('should handle concurrent registration attempts with same email', async () => {
       // Arrange
-      vi.mocked(mockUserRepo.findByEmail)
+      vi.mocked(mockUserRepo.getByEmail)
         .mockResolvedValueOnce(null)
         .mockResolvedValueOnce(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue('hashed_password');
@@ -530,8 +552,8 @@ describe('RegisterUserUseCase', () => {
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2024-12-31')
       );
-      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
-      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.create).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.create).mockResolvedValue(mockSession);
 
       // Act
       const promise1 = useCase.execute({

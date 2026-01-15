@@ -53,22 +53,44 @@ describe('ResetPasswordUseCase', () => {
   ];
 
   beforeEach(() => {
-    // Setup mock repositories
+    // Setup mock repositories with method names matching the interfaces
     mockUserRepo = {
+      // Query methods (new naming convention)
+      getById: vi.fn(),
+      getByEmail: vi.fn(),
+      getByStripeCustomerId: vi.fn(),
+      getByStripeSubscriptionId: vi.fn(),
+      getAll: vi.fn(),
+      // Legacy aliases
       findById: vi.fn(),
       findByEmail: vi.fn(),
-      save: vi.fn(),
-      delete: vi.fn(),
+      findByStripeCustomerId: vi.fn(),
+      findByStripeSubscriptionId: vi.fn(),
       emailExists: vi.fn(),
+      // Command methods
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      save: vi.fn(),
+      // Stripe methods
+      updateStripeCustomerId: vi.fn(),
+      updateSubscriptionStatus: vi.fn(),
     };
 
     mockSessionRepo = {
+      // New methods
+      getByUserId: vi.fn(),
+      getByRefreshToken: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      deleteExpired: vi.fn(),
+      // Legacy aliases
       findById: vi.fn(),
       findActiveByUserId: vi.fn(),
+      findByRefreshToken: vi.fn(),
       save: vi.fn(),
       invalidate: vi.fn(),
       invalidateAll: vi.fn(),
-      findByRefreshToken: vi.fn(),
     };
 
     // Setup mock services
@@ -93,7 +115,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -116,7 +138,7 @@ describe('ResetPasswordUseCase', () => {
         'valid_reset_token',
         'hashed_token'
       );
-      expect(mockUserRepo.findById).toHaveBeenCalledWith('user-123');
+      expect(mockUserRepo.getById).toHaveBeenCalledWith('user-123');
       expect(mockPasswordService.hashPassword).toHaveBeenCalledWith(
         'NewSecurePassword123!'
       );
@@ -131,7 +153,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -158,7 +180,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -186,7 +208,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -212,7 +234,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -456,7 +478,7 @@ describe('ResetPasswordUseCase', () => {
         })
       ).rejects.toThrow('Invalid reset token');
 
-      expect(mockUserRepo.findById).not.toHaveBeenCalled();
+      expect(mockUserRepo.getById).not.toHaveBeenCalled();
       expect(mockUserRepo.save).not.toHaveBeenCalled();
     });
 
@@ -467,7 +489,7 @@ describe('ResetPasswordUseCase', () => {
         errors: [],
       });
       vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(true);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(null);
 
       // Act & Assert
       await expect(
@@ -510,7 +532,7 @@ describe('ResetPasswordUseCase', () => {
         })
       ).rejects.toThrow(AuthenticationError);
 
-      expect(mockUserRepo.findById).not.toHaveBeenCalled();
+      expect(mockUserRepo.getById).not.toHaveBeenCalled();
     });
   });
 
@@ -523,7 +545,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -550,7 +572,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -575,7 +597,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -607,7 +629,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(adminUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(adminUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -635,7 +657,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -663,7 +685,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );

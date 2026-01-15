@@ -56,7 +56,8 @@ describe('SessionRepository', () => {
       expect(session.id).toBeTruthy();
       expect(session.userId).toBe(sessionData.userId);
       expect(session.refreshToken).toBe(sessionData.refreshToken);
-      expect(session.expiresAt).toBe(sessionData.expiresAt);
+      // Session entity converts expiresAt to Date object, compare as ISO strings
+      expect(session.expiresAt.toISOString()).toBe(sessionData.expiresAt);
       expect(session.createdAt).toBeTruthy();
     });
 
@@ -77,7 +78,7 @@ describe('SessionRepository', () => {
     });
 
     it('should set createdAt timestamp automatically', async () => {
-      const beforeCreate = new Date().toISOString();
+      const beforeCreate = new Date();
 
       const sessionData: CreateSessionData = {
         userId: 'user-123',
@@ -86,11 +87,12 @@ describe('SessionRepository', () => {
       };
 
       const session = await repository.create(sessionData);
-      const afterCreate = new Date().toISOString();
+      const afterCreate = new Date();
 
       expect(session.createdAt).toBeTruthy();
-      expect(session.createdAt >= beforeCreate).toBe(true);
-      expect(session.createdAt <= afterCreate).toBe(true);
+      // Session entity stores createdAt as Date object, compare as timestamps
+      expect(session.createdAt.getTime()).toBeGreaterThanOrEqual(beforeCreate.getTime());
+      expect(session.createdAt.getTime()).toBeLessThanOrEqual(afterCreate.getTime());
     });
 
     it('should throw error when database insertion fails', async () => {
@@ -420,7 +422,8 @@ describe('SessionRepository', () => {
 
       const session = await repository.create(sessionData);
 
-      expect(session.expiresAt).toBe(isoDate);
+      // Session entity converts expiresAt to Date object, compare as ISO strings
+      expect(session.expiresAt.toISOString()).toBe(isoDate);
     });
 
     it('should maintain data integrity across multiple operations', async () => {

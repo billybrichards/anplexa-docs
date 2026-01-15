@@ -126,10 +126,9 @@ export class UserRepository implements IUserRepository {
       // Note: Using 'as any' because Drizzle's $inferInsert only includes notNull() fields
       // but the schema accepts all optional fields
 
-      // Convert booleans to integers for SQLite compatibility (0/1 instead of false/true)
-      const isAdminValue = userData.isAdmin ? 1 : 0;
-      const manualOverrideValue = 0;
-
+      // Build the user data object - use 'as any' to allow integer values
+      // for boolean fields (SQLite compatibility: 0/1 instead of false/true)
+      // All boolean fields must be explicitly set to integers to avoid SQLite binding errors
       const newUser = {
         id: userData.id,
         email: userData.email,
@@ -138,7 +137,7 @@ export class UserRepository implements IUserRepository {
         chatName: userData.chatName ?? null,
         personalityMode: userData.personalityMode ?? 'nurturing',
         storagePreference: userData.storagePreference ?? 'cloud',
-        isAdmin: isAdminValue,
+        isAdmin: userData.isAdmin ? 1 : 0,
         subscriptionStatus: userData.subscriptionStatus ?? 'not_subscribed',
         credits: userData.credits ?? 0,
         stripeCustomerId: userData.stripeCustomerId ?? null,
@@ -147,9 +146,17 @@ export class UserRepository implements IUserRepository {
         sourceChannel: userData.sourceChannel ?? null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        manualSubscriptionOverride: manualOverrideValue,
+        manualSubscriptionOverride: 0,
         lastCreditRefresh: null,
-      } as NewUser;
+        // CRM boolean fields - explicitly set to integers for SQLite compatibility
+        emailOpened1: 0,
+        emailOpened2: 0,
+        emailOpened3: 0,
+        clickedUseApp: 0,
+        feedbackSubmitted: 0,
+        refundRequested: 0,
+        refundProcessed: 0,
+      } as any;
 
       // Insert user
       await this.db.insert(users).values(newUser);
@@ -194,9 +201,30 @@ export class UserRepository implements IUserRepository {
         updatedAt: new Date().toISOString(),
       };
 
-      // Remove undefined values to avoid Drizzle issues
+      // List of boolean fields that need to be converted to integers for SQLite
+      const booleanFields = [
+        'isAdmin',
+        'manualSubscriptionOverride',
+        'emailOpened1',
+        'emailOpened2',
+        'emailOpened3',
+        'clickedUseApp',
+        'feedbackSubmitted',
+        'refundRequested',
+        'refundProcessed',
+      ];
+
+      // Remove undefined values and convert booleans to integers for SQLite compatibility
       const cleanedUpdateData = Object.fromEntries(
-        Object.entries(updateData).filter(([_, value]) => value !== undefined)
+        Object.entries(updateData)
+          .filter(([_, value]) => value !== undefined)
+          .map(([key, value]) => {
+            // Convert boolean fields to integers (0/1)
+            if (booleanFields.includes(key) && typeof value === 'boolean') {
+              return [key, value ? 1 : 0];
+            }
+            return [key, value];
+          })
       );
 
       // Update user

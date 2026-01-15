@@ -61,17 +61,18 @@ export function usePreferences(): UsePreferencesReturn {
 
   // Update preferences and persist to storage
   const updatePreferences = useCallback((updates: Partial<CompanionPreferences>) => {
-    try {
-      setPreferences((prev) => {
-        const updated = { ...prev, ...updates };
-        if (typeof window !== 'undefined') {
+    setPreferences((prev) => {
+      const updated = { ...prev, ...updates };
+      // Persist to storage outside of the state update to properly handle errors
+      if (typeof window !== 'undefined') {
+        try {
           localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(updated));
+        } catch (error) {
+          console.error('Failed to update preferences:', error);
         }
-        return updated;
-      });
-    } catch (error) {
-      console.error('Failed to update preferences:', error);
-    }
+      }
+      return updated;
+    });
   }, []);
 
   // Reset to default preferences

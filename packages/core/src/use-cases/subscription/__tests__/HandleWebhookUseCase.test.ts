@@ -88,16 +88,17 @@ describe('HandleWebhookUseCase', () => {
       sourceChannel: null,
     };
 
-    // Create mock repository
+    // Create mock repository - using IUserRepository interface method names
     mockUserRepository = {
-      findById: vi.fn(),
-      findByEmail: vi.fn(),
-      findByStripeCustomerId: vi.fn(),
-      findByStripeSubscriptionId: vi.fn(),
+      getById: vi.fn(),
+      getByEmail: vi.fn(),
+      getByStripeCustomerId: vi.fn(),
+      getByStripeSubscriptionId: vi.fn(),
+      getAll: vi.fn(),
+      create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
       updateSubscriptionStatus: vi.fn(),
-      updateStripeCustomerId: vi.fn(),
-      updateCredits: vi.fn(),
     };
 
     // Create use case instance
@@ -134,7 +135,7 @@ describe('HandleWebhookUseCase', () => {
         email: 'test@example.com',
         metadata: { userId: 'user-123' },
       });
-      vi.mocked(mockUserRepository.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.update).mockResolvedValue(mockUser);
 
       // Act
@@ -188,7 +189,7 @@ describe('HandleWebhookUseCase', () => {
         currentPeriodEnd: new Date(),
         metadata: { userId: 'user-123' },
       });
-      vi.mocked(mockUserRepository.findByStripeCustomerId).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getByStripeCustomerId).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(mockUser);
 
       // Act
@@ -243,7 +244,7 @@ describe('HandleWebhookUseCase', () => {
         canceledAt: null,
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeSubscriptionId).mockResolvedValue(userWithSub);
+      vi.mocked(mockUserRepository.getByStripeSubscriptionId).mockResolvedValue(userWithSub);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(userWithSub);
 
       // Act
@@ -294,7 +295,7 @@ describe('HandleWebhookUseCase', () => {
         canceledAt: new Date(),
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeSubscriptionId).mockResolvedValue(userWithSub);
+      vi.mocked(mockUserRepository.getByStripeSubscriptionId).mockResolvedValue(userWithSub);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(userWithSub);
 
       // Act
@@ -351,7 +352,7 @@ describe('HandleWebhookUseCase', () => {
         paidAt: new Date(),
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeCustomerId).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getByStripeCustomerId).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.update).mockResolvedValue(mockUser);
 
       // Act
@@ -366,7 +367,6 @@ describe('HandleWebhookUseCase', () => {
       });
 
       expect(mockUserRepository.update).toHaveBeenCalledWith('user-123', {
-        lastActivityAt: expect.any(String),
         updatedAt: expect.any(String),
       });
     });
@@ -404,7 +404,7 @@ describe('HandleWebhookUseCase', () => {
         nextPaymentAttempt: new Date(Date.now() + 86400000),
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeCustomerId).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getByStripeCustomerId).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(mockUser);
 
       // Act
@@ -528,8 +528,8 @@ describe('HandleWebhookUseCase', () => {
         currentPeriodEnd: new Date(),
         metadata: { userId: 'user-123' },
       });
-      vi.mocked(mockUserRepository.findByStripeCustomerId).mockResolvedValue(null);
-      vi.mocked(mockUserRepository.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getByStripeCustomerId).mockResolvedValue(null);
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(mockUser);
 
       // Act
@@ -577,7 +577,7 @@ describe('HandleWebhookUseCase', () => {
         canceledAt: null,
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeSubscriptionId).mockResolvedValue(userWithSub);
+      vi.mocked(mockUserRepository.getByStripeSubscriptionId).mockResolvedValue(userWithSub);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(userWithSub);
 
       // Act
@@ -685,7 +685,7 @@ describe('HandleWebhookUseCase', () => {
         email: 'test@example.com',
         metadata: { userId: 'user-123' },
       });
-      vi.mocked(mockUserRepository.findById).mockResolvedValue(null);
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(null);
 
       // Act & Assert
       await expect(useCase.execute(request)).rejects.toThrow(HandleWebhookUseCaseError);
