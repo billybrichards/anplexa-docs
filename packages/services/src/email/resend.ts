@@ -1,5 +1,5 @@
-import { getResendClient, getFromEmail } from './client.js';
-import type { EmailTemplate } from './templates.js';
+import { getResendClient, getFromEmail } from './client';
+import type { EmailTemplate } from './templates';
 
 export interface SendEmailOptions {
   to: string;

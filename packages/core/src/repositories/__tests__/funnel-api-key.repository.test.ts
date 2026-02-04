@@ -9,8 +9,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { funnelApiKeys } from '@anplexa/database/schema/sqlite';
-import { FunnelApiKeyRepository } from '../funnel-api-key.repository.js';
-import type { CreateFunnelApiKeyData } from '../interfaces/funnel-api-key.repository.interface.js';
+import { FunnelApiKeyRepository } from '../funnel-api-key.repository';
+import type { CreateFunnelApiKeyData } from '../interfaces/funnel-api-key.repository.interface';
 
 describe('FunnelApiKeyRepository', () => {
   let sqliteDb: Database.Database;

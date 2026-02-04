@@ -14,7 +14,7 @@ import {
   ConversationRepository,
   ConversationNotFoundError,
   ConversationRepositoryError,
-} from '../conversation.repository.js';
+} from '../conversation.repository';
 import type { Database as DatabaseType } from '@anplexa/database';
 
 describe('ConversationRepository', () => {

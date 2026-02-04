@@ -1,4 +1,4 @@
-import { getUncachableStripeClient } from './client.js';
+import { getUncachableStripeClient } from './client';
 import Stripe from 'stripe';
 
 /**

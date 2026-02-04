@@ -9,7 +9,7 @@ export {
   CreateCheckoutUseCaseError,
   type CreateCheckoutRequest,
   type CreateCheckoutResponse,
-} from './CreateCheckoutUseCase.js';
+} from './CreateCheckoutUseCase';
 
 export {
   UpdateSubscriptionUseCase,
@@ -17,11 +17,11 @@ export {
   type UpdateSubscriptionRequest,
   type UpdateSubscriptionResponse,
   type SubscriptionAction,
-} from './UpdateSubscriptionUseCase.js';
+} from './UpdateSubscriptionUseCase';
 
 export {
   HandleWebhookUseCase,
   HandleWebhookUseCaseError,
   type HandleWebhookRequest,
   type HandleWebhookResponse,
-} from './HandleWebhookUseCase.js';
+} from './HandleWebhookUseCase';

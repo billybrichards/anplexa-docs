@@ -66,3 +66,10 @@ export type {
   IFunnelApiKeyRepository,
   CreateFunnelApiKeyData,
 } from './funnel-api-key.repository.interface';
+
+// Companion Persona Repository
+export type {
+  ICompanionPersonaRepository,
+  CreateCompanionPersonaData,
+  UpdateCompanionPersonaData,
+} from './companion-persona.repository.interface';

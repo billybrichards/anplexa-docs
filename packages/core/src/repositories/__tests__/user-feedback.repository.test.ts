@@ -9,8 +9,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { userFeedback, type UserFeedback } from '@anplexa/database/schema/sqlite';
-import { UserFeedbackRepository } from '../user-feedback.repository.js';
-import type { CreateUserFeedbackData } from '../interfaces/user-feedback.repository.interface.js';
+import { UserFeedbackRepository } from '../user-feedback.repository';
+import type { CreateUserFeedbackData } from '../interfaces/user-feedback.repository.interface';
 
 describe('UserFeedbackRepository', () => {
   let sqliteDb: Database.Database;

@@ -6,7 +6,7 @@
  * outer layers (infrastructure) implement it.
  */
 
-import { Session } from '../../domain/entities/Session.js';
+import { Session } from '../../domain/entities/Session';
 
 // Re-export Session for use by other modules
 export { Session };

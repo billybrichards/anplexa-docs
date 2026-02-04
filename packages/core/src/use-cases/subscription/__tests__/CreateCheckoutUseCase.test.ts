@@ -7,8 +7,8 @@ import {
   CreateCheckoutUseCase,
   CreateCheckoutUseCaseError,
   type CreateCheckoutRequest,
-} from '../CreateCheckoutUseCase.js';
-import type { UserRepository, User } from '../../../repositories/UserRepository.js';
+} from '../CreateCheckoutUseCase';
+import type { UserRepository, User } from '../../../repositories/UserRepository';
 import type Stripe from 'stripe';
 
 // Mock @anplexa/services/stripe

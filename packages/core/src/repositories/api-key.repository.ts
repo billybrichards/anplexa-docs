@@ -10,7 +10,7 @@ import { apiKeys, type ApiKey, eq } from '@anplexa/database';
 import type {
   IApiKeyRepository,
   CreateApiKeyData,
-} from './interfaces/api-key.repository.interface.js';
+} from './interfaces/api-key.repository.interface';
 
 export class ApiKeyRepository implements IApiKeyRepository {
   constructor(private readonly db: Database) {}
@@ -23,14 +23,14 @@ export class ApiKeyRepository implements IApiKeyRepository {
       // Prepare API key data
       const newApiKey = {
         id: data.id,
-        userId: data.userId,
+        userId: data.userId ?? null,
         name: data.name,
         keyHash: data.keyHash,
         keyPrefix: data.keyPrefix,
         isActive: 1 as any, // Use 1 for SQLite compatibility (boolean mode)
         createdAt: new Date().toISOString(),
         lastUsedAt: null,
-        createdBy: data.userId, // Set createdBy to the userId
+        createdBy: data.userId ?? null, // Set createdBy to the userId
       } as any;
 
       // Insert API key

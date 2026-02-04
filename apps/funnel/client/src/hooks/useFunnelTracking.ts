@@ -144,7 +144,7 @@ export function useFunnelTracking(): UseFunnelTrackingReturn {
     trackAnalytics.personaSelected(persona);
   }, []);
 
-  const trackEmailSubmitted = useCallback((email: string, path: 'free' | 'paid') => {
+  const trackEmailSubmitted = useCallback((_email: string, path: 'free' | 'paid') => {
     trackAnalytics.emailSubmitted('A', path);
   }, []);
 

@@ -32,7 +32,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { apiClient } from '../lib/adapters/api/api-client';
 import { storageService } from '../lib/adapters/storage/storage-service';
-import type { Message } from '../lib/domain/entities/Message';
+import { Message } from '@anplexa/core/domain/entities';
 import type { MessageDTO } from '@anplexa/contracts';
 
 /**
@@ -119,9 +119,17 @@ export function useMessagePersistence(
         if (options.enableLocalCache && options.cacheKey) {
           const cacheKey = `messages_${options.cacheKey}`;
           const cached = storageService.get<Message[]>(cacheKey) || [];
+          // Create Message instance from response
+          const updatedMessage = new Message(
+            response.id,
+            response.conversationId,
+            response.role,
+            response.content,
+            new Date(response.createdAt)
+          );
           const updated = [
             ...cached.filter(m => m.id !== message.id),
-            { ...message, ...response } as Message,
+            updatedMessage,
           ];
           storageService.set(cacheKey, updated);
         }
@@ -176,13 +184,15 @@ export function useMessagePersistence(
         );
 
         // Transform DTOs to Message entities
-        const messages: Message[] = response.map((dto: MessageDTO) => ({
-          id: dto.id,
-          conversationId: dto.conversationId,
-          role: dto.role,
-          content: dto.content,
-          createdAt: dto.createdAt,
-        }));
+        const messages: Message[] = response.map((dto: MessageDTO) =>
+          new Message(
+            dto.id,
+            dto.conversationId,
+            dto.role,
+            dto.content,
+            new Date(dto.createdAt)
+          )
+        );
 
         // Update local cache if enabled
         if (options.enableLocalCache) {

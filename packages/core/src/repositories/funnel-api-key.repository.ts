@@ -10,7 +10,7 @@ import { funnelApiKeys, type FunnelApiKey, eq } from '@anplexa/database';
 import type {
   IFunnelApiKeyRepository,
   CreateFunnelApiKeyData,
-} from './interfaces/funnel-api-key.repository.interface.js';
+} from './interfaces/funnel-api-key.repository.interface';
 
 export class FunnelApiKeyRepository implements IFunnelApiKeyRepository {
   constructor(private readonly db: Database) {}
@@ -113,6 +113,30 @@ export class FunnelApiKeyRepository implements IFunnelApiKeyRepository {
         throw error;
       }
       throw new Error(`Failed to deactivate funnel API key: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Activate a funnel API key
+   */
+  async activate(id: string): Promise<void> {
+    try {
+      // Check if funnel API key exists
+      const existingKey = await this.getById(id);
+      if (!existingKey) {
+        throw new Error(`Funnel API key with id ${id} not found`);
+      }
+
+      // Activate the key
+      await this.db
+        .update(funnelApiKeys)
+        .set({ isActive: 1 as any }) // Use 1 for SQLite compatibility (boolean mode)
+        .where(eq(funnelApiKeys.id, id));
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('not found')) {
+        throw error;
+      }
+      throw new Error(`Failed to activate funnel API key: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

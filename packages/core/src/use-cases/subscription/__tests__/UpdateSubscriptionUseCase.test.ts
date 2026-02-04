@@ -7,8 +7,8 @@ import {
   UpdateSubscriptionUseCase,
   UpdateSubscriptionUseCaseError,
   type UpdateSubscriptionRequest,
-} from '../UpdateSubscriptionUseCase.js';
-import type { UserRepository, User } from '../../../repositories/UserRepository.js';
+} from '../UpdateSubscriptionUseCase';
+import type { UserRepository, User } from '../../../repositories/UserRepository';
 import type Stripe from 'stripe';
 
 // Mock @anplexa/services/stripe

@@ -14,13 +14,16 @@
 export * from './analytics';
 
 // Stripe payment service
-export * from './stripe/index.js';
+export * from './stripe/index';
 
 // Email service
-export * from './email/index.js';
+export * from './email/index';
 
 // Auth Services
 export * from './auth';
 
 // AI Services
 export * from './ai';
+
+// Astrology Services
+export { SimplifiedAstrologyService } from './astrology/SimplifiedAstrologyService';

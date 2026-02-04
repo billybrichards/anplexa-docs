@@ -19,6 +19,8 @@ import {
   FunnelApiKeyRepository,
   ApiUsageRepository,
   UserFeedbackRepository,
+  BirthChartRepository,
+  CompanionPersonaRepository,
   createAllUseCases,
   type AllUseCases,
 } from '@anplexa/core';
@@ -26,6 +28,7 @@ import {
   JWTService,
   PasswordService,
   OllamaGateway,
+  SimplifiedAstrologyService,
 } from '@anplexa/services';
 
 /**
@@ -57,11 +60,14 @@ export interface AppContainer {
   funnelApiKeyRepository: FunnelApiKeyRepository;
   apiUsageRepository: ApiUsageRepository;
   userFeedbackRepository: UserFeedbackRepository;
+  birthChartRepository: BirthChartRepository;
+  companionPersonaRepository: CompanionPersonaRepository;
 
   // Services
   jwtService: JWTService;
   passwordService: PasswordService;
   ollamaGateway: OllamaGateway;
+  astrologyService: SimplifiedAstrologyService;
   emailScheduler: EmailScheduler;
 
   // Use Cases
@@ -102,6 +108,8 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     funnelApiKeyRepository: asClass(FunnelApiKeyRepository).singleton(),
     apiUsageRepository: asClass(ApiUsageRepository).singleton(),
     userFeedbackRepository: asClass(UserFeedbackRepository).singleton(),
+    birthChartRepository: asClass(BirthChartRepository).singleton(),
+    companionPersonaRepository: asClass(CompanionPersonaRepository).singleton(),
 
     // Services
     jwtService: asFunction(() => {
@@ -129,18 +137,32 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       });
     }).singleton(),
 
+    astrologyService: asClass(SimplifiedAstrologyService).singleton(),
+
     // Use Cases - wire up all use cases using the factory
     useCases: asFunction(({
       userRepository,
       conversationRepository,
       messageRepository,
       sessionRepository,
+      birthChartRepository,
+      companionPersonaRepository,
+      passwordService,
+      jwtService,
+      astrologyService,
+      ollamaGateway,
     }) => {
       return createAllUseCases({
         userRepository,
         conversationRepository,
         messageRepository,
         sessionRepository,
+        birthChartRepository,
+        companionPersonaRepository,
+        passwordService,
+        jwtService,
+        astrologyService,
+        ollamaGateway,
       });
     }).singleton(),
   });

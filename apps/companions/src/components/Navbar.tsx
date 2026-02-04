@@ -19,6 +19,9 @@ export function Navbar() {
           <Link href="/business" className="navbar-link">
             Business
           </Link>
+          <Link href="/test" className="navbar-link">
+            🧪 Test
+          </Link>
         </div>
       </div>
       <style jsx>{`

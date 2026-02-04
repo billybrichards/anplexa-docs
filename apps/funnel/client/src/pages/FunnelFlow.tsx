@@ -5,12 +5,16 @@
  * and checkout experience. Uses custom hooks for session and tracking logic.
  *
  * Reduced from ~450 LOC to ~180 LOC by extracting business logic to hooks.
+ *
+ * Updated for Next.js App Router - persona passed as prop instead of useParams.
  */
 
+'use client';
+
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useFunnelSession, useFunnelTracking } from '../hooks';
 import type { FunnelView, Persona } from '../types';
+import { Starfield } from '../components/Starfield';
 
 // Dummy data - replace with actual funnel data
 const FUNNEL_STEPS = [
@@ -52,8 +56,7 @@ interface FunnelFlowProps {
  * Manages the quiz flow and checkout experience with extracted business logic
  */
 export function FunnelFlow({ personaId }: FunnelFlowProps) {
-  const { persona: paramPersona } = useParams<{ persona?: Persona }>();
-  const selectedPersona = personaId || paramPersona;
+  const selectedPersona = personaId;
 
   // Custom hooks for state management
   const session = useFunnelSession(FUNNEL_STEPS);
@@ -155,15 +158,16 @@ export function FunnelFlow({ personaId }: FunnelFlowProps) {
   // Render current view
   if (view === 'already_registered') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Already with us!</h2>
+      <div className="flex flex-col items-center justify-center min-h-screen relative">
+        <Starfield />
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md relative z-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 font-serif">Already with us!</h2>
           <p className="text-gray-600 mb-6">
             It looks like you're already registered. Please log in to continue.
           </p>
           <a
             href="/login"
-            className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+            className="inline-block gradient-gold text-gray-900 font-semibold py-2 px-6 rounded-lg transition-all hover:shadow-gold"
           >
             Go to Login
           </a>
@@ -174,11 +178,12 @@ export function FunnelFlow({ personaId }: FunnelFlowProps) {
 
   if (view === 'email_capture') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Join the community</h2>
+      <div className="flex flex-col items-center justify-center min-h-screen relative p-4">
+        <Starfield />
+        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative z-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 font-serif">Join the cosmic community</h2>
           <p className="text-gray-600 mb-6">
-            Enter your email to get started and choose your plan.
+            Enter your email to discover your perfect AI companion.
           </p>
 
           {error && <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded mb-4">{error}</div>}
@@ -198,16 +203,17 @@ export function FunnelFlow({ personaId }: FunnelFlowProps) {
 
   if (view === 'success') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md">
-          <div className="text-5xl mb-4">✅</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Welcome!</h2>
+      <div className="flex flex-col items-center justify-center min-h-screen relative">
+        <Starfield />
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md relative z-10">
+          <div className="text-5xl mb-4">✨</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 font-serif">Welcome to the cosmos!</h2>
           <p className="text-gray-600 mb-6">
-            Check your email to confirm your account and get started.
+            Check your email to confirm your account and meet your AI companion.
           </p>
           <button
             onClick={handleReset}
-            className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+            className="inline-block gradient-gold text-gray-900 font-semibold py-2 px-6 rounded-lg transition-all hover:shadow-gold"
           >
             Start Over
           </button>
@@ -219,30 +225,36 @@ export function FunnelFlow({ personaId }: FunnelFlowProps) {
   // Default: Quiz questions view
   const currentStep = FUNNEL_STEPS[session.currentStep];
   if (!currentStep) {
-    return <div className="text-center p-4">Loading...</div>;
+    return (
+      <div className="text-center p-4 min-h-screen flex items-center justify-center relative">
+        <Starfield />
+        <div className="relative z-10">Loading your cosmic journey...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+    <div className="flex flex-col items-center justify-center min-h-screen relative p-4">
+      <Starfield />
+      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative z-10">
         {/* Progress */}
         <div className="mb-6">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
             <span>
               Question {session.currentStep + 1} of {session.totalSteps}
             </span>
-            <span>{session.progress}%</span>
+            <span className="text-gold">{session.progress}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
             <div
-              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              className="gradient-gold h-2 rounded-full transition-all duration-300"
               style={{ width: `${session.progress}%` }}
             />
           </div>
         </div>
 
         {/* Question */}
-        <h2 className="text-xl font-bold text-gray-900 mb-6">{currentStep.text}</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-6 font-serif">{currentStep.text}</h2>
 
         {/* Options */}
         <div className="space-y-3 mb-6">
@@ -250,7 +262,10 @@ export function FunnelFlow({ personaId }: FunnelFlowProps) {
             <button
               key={idx}
               onClick={() => handleAnswer(option.text)}
-              className="w-full p-4 text-left border-2 border-gray-200 rounded-lg hover:border-purple-600 hover:bg-purple-50 transition font-semibold text-gray-900"
+              className="w-full p-4 text-left border-2 border-gray-200 rounded-lg hover:border-purple-600 hover:bg-purple-50 transition-all duration-300 font-semibold text-gray-900 hover:shadow-gold"
+              style={{
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
             >
               <span className="mr-3">{option.emoji}</span>
               {option.text}
@@ -313,14 +328,14 @@ function EmailCaptureForm({ onSubmit, isLoading }: EmailCaptureFormProps) {
         <button
           onClick={(e) => handleSubmit(e, 'free')}
           disabled={isLoading || !email.trim()}
-          className="flex-1 py-2 px-4 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 disabled:opacity-50 transition font-semibold"
+          className="flex-1 py-2 px-4 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 disabled:opacity-50 transition-all font-semibold"
         >
           {isLoading ? 'Processing...' : 'Free Trial'}
         </button>
         <button
           onClick={(e) => handleSubmit(e, 'paid')}
           disabled={isLoading || !email.trim()}
-          className="flex-1 py-2 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition font-semibold"
+          className="flex-1 py-2 px-4 gradient-gold text-gray-900 rounded-lg hover:shadow-gold disabled:opacity-50 transition-all font-semibold"
         >
           {isLoading ? 'Processing...' : 'Subscribe Now'}
         </button>

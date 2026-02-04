@@ -6,7 +6,7 @@
  * outer layers (infrastructure) implement it.
  */
 
-import { PasswordResetToken } from '../../domain/entities/PasswordResetToken.js';
+import { PasswordResetToken } from '../../domain/entities/PasswordResetToken';
 
 // Re-export PasswordResetToken for use by other modules
 export { PasswordResetToken };
@@ -48,6 +48,12 @@ export interface IPasswordResetTokenRepository {
    * @returns Promise that resolves when update is complete
    */
   markAsUsed(id: string): Promise<void>;
+
+  /**
+   * Gets all valid (non-expired, unused) password reset tokens
+   * @returns Promise resolving to array of valid tokens
+   */
+  getAllValid(): Promise<PasswordResetToken[]>;
 
   /**
    * Removes all expired tokens from the database

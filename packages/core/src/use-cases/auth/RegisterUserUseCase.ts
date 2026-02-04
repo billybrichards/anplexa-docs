@@ -9,8 +9,8 @@
  * - Creates initial session
  */
 
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
-import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface';
 import { User } from '../../domain/entities/User';
 import { Session } from '../../domain/entities/Session';
 import { ValidationError } from '../../domain/errors/ValidationError';

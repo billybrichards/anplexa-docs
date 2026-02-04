@@ -10,9 +10,9 @@
  * 6. Deducts credits from user
  */
 
-import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface.js';
-import type { IMessageRepository } from '../../repositories/interfaces/message.repository.interface.js';
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface';
+import type { IMessageRepository } from '../../repositories/interfaces/message.repository.interface';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
 
 export interface SendMessageRequest {
   conversationId: string;

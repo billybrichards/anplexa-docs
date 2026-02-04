@@ -9,8 +9,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { apiUsage, type ApiUsage } from '@anplexa/database/schema/sqlite';
-import { ApiUsageRepository } from '../api-usage.repository.js';
-import type { CreateApiUsageData } from '../interfaces/api-usage.repository.interface.js';
+import { ApiUsageRepository } from '../api-usage.repository';
+import type { CreateApiUsageData } from '../interfaces/api-usage.repository.interface';
 
 describe('ApiUsageRepository', () => {
   let sqliteDb: Database.Database;

@@ -12,8 +12,9 @@ export type {
 
 export { useGuestChat } from './useGuestChat';
 export type {
-  Message,
-  Conversation,
   UseGuestChatOptions,
   UseGuestChatReturn,
 } from './useGuestChat';
+
+// Re-export domain entities from @anplexa/core for convenience
+export type { Message, Conversation } from '@anplexa/core/domain/entities';

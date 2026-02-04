@@ -15,7 +15,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useMessagePersistence } from '../useMessagePersistence';
 import { apiClient } from '../../lib/adapters/api/api-client';
 import { storageService } from '../../lib/adapters/storage/storage-service';
-import type { Message } from '../../lib/domain/entities/Message';
+import type { Message } from '@anplexa/core';
 import type { MessageDTO } from '@anplexa/contracts';
 
 // Mock dependencies

@@ -4,7 +4,15 @@
  * Initializes the Express server with Clean Architecture + DI
  */
 
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from monorepo root
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 import { Pool } from 'pg';
 import { configureContainer } from './container.js';
 import { createApp } from './app.js';

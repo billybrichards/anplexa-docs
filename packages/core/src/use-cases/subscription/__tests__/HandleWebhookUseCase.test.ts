@@ -7,10 +7,10 @@ import {
   HandleWebhookUseCase,
   HandleWebhookUseCaseError,
   type HandleWebhookRequest,
-} from '../HandleWebhookUseCase.js';
-import type { UserRepository, User } from '../../../repositories/UserRepository.js';
+} from '../HandleWebhookUseCase';
+import type { UserRepository, User } from '../../../repositories/UserRepository';
 import type Stripe from 'stripe';
-import { createMockUser } from '../../../test-utils/mocks.js';
+import { createMockUser } from '../../../test-utils/mocks';
 
 // Mock @anplexa/services/stripe
 vi.mock('@anplexa/services/stripe', () => ({

@@ -10,22 +10,15 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-
-export interface Message {
-  id: string;
-  conversationId: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  createdAt: Date;
-}
-
-export interface Conversation {
-  id: string;
-  userId: string;
-  title: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Message, Conversation } from '@anplexa/core/domain/entities';
+import {
+  conversationToStored,
+  storedToConversation,
+  messagesToStored,
+  storedToMessages,
+  type StoredMessage,
+  type StoredConversation,
+} from '../lib/adapters/domain-adapters';
 
 export interface UseGuestChatOptions {
   userId?: string;
@@ -178,13 +171,8 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
       const storedMessages = safeGetItem(GUEST_MESSAGES_KEY);
       if (storedMessages) {
         try {
-          const parsed = JSON.parse(storedMessages);
-          const messages = Array.isArray(parsed)
-            ? parsed.map((msg: Omit<Message, 'createdAt'> & { createdAt: string }) => ({
-                ...msg,
-                createdAt: new Date(msg.createdAt),
-              }))
-            : [];
+          const parsed: StoredMessage[] = JSON.parse(storedMessages);
+          const messages = Array.isArray(parsed) ? storedToMessages(parsed) : [];
           setGuestMessages(messages);
         } catch (error) {
           console.error('Failed to parse guest messages:', error);
@@ -196,12 +184,8 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
       const storedConversation = safeGetItem(GUEST_CONVERSATION_KEY);
       if (storedConversation) {
         try {
-          const parsed = JSON.parse(storedConversation);
-          const conversation = {
-            ...parsed,
-            createdAt: new Date(parsed.createdAt),
-            updatedAt: new Date(parsed.updatedAt),
-          };
+          const parsed: StoredConversation = JSON.parse(storedConversation);
+          const conversation = storedToConversation(parsed);
           setGuestConversation(conversation);
         } catch (error) {
           console.error('Failed to parse guest conversation:', error);
@@ -237,7 +221,7 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
 
           // Persist to localStorage
           try {
-            safeSetItem(GUEST_MESSAGES_KEY, JSON.stringify(updated));
+            safeSetItem(GUEST_MESSAGES_KEY, JSON.stringify(messagesToStored(updated)));
           } catch (error) {
             console.error('Failed to persist guest messages:', error);
           }
@@ -270,7 +254,7 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
 
       try {
         setGuestConversation(conversation);
-        safeSetItem(GUEST_CONVERSATION_KEY, JSON.stringify(conversation));
+        safeSetItem(GUEST_CONVERSATION_KEY, JSON.stringify(conversationToStored(conversation)));
       } catch (error) {
         console.error('Failed to save guest conversation:', error);
       }

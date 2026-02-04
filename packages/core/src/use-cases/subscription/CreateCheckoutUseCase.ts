@@ -28,7 +28,7 @@ import {
   getCustomer,
   type CheckoutSessionOptions,
 } from '@anplexa/services/stripe';
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
 import type Stripe from 'stripe';
 
 export interface CreateCheckoutRequest {

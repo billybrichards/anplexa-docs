@@ -38,7 +38,7 @@ export {
   Message,
   Session,
   type MessageRole,
-} from './domain/entities/index.js';
+} from './domain/entities/index';
 
 // Domain errors
 export {
@@ -47,14 +47,14 @@ export {
   AuthenticationError,
   AuthorizationError,
   NotFoundError,
-} from './domain/errors/index.js';
+} from './domain/errors/index';
 
 // ============================================================================
 // Repository Layer Exports
 // ============================================================================
 
 // Repository interfaces (data persistence contracts)
-export * from './repositories/interfaces/index.js';
+export * from './repositories/interfaces/index';
 
 // Repository implementations (for testing and in-memory usage)
 export {
@@ -67,23 +67,24 @@ export {
   FunnelApiKeyRepository,
   ApiUsageRepository,
   UserFeedbackRepository,
-} from './repositories/index.js';
+  BirthChartRepository,
+} from './repositories/index';
 
 // ============================================================================
 // Application Layer Exports (Use Cases)
 // ============================================================================
 
 // Auth use cases
-export * from './use-cases/auth/index.js';
+export * from './use-cases/auth/index';
 
 // Chat use cases
-export * from './use-cases/chat/index.js';
+export * from './use-cases/chat/index';
 
 // Subscription use cases
-export * from './use-cases/subscription/index.js';
+export * from './use-cases/subscription/index';
 
 // ============================================================================
 // Dependency Injection & Factory Functions
 // ============================================================================
 
-export * from './factories.js';
+export * from './factories';

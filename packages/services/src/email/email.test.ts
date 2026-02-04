@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import * as emailClient from './client.js';
-import * as emailTemplates from './templates.js';
-import * as emailResend from './resend.js';
+import * as emailClient from './client';
+import * as emailTemplates from './templates';
+import * as emailResend from './resend';
 
 // Mock Resend SDK
 vi.mock('resend', () => ({

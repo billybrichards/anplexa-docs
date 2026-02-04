@@ -6,12 +6,12 @@
  */
 
 import type { Database } from '@anplexa/database';
-import { userFeedback, type UserFeedback, eq, count } from '@anplexa/database';
+import { userFeedback, type UserFeedback, eq } from '@anplexa/database';
 import type {
   IUserFeedbackRepository,
   CreateUserFeedbackData,
   UserFeedbackStats,
-} from './interfaces/user-feedback.repository.interface.js';
+} from './interfaces/user-feedback.repository.interface';
 
 export class UserFeedbackRepository implements IUserFeedbackRepository {
   constructor(private readonly db: Database) {}

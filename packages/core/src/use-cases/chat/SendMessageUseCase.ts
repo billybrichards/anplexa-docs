@@ -4,16 +4,24 @@
  * Handles the business logic for sending a message in a conversation and generating an AI response.
  * This use case orchestrates:
  * 1. Validating the conversation exists
- * 2. Creating the user message
- * 3. Calling the AI service for a response
- * 4. Creating the AI response message
- * 5. Returning both messages
+ * 2. Fetching the user's active companion persona (if available)
+ * 3. Building the system prompt with persona customization
+ * 4. Creating the user message
+ * 5. Calling the AI service for a response
+ * 6. Creating the AI response message
+ * 7. Returning both messages
  */
 
 import type { MessageDTO, MessageRole } from '@anplexa/contracts';
 import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface';
 import type { IMessageRepository } from '../../repositories/interfaces/message.repository.interface';
+import type { ICompanionPersonaRepository } from '../../repositories/interfaces/companion-persona.repository.interface';
 import type { OllamaGateway, ChatMessage } from '@anplexa/services/ai';
+import {
+  SystemPromptBuilder,
+  type SystemPromptConfig,
+  type ConversationContext,
+} from '../../domain/services/SystemPromptBuilder';
 
 /**
  * Input parameters for sending a message
@@ -72,13 +80,21 @@ export class AIServiceError extends Error {
  *
  * Implements the business logic for processing a user message and generating an AI response.
  * Follows the Clean Architecture use case pattern with a single execute() method.
+ *
+ * Supports personalized AI responses through CompanionPersona system prompts.
  */
 export class SendMessageUseCase {
+  private readonly systemPromptBuilder: SystemPromptBuilder;
+
   constructor(
     private readonly conversationRepository: IConversationRepository,
     private readonly messageRepository: IMessageRepository,
-    private readonly ollamaGateway: OllamaGateway
-  ) {}
+    private readonly ollamaGateway: OllamaGateway,
+    private readonly companionPersonaRepository?: ICompanionPersonaRepository,
+    systemPromptConfig?: SystemPromptConfig
+  ) {
+    this.systemPromptBuilder = new SystemPromptBuilder(systemPromptConfig);
+  }
 
   /**
    * Execute the send message use case
@@ -107,6 +123,17 @@ export class SendMessageUseCase {
       throw new UnauthorizedConversationAccessError(input.conversationId, input.userId);
     }
 
+    // Fetch user's active companion persona (if repository is available)
+    const persona = this.companionPersonaRepository
+      ? await this.companionPersonaRepository.getActiveByUserId(input.userId)
+      : null;
+
+    // Build system prompt with persona customization
+    const conversationContext: ConversationContext = {
+      currentDateTime: new Date(),
+    };
+    const systemPrompt = this.systemPromptBuilder.build(persona, conversationContext);
+
     // Create user message
     const userMessage = await this.messageRepository.create({
       conversationId: input.conversationId,
@@ -120,13 +147,23 @@ export class SendMessageUseCase {
       { limit: 10 } // Get last 10 messages for context
     );
 
-    // Build chat messages for AI (excluding the message we just created since it will be added)
-    const chatMessages: ChatMessage[] = previousMessages
-      .filter(msg => msg.id !== userMessage.id) // Exclude the just-created message
+    // Build chat messages for AI
+    // Start with system prompt, then conversation history, then current message
+    const chatMessages: ChatMessage[] = [
+      {
+        role: 'system',
+        content: systemPrompt,
+      },
+    ];
+
+    // Add conversation history (excluding the message we just created and any existing system messages)
+    const historyMessages = previousMessages
+      .filter(msg => msg.id !== userMessage.id && msg.role !== 'system')
       .map(msg => ({
         role: msg.role as 'system' | 'user' | 'assistant',
         content: msg.content,
       }));
+    chatMessages.push(...historyMessages);
 
     // Add the current user message
     chatMessages.push({

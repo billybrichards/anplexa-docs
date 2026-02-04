@@ -10,8 +10,8 @@ import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { sql } from 'drizzle-orm';
 import { sessions } from '@anplexa/database';
-import { SessionRepository } from '../session.repository.js';
-import type { CreateSessionData } from '../interfaces/session.repository.interface.js';
+import { SessionRepository } from '../session.repository';
+import type { CreateSessionData } from '../interfaces/session.repository.interface';
 
 describe('SessionRepository', () => {
   let db: ReturnType<typeof drizzle>;

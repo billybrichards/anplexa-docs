@@ -11,7 +11,7 @@ import type {
   IApiUsageRepository,
   CreateApiUsageData,
   ApiUsageStats,
-} from './interfaces/api-usage.repository.interface.js';
+} from './interfaces/api-usage.repository.interface';
 
 export class ApiUsageRepository implements IApiUsageRepository {
   constructor(private readonly db: Database) {}
@@ -220,7 +220,7 @@ export class ApiUsageRepository implements IApiUsageRepository {
   async deleteOlderThan(beforeDate: string): Promise<number> {
     try {
       const cutoffDate = new Date(beforeDate).toISOString();
-      const result = await this.db
+      await this.db
         .delete(apiUsage)
         .where(lte(apiUsage.createdAt, cutoffDate));
 

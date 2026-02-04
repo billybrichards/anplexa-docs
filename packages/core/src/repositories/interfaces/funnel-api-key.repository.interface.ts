@@ -42,6 +42,11 @@ export interface IFunnelApiKeyRepository {
   deactivate(id: string): Promise<void>;
 
   /**
+   * Activate a funnel API key
+   */
+  activate(id: string): Promise<void>;
+
+  /**
    * Delete a funnel API key (hard delete)
    */
   delete(id: string): Promise<void>;

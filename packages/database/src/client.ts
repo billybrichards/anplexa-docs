@@ -3,8 +3,8 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzle as drizzleSqlite } from 'drizzle-orm/better-sqlite3';
 import { Pool } from 'pg';
 import Database from 'better-sqlite3';
-import * as schemaPostgres from './schema/postgres.js';
-import * as schemaSqlite from './schema/sqlite.js';
+import * as schemaPostgres from './schema/postgres';
+import * as schemaSqlite from './schema/sqlite';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let dbInstance: any = null;

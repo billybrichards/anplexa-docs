@@ -4,8 +4,8 @@
 // - For SQLite: import { sqlite as schema } from '@anplexa/database';
 
 // Export both schemas as named exports
-export * as postgres from './postgres.js';
-export * as sqlite from './sqlite.js';
+export * as postgres from './postgres';
+export * as sqlite from './sqlite';
 
 // Note: Choose the appropriate schema based on your database type
 // This prevents type mismatches between SQLite and PostgreSQL Drizzle instances

@@ -11,8 +11,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { Container } from '../../container.js';
 import { requireAuth } from '../../middleware/adminAuth.js';
 import { layout, escapeHtml } from './templates/layout.js';
-import { eq, desc } from '@anplexa/database';
-import * as schema from '@anplexa/database';
 import { apiReferenceTemplate } from './templates/api-reference.js';
 
 export function createSettingsRoutes(container: Container): Router {
@@ -118,7 +116,7 @@ export function createSettingsRoutes(container: Container): Router {
 
   router.post('/api-keys', requireAuth, async (req: Request, res: Response) => {
     try {
-      const { db } = container.cradle;
+      const { apiKeyRepository } = container.cradle;
       const { name } = req.body;
 
       if (!name || name.trim() === '') {
@@ -135,14 +133,11 @@ export function createSettingsRoutes(container: Container): Router {
       const keyHash = await bcrypt.hash(rawKey, 10);
       const id = uuidv4();
 
-      // Note: apiKeys table is not covered by current repositories
-      await db.insert(schema.apiKeys).values({
+      await apiKeyRepository.create({
         id,
         name: name.trim(),
         keyHash,
         keyPrefix,
-        isActive: true,
-        createdAt: new Date().toISOString(),
       });
 
       res.redirect(`/admin/api-keys?newKey=${encodeURIComponent(rawKey)}`);
@@ -159,11 +154,10 @@ export function createSettingsRoutes(container: Container): Router {
 
   router.post('/api-keys/:id/delete', requireAuth, async (req: Request, res: Response) => {
     try {
-      const { db } = container.cradle;
+      const { apiKeyRepository } = container.cradle;
       const { id } = req.params;
 
-      // Note: apiKeys table is not covered by current repositories
-      await db.update(schema.apiKeys).set({ isActive: false }).where(eq(schema.apiKeys.id, id));
+      await apiKeyRepository.deactivate(id);
       res.redirect('/admin/api-keys?success=1');
     } catch (error) {
       console.error('Revoke API key error:', error);
@@ -180,10 +174,9 @@ export function createSettingsRoutes(container: Container): Router {
 
   router.get('/funnel-keys', requireAuth, async (req: Request, res: Response) => {
     try {
-      const { db } = container.cradle;
+      const { funnelApiKeyRepository } = container.cradle;
 
-      // Note: funnelApiKeys table is not covered by current repositories
-      const allFunnelKeys = await db.select().from(schema.funnelApiKeys).orderBy(desc(schema.funnelApiKeys.createdAt));
+      const allFunnelKeys = await funnelApiKeyRepository.getAll();
       const newKeyDisplay = req.query.newKey as string | undefined;
 
       const keysTable =
@@ -291,20 +284,17 @@ GET /api/funnel/subscription/:userId
 
   router.post('/funnel-keys/generate', requireAuth, async (req: Request, res: Response) => {
     try {
-      const { db } = container.cradle;
+      const { funnelApiKeyRepository } = container.cradle;
       const { keyName, notes } = req.body;
       const rawKey = `fk_${crypto.randomBytes(24).toString('hex')}`;
       const keyHash = await bcrypt.hash(rawKey, 10);
       const keyPrefix = rawKey.slice(0, 12);
 
-      // Note: funnelApiKeys table is not covered by current repositories
-      await db.insert(schema.funnelApiKeys).values({
+      await funnelApiKeyRepository.create({
         id: uuidv4(),
         name: keyName || 'Funnel API Key',
         keyHash,
         keyPrefix,
-        isActive: true,
-        createdAt: new Date().toISOString(),
         notes: notes || null,
       });
 
@@ -317,17 +307,17 @@ GET /api/funnel/subscription/:userId
 
   router.post('/funnel-keys/:id/toggle', requireAuth, async (req: Request, res: Response) => {
     try {
-      const { db } = container.cradle;
+      const { funnelApiKeyRepository } = container.cradle;
       const { id } = req.params;
 
-      // Note: funnelApiKeys table is not covered by current repositories
-      const [existing] = await db.select().from(schema.funnelApiKeys).where(eq(schema.funnelApiKeys.id, id));
+      const existing = await funnelApiKeyRepository.getById(id);
 
       if (existing) {
-        await db
-          .update(schema.funnelApiKeys)
-          .set({ isActive: !existing.isActive })
-          .where(eq(schema.funnelApiKeys.id, id));
+        if (existing.isActive) {
+          await funnelApiKeyRepository.deactivate(id);
+        } else {
+          await funnelApiKeyRepository.activate(id);
+        }
       }
 
       res.redirect('/admin/funnel-keys');
@@ -339,11 +329,10 @@ GET /api/funnel/subscription/:userId
 
   router.post('/funnel-keys/:id/delete', requireAuth, async (req: Request, res: Response) => {
     try {
-      const { db } = container.cradle;
+      const { funnelApiKeyRepository } = container.cradle;
       const { id } = req.params;
 
-      // Note: funnelApiKeys table is not covered by current repositories
-      await db.delete(schema.funnelApiKeys).where(eq(schema.funnelApiKeys.id, id));
+      await funnelApiKeyRepository.delete(id);
       res.redirect('/admin/funnel-keys');
     } catch (error) {
       console.error('Delete funnel key error:', error);
