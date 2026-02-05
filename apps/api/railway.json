@@ -2,8 +2,8 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=@anplexa/api...",
-    "nixpacksConfigPath": "apps/api/nixpacks.toml",
+    "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm build --filter=@anplexa/api...",
+    "nixpacksConfigPath": "nixpacks.toml",
     "watchPatterns": [
       "apps/api/**",
       "packages/core/**",
