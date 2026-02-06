@@ -2,17 +2,28 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
+    "rootDir": "./src",
     "types": ["node"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "composite": true
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@anplexa/contracts": ["../../packages/contracts/dist"],
+      "@anplexa/contracts/*": ["../../packages/contracts/dist/*"],
+      "@anplexa/config": ["../../packages/config/dist"],
+      "@anplexa/config/*": ["../../packages/config/dist/*"],
+      "@anplexa/database": ["../../packages/database/dist"],
+      "@anplexa/database/*": ["../../packages/database/dist/*"],
+      "@anplexa/core": ["../../packages/core/dist"],
+      "@anplexa/core/*": ["../../packages/core/dist/*"],
+      "@anplexa/services": ["../../packages/services/dist"],
+      "@anplexa/services/*": ["../../packages/services/dist/*"]
+    }
   },
   "include": ["src/**/*", "src/**/*.json"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"],
-  "references": [
-    { "path": "../../packages/contracts" },
-    { "path": "../../packages/database" },
-    { "path": "../../packages/core" },
-    { "path": "../../packages/services" }
-  ]
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
