@@ -14,7 +14,7 @@ import type { IUserRepository } from '../../repositories/interfaces/user.reposit
 import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface';
 import { ValidationError } from '../../domain/errors/ValidationError';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
-import { PasswordService } from '@anplexa/services';
+import type { IPasswordService } from '../../domain/services/IPasswordService';
 
 export interface ResetPasswordInput {
   token: string;
@@ -41,7 +41,7 @@ export class ResetPasswordUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly sessionRepository: ISessionRepository,
-    private readonly passwordService: PasswordService
+    private readonly passwordService: IPasswordService
   ) {}
 
   /**

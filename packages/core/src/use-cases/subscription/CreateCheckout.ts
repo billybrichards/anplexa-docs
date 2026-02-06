@@ -10,9 +10,9 @@
  */
 
 import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
+import type { IStripeService } from '../../domain/services/IStripeService';
 import { ValidationError } from '../../domain/errors/ValidationError';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
-import { createCustomer, createCheckoutSession } from '@anplexa/services';
 
 export interface CreateCheckoutRequest {
   userId: string;
@@ -27,7 +27,10 @@ export interface CreateCheckoutResponse {
 }
 
 export class CreateCheckout {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly stripeService: IStripeService,
+  ) {}
 
   async execute(request: CreateCheckoutRequest): Promise<CreateCheckoutResponse> {
     // 1. Validate input
@@ -44,7 +47,7 @@ export class CreateCheckout {
 
     if (!stripeCustomerId) {
       // Create new Stripe customer
-      const customer = await createCustomer(user.email, {
+      const customer = await this.stripeService.createCustomer(user.email, {
         name: user.displayName,
         userId: user.id,
         metadata: {
@@ -61,7 +64,7 @@ export class CreateCheckout {
     }
 
     // 4. Create Stripe checkout session
-    const session = await createCheckoutSession(
+    const session = await this.stripeService.createCheckoutSession(
       request.priceId,
       request.successUrl || `${process.env.APP_URL || 'http://localhost:3000'}/checkout/success`,
       request.cancelUrl || `${process.env.APP_URL || 'http://localhost:3000'}/checkout/cancel`,

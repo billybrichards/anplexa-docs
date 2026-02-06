@@ -12,7 +12,7 @@
  *
  * Usage:
  * ```ts
- * const useCase = new CreateCheckoutUseCase(userRepository);
+ * const useCase = new CreateCheckoutUseCase(userRepository, stripeService);
  * const result = await useCase.execute({
  *   userId: 'user-123',
  *   priceId: 'price_xxx',
@@ -22,14 +22,11 @@
  * ```
  */
 
-import {
-  createCheckoutSession,
-  createCustomer,
-  getCustomer,
-  type CheckoutSessionOptions,
-} from '@anplexa/services/stripe';
+import type {
+  IStripeService,
+  CheckoutSessionOptions,
+} from '../../domain/services/IStripeService';
 import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
-import type Stripe from 'stripe';
 
 export interface CreateCheckoutRequest {
   userId: string;
@@ -56,7 +53,10 @@ export class CreateCheckoutUseCaseError extends Error {
 }
 
 export class CreateCheckoutUseCase {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly stripeService: IStripeService,
+  ) {}
 
   /**
    * Execute the use case to create a checkout session
@@ -88,7 +88,6 @@ export class CreateCheckoutUseCase {
     }
 
     // Create checkout session
-    let session: Stripe.Checkout.Session;
     try {
       const checkoutOptions: CheckoutSessionOptions = {
         customerId,
@@ -99,33 +98,36 @@ export class CreateCheckoutUseCase {
         },
       };
 
-      session = await createCheckoutSession(
+      const session = await this.stripeService.createCheckoutSession(
         request.priceId,
         request.successUrl,
         request.cancelUrl,
         checkoutOptions
       );
+
+      // Validate session has URL
+      if (!session.url) {
+        throw new CreateCheckoutUseCaseError(
+          'Checkout session created but no URL returned',
+          'STRIPE_ERROR'
+        );
+      }
+
+      // Return result
+      return {
+        sessionId: session.id,
+        url: session.url,
+        customerId,
+      };
     } catch (error) {
+      if (error instanceof CreateCheckoutUseCaseError) {
+        throw error;
+      }
       throw new CreateCheckoutUseCaseError(
         `Failed to create checkout session: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'STRIPE_ERROR'
       );
     }
-
-    // Validate session has URL
-    if (!session.url) {
-      throw new CreateCheckoutUseCaseError(
-        'Checkout session created but no URL returned',
-        'STRIPE_ERROR'
-      );
-    }
-
-    // Return result
-    return {
-      sessionId: session.id,
-      url: session.url,
-      customerId,
-    };
   }
 
   /**
@@ -140,9 +142,8 @@ export class CreateCheckoutUseCase {
     // If user already has a Stripe customer ID, verify it exists
     if (user.stripeCustomerId) {
       try {
-        const customer = await getCustomer(user.stripeCustomerId);
+        const customer = await this.stripeService.getCustomer(user.stripeCustomerId);
         // Check if customer exists and is not deleted
-        // Note: using 'as any' because Stripe types don't properly expose deleted property
         const isDeleted = 'deleted' in customer ? (customer as any).deleted === true : false;
         if (customer && !isDeleted) {
           return customer.id;
@@ -156,7 +157,7 @@ export class CreateCheckoutUseCase {
     }
 
     // Create new Stripe customer
-    const customer = await createCustomer(user.email, {
+    const customer = await this.stripeService.createCustomer(user.email, {
       name: user.displayName || undefined,
       userId: user.id,
       metadata: {

@@ -49,6 +49,12 @@ export {
   NotFoundError,
 } from './domain/errors/index';
 
+// Domain service interfaces
+export type { IPasswordService, GeneratedApiKey, PasswordStrengthResult } from './domain/services/IPasswordService';
+export type { IJWTService, TokenPayload, TokenPair } from './domain/services/IJWTService';
+export type { IStripeService, CheckoutSessionOptions, CheckoutSessionResult, CustomerResult, SubscriptionResult, WebhookEvent } from './domain/services/IStripeService';
+export type { IChatGateway, ChatMessage, GenerateOptions } from './domain/services/IChatGateway';
+
 // ============================================================================
 // Repository Layer Exports
 // ============================================================================

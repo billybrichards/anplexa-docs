@@ -13,13 +13,13 @@ import { User } from '../../../domain/entities/User';
 import { Session } from '../../../domain/entities/Session';
 import { ValidationError } from '../../../domain/errors/ValidationError';
 import { AuthenticationError } from '../../../domain/errors/AuthenticationError';
-import { JWTService } from '@anplexa/services';
+import type { IJWTService } from '../../../domain/services/IJWTService';
 
 describe('RefreshTokenUseCase', () => {
   let useCase: RefreshTokenUseCase;
   let mockUserRepo: IUserRepository;
   let mockSessionRepo: ISessionRepository;
-  let mockJwtService: JWTService;
+  let mockJwtService: IJWTService;
 
   const mockUser = User.create({
     id: 'user-123',
@@ -101,7 +101,9 @@ describe('RefreshTokenUseCase', () => {
       verifyAccessToken: vi.fn(),
       verifyRefreshToken: vi.fn(),
       getRefreshExpiryDate: vi.fn(),
-    } as any;
+      getAccessExpiryDate: vi.fn(),
+      decode: vi.fn(),
+    } as IJWTService;
 
     useCase = new RefreshTokenUseCase(
       mockSessionRepo,

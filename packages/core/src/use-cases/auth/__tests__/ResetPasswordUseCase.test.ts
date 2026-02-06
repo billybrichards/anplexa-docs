@@ -13,13 +13,13 @@ import { User } from '../../../domain/entities/User';
 import { Session } from '../../../domain/entities/Session';
 import { ValidationError } from '../../../domain/errors/ValidationError';
 import { AuthenticationError } from '../../../domain/errors/AuthenticationError';
-import { PasswordService } from '@anplexa/services';
+import type { IPasswordService } from '../../../domain/services/IPasswordService';
 
 describe('ResetPasswordUseCase', () => {
   let useCase: ResetPasswordUseCase;
   let mockUserRepo: IUserRepository;
   let mockSessionRepo: ISessionRepository;
-  let mockPasswordService: PasswordService;
+  let mockPasswordService: IPasswordService;
 
   const mockUser = User.create({
     id: 'user-123',
@@ -98,7 +98,9 @@ describe('ResetPasswordUseCase', () => {
       hashPassword: vi.fn(),
       verifyPassword: vi.fn(),
       validatePasswordStrength: vi.fn(),
-    } as any;
+      generateApiKey: vi.fn(),
+      verifyApiKey: vi.fn(),
+    } as IPasswordService;
 
     useCase = new ResetPasswordUseCase(
       mockUserRepo,
