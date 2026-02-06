@@ -144,28 +144,32 @@ jobs:
             const sha = context.sha.substring(0, 7);
             const actor = context.actor;
 
+            const issueBody = [
+              '## Production Deployment Failed',
+              '',
+              `**Commit:** ${context.sha}`,
+              `**Actor:** @${actor}`,
+              `**Run ID:** ${runId}`,
+              `**Workflow Run:** ${runUrl}`,
+              '',
+              '### Action Required',
+              `Please review the [workflow logs](${runUrl}) to identify and fix the deployment issue.`,
+              '',
+              '### Checklist',
+              '- [ ] Reviewed deployment logs',
+              '- [ ] Identified root cause',
+              '- [ ] Applied fix',
+              '- [ ] Re-deployed successfully',
+              '',
+              '---',
+              '*This issue was automatically created by the deployment workflow.*'
+            ].join('\n');
+
             await github.rest.issues.create({
               owner,
               repo,
               title: `[Production Deploy Failed] Deployment failed for commit ${sha}`,
-              body: `## Production Deployment Failed
-
-**Commit:** \`${context.sha}\`
-**Actor:** @${actor}
-**Run ID:** ${runId}
-**Workflow Run:** ${runUrl}
-
-### Action Required
-Please review the [workflow logs](${runUrl}) to identify and fix the deployment issue.
-
-### Checklist
-- [ ] Reviewed deployment logs
-- [ ] Identified root cause
-- [ ] Applied fix
-- [ ] Re-deployed successfully
-
----
-*This issue was automatically created by the deployment workflow.*`,
+              body: issueBody,
               labels: ['deployment', 'production', 'urgent']
             });
 
