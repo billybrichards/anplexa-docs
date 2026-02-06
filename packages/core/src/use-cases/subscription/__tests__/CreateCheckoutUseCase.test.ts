@@ -9,24 +9,12 @@ import {
   type CreateCheckoutRequest,
 } from '../CreateCheckoutUseCase';
 import type { UserRepository, User } from '../../../repositories/UserRepository';
-import type Stripe from 'stripe';
-
-// Mock @anplexa/services/stripe
-vi.mock('@anplexa/services/stripe', () => ({
-  createCheckoutSession: vi.fn(),
-  createCustomer: vi.fn(),
-  getCustomer: vi.fn(),
-}));
-
-import {
-  createCheckoutSession,
-  createCustomer,
-  getCustomer,
-} from '@anplexa/services/stripe';
+import type { IStripeService } from '../../../domain/services/IStripeService';
 
 describe('CreateCheckoutUseCase', () => {
   let useCase: CreateCheckoutUseCase;
   let mockUserRepository: UserRepository;
+  let mockStripeService: IStripeService;
   let mockUser: User;
 
   beforeEach(() => {
@@ -92,8 +80,27 @@ describe('CreateCheckoutUseCase', () => {
       updateSubscriptionStatus: vi.fn(),
     };
 
+    // Create mock stripe service
+    mockStripeService = {
+      createCheckoutSession: vi.fn(),
+      createCustomer: vi.fn(),
+      getCustomer: vi.fn(),
+      getSubscription: vi.fn(),
+      cancelSubscription: vi.fn(),
+      scheduleSubscriptionCancellation: vi.fn(),
+      unscheduleSubscriptionCancellation: vi.fn(),
+      changeSubscriptionPrice: vi.fn(),
+      constructWebhookEvent: vi.fn(),
+      handleCheckoutCompleted: vi.fn(),
+      handleSubscriptionCreated: vi.fn(),
+      handleSubscriptionUpdated: vi.fn(),
+      handleSubscriptionDeleted: vi.fn(),
+      handleInvoicePaid: vi.fn(),
+      handleInvoicePaymentFailed: vi.fn(),
+    };
+
     // Create use case instance
-    useCase = new CreateCheckoutUseCase(mockUserRepository);
+    useCase = new CreateCheckoutUseCase(mockUserRepository, mockStripeService);
   });
 
   describe('execute', () => {
@@ -106,21 +113,12 @@ describe('CreateCheckoutUseCase', () => {
         cancelUrl: 'https://example.com/cancel',
       };
 
-      const mockCustomer = {
-        id: 'cus_123',
-        email: 'test@example.com',
-        deleted: false,
-      } as Stripe.Customer;
-
-      const mockSession = {
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockStripeService.createCustomer).mockResolvedValue({ id: 'cus_123' });
+      vi.mocked(mockStripeService.createCheckoutSession).mockResolvedValue({
         id: 'cs_test_123',
         url: 'https://checkout.stripe.com/pay/cs_test_123',
-        customer: 'cus_123',
-      } as Stripe.Checkout.Session;
-
-      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(createCustomer).mockResolvedValue(mockCustomer);
-      vi.mocked(createCheckoutSession).mockResolvedValue(mockSession);
+      });
       vi.mocked(mockUserRepository.updateStripeCustomerId).mockResolvedValue(mockUser);
 
       // Act
@@ -134,13 +132,13 @@ describe('CreateCheckoutUseCase', () => {
       });
 
       expect(mockUserRepository.getById).toHaveBeenCalledWith('user-123');
-      expect(createCustomer).toHaveBeenCalledWith('test@example.com', {
+      expect(mockStripeService.createCustomer).toHaveBeenCalledWith('test@example.com', {
         name: 'Test User',
         userId: 'user-123',
         metadata: { userId: 'user-123' },
       });
       expect(mockUserRepository.updateStripeCustomerId).toHaveBeenCalledWith('user-123', 'cus_123');
-      expect(createCheckoutSession).toHaveBeenCalledWith(
+      expect(mockStripeService.createCheckoutSession).toHaveBeenCalledWith(
         'price_xxx',
         'https://example.com/success',
         'https://example.com/cancel',
@@ -166,21 +164,12 @@ describe('CreateCheckoutUseCase', () => {
         stripeCustomerId: 'cus_existing',
       };
 
-      const mockCustomer = {
-        id: 'cus_existing',
-        email: 'test@example.com',
-        deleted: false,
-      } as Stripe.Customer;
-
-      const mockSession = {
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(userWithCustomer);
+      vi.mocked(mockStripeService.getCustomer).mockResolvedValue({ id: 'cus_existing' });
+      vi.mocked(mockStripeService.createCheckoutSession).mockResolvedValue({
         id: 'cs_test_123',
         url: 'https://checkout.stripe.com/pay/cs_test_123',
-        customer: 'cus_existing',
-      } as Stripe.Checkout.Session;
-
-      vi.mocked(mockUserRepository.getById).mockResolvedValue(userWithCustomer);
-      vi.mocked(getCustomer).mockResolvedValue(mockCustomer);
-      vi.mocked(createCheckoutSession).mockResolvedValue(mockSession);
+      });
 
       // Act
       const result = await useCase.execute(request);
@@ -192,8 +181,8 @@ describe('CreateCheckoutUseCase', () => {
         customerId: 'cus_existing',
       });
 
-      expect(getCustomer).toHaveBeenCalledWith('cus_existing');
-      expect(createCustomer).not.toHaveBeenCalled();
+      expect(mockStripeService.getCustomer).toHaveBeenCalledWith('cus_existing');
+      expect(mockStripeService.createCustomer).not.toHaveBeenCalled();
       expect(mockUserRepository.updateStripeCustomerId).not.toHaveBeenCalled();
     });
 
@@ -211,27 +200,13 @@ describe('CreateCheckoutUseCase', () => {
         stripeCustomerId: 'cus_deleted',
       };
 
-      const mockDeletedCustomer = {
-        id: 'cus_deleted',
-        deleted: true,
-      } as Stripe.DeletedCustomer;
-
-      const mockNewCustomer = {
-        id: 'cus_new',
-        email: 'test@example.com',
-        deleted: false,
-      } as Stripe.Customer;
-
-      const mockSession = {
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(userWithCustomer);
+      vi.mocked(mockStripeService.getCustomer).mockResolvedValue({ id: 'cus_deleted', deleted: true } as any);
+      vi.mocked(mockStripeService.createCustomer).mockResolvedValue({ id: 'cus_new' });
+      vi.mocked(mockStripeService.createCheckoutSession).mockResolvedValue({
         id: 'cs_test_123',
         url: 'https://checkout.stripe.com/pay/cs_test_123',
-        customer: 'cus_new',
-      } as Stripe.Checkout.Session;
-
-      vi.mocked(mockUserRepository.getById).mockResolvedValue(userWithCustomer);
-      vi.mocked(getCustomer).mockResolvedValue(mockDeletedCustomer as any);
-      vi.mocked(createCustomer).mockResolvedValue(mockNewCustomer);
-      vi.mocked(createCheckoutSession).mockResolvedValue(mockSession);
+      });
       vi.mocked(mockUserRepository.updateStripeCustomerId).mockResolvedValue(mockUser);
 
       // Act
@@ -239,7 +214,7 @@ describe('CreateCheckoutUseCase', () => {
 
       // Assert
       expect(result.customerId).toBe('cus_new');
-      expect(createCustomer).toHaveBeenCalled();
+      expect(mockStripeService.createCustomer).toHaveBeenCalled();
       expect(mockUserRepository.updateStripeCustomerId).toHaveBeenCalledWith('user-123', 'cus_new');
     });
 
@@ -256,28 +231,19 @@ describe('CreateCheckoutUseCase', () => {
         },
       };
 
-      const mockCustomer = {
-        id: 'cus_123',
-        email: 'test@example.com',
-        deleted: false,
-      } as Stripe.Customer;
-
-      const mockSession = {
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockStripeService.createCustomer).mockResolvedValue({ id: 'cus_123' });
+      vi.mocked(mockStripeService.createCheckoutSession).mockResolvedValue({
         id: 'cs_test_123',
         url: 'https://checkout.stripe.com/pay/cs_test_123',
-        customer: 'cus_123',
-      } as Stripe.Checkout.Session;
-
-      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(createCustomer).mockResolvedValue(mockCustomer);
-      vi.mocked(createCheckoutSession).mockResolvedValue(mockSession);
+      });
       vi.mocked(mockUserRepository.updateStripeCustomerId).mockResolvedValue(mockUser);
 
       // Act
       await useCase.execute(request);
 
       // Assert
-      expect(createCheckoutSession).toHaveBeenCalledWith(
+      expect(mockStripeService.createCheckoutSession).toHaveBeenCalledWith(
         'price_xxx',
         'https://example.com/success',
         'https://example.com/cancel',
@@ -409,21 +375,12 @@ describe('CreateCheckoutUseCase', () => {
         cancelUrl: 'https://example.com/cancel',
       };
 
-      const mockCustomer = {
-        id: 'cus_123',
-        email: 'test@example.com',
-        deleted: false,
-      } as Stripe.Customer;
-
-      const mockSession = {
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockStripeService.createCustomer).mockResolvedValue({ id: 'cus_123' });
+      vi.mocked(mockStripeService.createCheckoutSession).mockResolvedValue({
         id: 'cs_test_123',
         url: null,
-        customer: 'cus_123',
-      } as Stripe.Checkout.Session;
-
-      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(createCustomer).mockResolvedValue(mockCustomer);
-      vi.mocked(createCheckoutSession).mockResolvedValue(mockSession);
+      });
       vi.mocked(mockUserRepository.updateStripeCustomerId).mockResolvedValue(mockUser);
 
       // Act & Assert
@@ -444,7 +401,7 @@ describe('CreateCheckoutUseCase', () => {
       };
 
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(createCustomer).mockRejectedValue(new Error('Stripe API error'));
+      vi.mocked(mockStripeService.createCustomer).mockRejectedValue(new Error('Stripe API error'));
 
       // Act & Assert
       await expect(useCase.execute(request)).rejects.toThrow(CreateCheckoutUseCaseError);
@@ -462,15 +419,9 @@ describe('CreateCheckoutUseCase', () => {
         cancelUrl: 'https://example.com/cancel',
       };
 
-      const mockCustomer = {
-        id: 'cus_123',
-        email: 'test@example.com',
-        deleted: false,
-      } as Stripe.Customer;
-
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(createCustomer).mockResolvedValue(mockCustomer);
-      vi.mocked(createCheckoutSession).mockRejectedValue(new Error('Stripe API error'));
+      vi.mocked(mockStripeService.createCustomer).mockResolvedValue({ id: 'cus_123' });
+      vi.mocked(mockStripeService.createCheckoutSession).mockRejectedValue(new Error('Stripe API error'));
       vi.mocked(mockUserRepository.updateStripeCustomerId).mockResolvedValue(mockUser);
 
       // Act & Assert

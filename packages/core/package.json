@@ -54,6 +54,22 @@
       "types": "./dist/core/src/domain/services/IAstrologyCalculationService.d.ts",
       "default": "./dist/core/src/domain/services/IAstrologyCalculationService.js"
     },
+    "./domain/services/IPasswordService": {
+      "types": "./dist/core/src/domain/services/IPasswordService.d.ts",
+      "default": "./dist/core/src/domain/services/IPasswordService.js"
+    },
+    "./domain/services/IJWTService": {
+      "types": "./dist/core/src/domain/services/IJWTService.d.ts",
+      "default": "./dist/core/src/domain/services/IJWTService.js"
+    },
+    "./domain/services/IStripeService": {
+      "types": "./dist/core/src/domain/services/IStripeService.d.ts",
+      "default": "./dist/core/src/domain/services/IStripeService.js"
+    },
+    "./domain/services/IChatGateway": {
+      "types": "./dist/core/src/domain/services/IChatGateway.d.ts",
+      "default": "./dist/core/src/domain/services/IChatGateway.js"
+    },
     "./domain/value-objects/astrology/BirthData": {
       "types": "./dist/core/src/domain/value-objects/astrology/BirthData.d.ts",
       "default": "./dist/core/src/domain/value-objects/astrology/BirthData.js"
@@ -77,15 +93,12 @@
   },
   "dependencies": {
     "@anplexa/contracts": "workspace:*",
-    "@anplexa/database": "workspace:*",
-    "@anplexa/services": "workspace:*"
+    "@anplexa/database": "workspace:*"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
-    "@types/stripe": "^8.0.0",
     "@vitest/coverage-v8": "^4.0.17",
     "better-sqlite3": "^12.6.0",
-    "stripe": "^14.16.0",
     "typescript": "^5.7.2",
     "vite-tsconfig-paths": "^6.0.4",
     "vitest": "^1.2.0"

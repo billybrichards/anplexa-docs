@@ -14,8 +14,9 @@ import type { ISessionRepository } from '../../repositories/interfaces/session.r
 import { Session } from '../../domain/entities/Session';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
 import { ValidationError } from '../../domain/errors/ValidationError';
-import { JWTService, PasswordService } from '@anplexa/services';
-import type { TokenPair } from '@anplexa/services';
+import type { IJWTService } from '../../domain/services/IJWTService';
+import type { TokenPair } from '../../domain/services/IJWTService';
+import type { IPasswordService } from '../../domain/services/IPasswordService';
 
 export interface LoginUserInput {
   email: string;
@@ -44,8 +45,8 @@ export class LoginUserUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly sessionRepository: ISessionRepository,
-    private readonly jwtService: JWTService,
-    private readonly passwordService: PasswordService
+    private readonly jwtService: IJWTService,
+    private readonly passwordService: IPasswordService
   ) {}
 
   /**

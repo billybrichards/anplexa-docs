@@ -13,8 +13,8 @@ import type { ISessionRepository } from '../../repositories/interfaces/session.r
 import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
 import { ValidationError } from '../../domain/errors/ValidationError';
-import { JWTService } from '@anplexa/services';
-import type { TokenPair } from '@anplexa/services';
+import type { IJWTService } from '../../domain/services/IJWTService';
+import type { TokenPair } from '../../domain/services/IJWTService';
 
 export interface RefreshTokenInput {
   refreshToken: string;
@@ -34,7 +34,7 @@ export class RefreshTokenUseCase {
   constructor(
     private readonly sessionRepository: ISessionRepository,
     private readonly userRepository: IUserRepository,
-    private readonly jwtService: JWTService
+    private readonly jwtService: IJWTService
   ) {}
 
   /**

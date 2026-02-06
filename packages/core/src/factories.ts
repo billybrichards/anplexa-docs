@@ -43,6 +43,10 @@ import type { IBirthChartRepository } from './repositories/interfaces/birth-char
 import type { ICompanionPersonaRepository } from './repositories/interfaces/companion-persona.repository.interface';
 import type { IAstrologyCalculationService } from './domain/services/IAstrologyCalculationService';
 import type { SystemPromptConfig } from './domain/services/SystemPromptBuilder';
+import type { IPasswordService } from './domain/services/IPasswordService';
+import type { IJWTService } from './domain/services/IJWTService';
+import type { IStripeService } from './domain/services/IStripeService';
+import type { IChatGateway } from './domain/services/IChatGateway';
 
 import { LoginUser, RegisterUser, RefreshToken } from './use-cases/auth/index';
 import {
@@ -51,7 +55,6 @@ import {
 } from './use-cases/chat/index';
 import { CreateCheckoutUseCase } from './use-cases/subscription/index';
 import { CalculateBirthChartUseCase } from './use-cases/astrology/CalculateBirthChartUseCase';
-import { PasswordService, JWTService } from '@anplexa/services';
 
 /**
  * DI Container for managing repository and service instances
@@ -64,10 +67,11 @@ export interface DIContainer {
   sessionRepository: ISessionRepository;
   birthChartRepository?: IBirthChartRepository;
   companionPersonaRepository?: ICompanionPersonaRepository;
-  passwordService: PasswordService;
-  jwtService: JWTService;
+  passwordService: IPasswordService;
+  jwtService: IJWTService;
+  stripeService?: IStripeService;
   astrologyService?: IAstrologyCalculationService;
-  ollamaGateway?: import('@anplexa/services/ai').OllamaGateway;
+  chatGateway?: IChatGateway;
   /** Optional configuration for system prompt building */
   systemPromptConfig?: SystemPromptConfig;
 }
@@ -125,8 +129,8 @@ export interface DIContainer {
 export function createLoginUserUseCase(
   userRepository: IUserRepository,
   sessionRepository: ISessionRepository,
-  passwordService: PasswordService,
-  jwtService: JWTService
+  passwordService: IPasswordService,
+  jwtService: IJWTService
 ): LoginUser {
   return new LoginUser(userRepository, sessionRepository, passwordService, jwtService);
 }
@@ -152,8 +156,8 @@ export function createLoginUserUseCase(
 export function createRegisterUserUseCase(
   userRepository: IUserRepository,
   sessionRepository: ISessionRepository,
-  passwordService: PasswordService,
-  jwtService: JWTService
+  passwordService: IPasswordService,
+  jwtService: IJWTService
 ): RegisterUser {
   return new RegisterUser(userRepository, sessionRepository, passwordService, jwtService);
 }
@@ -175,7 +179,7 @@ export function createRegisterUserUseCase(
 export function createRefreshTokenUseCase(
   sessionRepository: ISessionRepository,
   userRepository: IUserRepository,
-  jwtService: JWTService
+  jwtService: IJWTService
 ): RefreshToken {
   return new RefreshToken(sessionRepository, userRepository, jwtService);
 }
@@ -189,7 +193,7 @@ export function createRefreshTokenUseCase(
  *
  * @param conversationRepository - Repository for conversation data access
  * @param messageRepository - Repository for message data access
- * @param ollamaGateway - AI service gateway for generating responses
+ * @param chatGateway - AI service gateway for generating responses
  * @param companionPersonaRepository - Optional repository for companion persona data access
  * @param systemPromptConfig - Optional configuration for system prompt building
  * @returns SendMessageUseCase instance ready for use
@@ -197,13 +201,13 @@ export function createRefreshTokenUseCase(
  * @example
  * ```ts
  * // Basic usage (without persona)
- * const sendMessage = createSendMessageUseCase(convRepo, msgRepo, ollamaGateway);
+ * const sendMessage = createSendMessageUseCase(convRepo, msgRepo, chatGateway);
  *
  * // With persona support
  * const sendMessage = createSendMessageUseCase(
  *   convRepo,
  *   msgRepo,
- *   ollamaGateway,
+ *   chatGateway,
  *   personaRepo
  * );
  *
@@ -217,14 +221,14 @@ export function createRefreshTokenUseCase(
 export function createSendMessageUseCase(
   conversationRepository: IConversationRepository,
   messageRepository: IMessageRepository,
-  ollamaGateway: import('@anplexa/services/ai').OllamaGateway,
+  chatGateway: IChatGateway,
   companionPersonaRepository?: ICompanionPersonaRepository,
   systemPromptConfig?: SystemPromptConfig
 ): SendMessageUseCase {
   return new SendMessageUseCase(
     conversationRepository,
     messageRepository,
-    ollamaGateway,
+    chatGateway,
     companionPersonaRepository,
     systemPromptConfig
   );
@@ -262,11 +266,12 @@ export function createGetConversationHistoryUseCase(
  * Create CreateCheckoutUseCase instance
  *
  * @param userRepository - Repository for user data access
+ * @param stripeService - Stripe payment service
  * @returns CreateCheckoutUseCase instance ready for use
  *
  * @example
  * ```ts
- * const createCheckout = createCreateCheckoutUseCase(userRepo);
+ * const createCheckout = createCreateCheckoutUseCase(userRepo, stripeService);
  * const result = await createCheckout.execute({
  *   userId: 'user-123',
  *   priceId: 'price_xxx'
@@ -274,9 +279,10 @@ export function createGetConversationHistoryUseCase(
  * ```
  */
 export function createCreateCheckoutUseCase(
-  userRepository: IUserRepository
+  userRepository: IUserRepository,
+  stripeService: IStripeService
 ): CreateCheckoutUseCase {
-  return new CreateCheckoutUseCase(userRepository);
+  return new CreateCheckoutUseCase(userRepository, stripeService);
 }
 
 // ============================================================================
@@ -346,7 +352,7 @@ export function createAllUseCases(container: DIContainer) {
     refreshToken: RefreshToken;
     sendMessage?: SendMessageUseCase;
     getConversationHistory: GetConversationHistoryUseCase;
-    createCheckout: CreateCheckoutUseCase;
+    createCheckout?: CreateCheckoutUseCase;
     calculateBirthChart?: CalculateBirthChartUseCase;
   } = {
     // Auth use cases
@@ -368,25 +374,30 @@ export function createAllUseCases(container: DIContainer) {
       container.jwtService
     ),
 
-    // Chat use cases (sendMessage requires ollamaGateway)
+    // Chat use cases (sendMessage requires chatGateway)
     getConversationHistory: createGetConversationHistoryUseCase(
       container.conversationRepository,
       container.messageRepository
     ),
-
-    // Subscription use cases
-    createCheckout: createCreateCheckoutUseCase(container.userRepository),
   };
 
-  // Add sendMessage use case if ollamaGateway is provided
+  // Add sendMessage use case if chatGateway is provided
   // Persona repository is optional - if not provided, default system prompt is used
-  if (container.ollamaGateway) {
+  if (container.chatGateway) {
     useCases.sendMessage = createSendMessageUseCase(
       container.conversationRepository,
       container.messageRepository,
-      container.ollamaGateway,
+      container.chatGateway,
       container.companionPersonaRepository,
       container.systemPromptConfig
+    );
+  }
+
+  // Add createCheckout use case if stripeService is provided
+  if (container.stripeService) {
+    useCases.createCheckout = createCreateCheckoutUseCase(
+      container.userRepository,
+      container.stripeService
     );
   }
 

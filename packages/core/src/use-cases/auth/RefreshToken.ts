@@ -16,7 +16,7 @@ import type { ISessionRepository } from '../../repositories/interfaces/session.r
 import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
 import { ValidationError } from '../../domain/errors/ValidationError';
-import { JWTService } from '@anplexa/services';
+import type { IJWTService } from '../../domain/services/IJWTService';
 
 export interface RefreshTokenRequest {
   refreshToken: string;
@@ -31,7 +31,7 @@ export class RefreshToken {
   constructor(
     private readonly sessionRepository: ISessionRepository,
     private readonly userRepository: IUserRepository,
-    private readonly jwtService: JWTService
+    private readonly jwtService: IJWTService
   ) {}
 
   async execute(request: RefreshTokenRequest): Promise<RefreshTokenResponse> {

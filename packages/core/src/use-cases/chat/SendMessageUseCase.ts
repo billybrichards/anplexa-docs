@@ -16,7 +16,7 @@ import type { MessageDTO, MessageRole } from '@anplexa/contracts';
 import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface';
 import type { IMessageRepository } from '../../repositories/interfaces/message.repository.interface';
 import type { ICompanionPersonaRepository } from '../../repositories/interfaces/companion-persona.repository.interface';
-import type { OllamaGateway, ChatMessage } from '@anplexa/services/ai';
+import type { IChatGateway, ChatMessage } from '../../domain/services/IChatGateway';
 import {
   SystemPromptBuilder,
   type SystemPromptConfig,
@@ -89,7 +89,7 @@ export class SendMessageUseCase {
   constructor(
     private readonly conversationRepository: IConversationRepository,
     private readonly messageRepository: IMessageRepository,
-    private readonly ollamaGateway: OllamaGateway,
+    private readonly ollamaGateway: IChatGateway,
     private readonly companionPersonaRepository?: ICompanionPersonaRepository,
     systemPromptConfig?: SystemPromptConfig
   ) {

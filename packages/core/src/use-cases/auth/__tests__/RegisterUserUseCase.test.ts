@@ -12,14 +12,15 @@ import type { ISessionRepository } from '../../../repositories/ISessionRepositor
 import { User } from '../../../domain/entities/User';
 import { Session } from '../../../domain/entities/Session';
 import { ValidationError } from '../../../domain/errors/ValidationError';
-import { JWTService, PasswordService } from '@anplexa/services';
+import type { IJWTService } from '../../../domain/services/IJWTService';
+import type { IPasswordService } from '../../../domain/services/IPasswordService';
 
 describe('RegisterUserUseCase', () => {
   let useCase: RegisterUserUseCase;
   let mockUserRepo: IUserRepository;
   let mockSessionRepo: ISessionRepository;
-  let mockJwtService: JWTService;
-  let mockPasswordService: PasswordService;
+  let mockJwtService: IJWTService;
+  let mockPasswordService: IPasswordService;
 
   const mockUser = User.create({
     id: 'user-123',
@@ -95,13 +96,17 @@ describe('RegisterUserUseCase', () => {
       verifyAccessToken: vi.fn(),
       verifyRefreshToken: vi.fn(),
       getRefreshExpiryDate: vi.fn(),
-    } as any;
+      getAccessExpiryDate: vi.fn(),
+      decode: vi.fn(),
+    } as IJWTService;
 
     mockPasswordService = {
       hashPassword: vi.fn(),
       verifyPassword: vi.fn(),
       validatePasswordStrength: vi.fn(),
-    } as any;
+      generateApiKey: vi.fn(),
+      verifyApiKey: vi.fn(),
+    } as IPasswordService;
 
     useCase = new RegisterUserUseCase(
       mockUserRepo,

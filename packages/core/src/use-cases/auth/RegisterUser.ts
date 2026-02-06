@@ -16,7 +16,8 @@ import type { IUserRepository } from '../../repositories/interfaces/user.reposit
 import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface';
 import { ValidationError } from '../../domain/errors/ValidationError';
 import { AuthenticationError } from '../../domain/errors/AuthenticationError';
-import { PasswordService, JWTService } from '@anplexa/services';
+import type { IPasswordService } from '../../domain/services/IPasswordService';
+import type { IJWTService } from '../../domain/services/IJWTService';
 
 export interface RegisterUserRequest {
   email: string;
@@ -36,8 +37,8 @@ export class RegisterUser {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly sessionRepository: ISessionRepository,
-    private readonly passwordService: PasswordService,
-    private readonly jwtService: JWTService
+    private readonly passwordService: IPasswordService,
+    private readonly jwtService: IJWTService
   ) {}
 
   async execute(request: RegisterUserRequest): Promise<RegisterUserResponse> {
