@@ -13,15 +13,15 @@
  */
 
 import type { MessageDTO, MessageRole } from '@anplexa/contracts';
-import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface';
-import type { IMessageRepository } from '../../repositories/interfaces/message.repository.interface';
-import type { ICompanionPersonaRepository } from '../../repositories/interfaces/companion-persona.repository.interface';
-import type { IChatGateway, ChatMessage } from '../../domain/services/IChatGateway';
+import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface.js';
+import type { IMessageRepository } from '../../repositories/interfaces/message.repository.interface.js';
+import type { ICompanionPersonaRepository } from '../../repositories/interfaces/companion-persona.repository.interface.js';
+import type { IChatGateway, ChatMessage } from '../../domain/services/IChatGateway.js';
 import {
   SystemPromptBuilder,
   type SystemPromptConfig,
   type ConversationContext,
-} from '../../domain/services/SystemPromptBuilder';
+} from '../../domain/services/SystemPromptBuilder.js';
 
 /**
  * Input parameters for sending a message

@@ -6,14 +6,14 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ResetPasswordUseCase } from '../ResetPasswordUseCase';
-import type { IUserRepository } from '../../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../../repositories/ISessionRepository';
-import { User } from '../../../domain/entities/User';
-import { Session } from '../../../domain/entities/Session';
-import { ValidationError } from '../../../domain/errors/ValidationError';
-import { AuthenticationError } from '../../../domain/errors/AuthenticationError';
-import type { IPasswordService } from '../../../domain/services/IPasswordService';
+import { ResetPasswordUseCase } from '../ResetPasswordUseCase.js';
+import type { IUserRepository } from '../../../repositories/IUserRepository.js';
+import type { ISessionRepository } from '../../../repositories/ISessionRepository.js';
+import { User } from '../../../domain/entities/User.js';
+import { Session } from '../../../domain/entities/Session.js';
+import { ValidationError } from '../../../domain/errors/ValidationError.js';
+import { AuthenticationError } from '../../../domain/errors/AuthenticationError.js';
+import type { IPasswordService } from '../../../domain/services/IPasswordService.js';
 
 describe('ResetPasswordUseCase', () => {
   let useCase: ResetPasswordUseCase;

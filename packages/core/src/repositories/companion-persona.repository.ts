@@ -11,11 +11,11 @@ import type {
   ICompanionPersonaRepository,
   CreateCompanionPersonaData,
   UpdateCompanionPersonaData,
-} from './interfaces/companion-persona.repository.interface';
-import { CompanionPersona } from '../domain/entities/CompanionPersona';
-import { PersonalityTraits } from '../domain/value-objects/companion/PersonalityTraits';
-import { CommunicationStyle } from '../domain/value-objects/companion/CommunicationStyle';
-import { EmotionalApproach } from '../domain/value-objects/companion/EmotionalApproach';
+} from './interfaces/companion-persona.repository.interface.js';
+import { CompanionPersona } from '../domain/entities/CompanionPersona.js';
+import { PersonalityTraits } from '../domain/value-objects/companion/PersonalityTraits.js';
+import { CommunicationStyle } from '../domain/value-objects/companion/CommunicationStyle.js';
+import { EmotionalApproach } from '../domain/value-objects/companion/EmotionalApproach.js';
 
 export class CompanionPersonaRepository implements ICompanionPersonaRepository {
   constructor(private readonly db: Database) {}

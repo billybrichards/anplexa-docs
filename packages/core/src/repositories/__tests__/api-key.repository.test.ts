@@ -9,8 +9,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { apiKeys } from '@anplexa/database/schema/sqlite';
-import { ApiKeyRepository } from '../api-key.repository';
-import type { CreateApiKeyData } from '../interfaces/api-key.repository.interface';
+import { ApiKeyRepository } from '../api-key.repository.js';
+import type { CreateApiKeyData } from '../interfaces/api-key.repository.interface.js';
 
 describe('ApiKeyRepository', () => {
   let sqliteDb: Database.Database;

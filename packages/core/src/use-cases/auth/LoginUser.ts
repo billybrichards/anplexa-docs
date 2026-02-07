@@ -10,12 +10,12 @@
  * 6. Returns tokens and user data
  */
 
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
-import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface';
-import { AuthenticationError } from '../../domain/errors/AuthenticationError';
-import { ValidationError } from '../../domain/errors/ValidationError';
-import type { IPasswordService } from '../../domain/services/IPasswordService';
-import type { IJWTService } from '../../domain/services/IJWTService';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
+import { AuthenticationError } from '../../domain/errors/AuthenticationError.js';
+import { ValidationError } from '../../domain/errors/ValidationError.js';
+import type { IPasswordService } from '../../domain/services/IPasswordService.js';
+import type { IJWTService } from '../../domain/services/IJWTService.js';
 
 export interface LoginUserRequest {
   email: string;

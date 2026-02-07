@@ -9,11 +9,11 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ResetPasswordUseCase } from '../../auth/ResetPasswordUseCase';
-import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface';
-import type { ISessionRepository } from '../../../repositories/interfaces/session.repository.interface';
-import { ValidationError } from '../../../domain/errors/ValidationError';
-import { AuthenticationError } from '../../../domain/errors/AuthenticationError';
+import { ResetPasswordUseCase } from '../../auth/ResetPasswordUseCase.js';
+import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface.js';
+import type { ISessionRepository } from '../../../repositories/interfaces/session.repository.interface.js';
+import { ValidationError } from '../../../domain/errors/ValidationError.js';
+import { AuthenticationError } from '../../../domain/errors/AuthenticationError.js';
 import type { User } from '@anplexa/database';
 
 // Mock PasswordService

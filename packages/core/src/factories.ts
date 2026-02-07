@@ -35,26 +35,26 @@
  * - Repository factories abstract database creation and configuration
  */
 
-import type { IUserRepository } from './repositories/interfaces/user.repository.interface';
-import type { IConversationRepository } from './repositories/interfaces/conversation.repository.interface';
-import type { IMessageRepository } from './repositories/interfaces/message.repository.interface';
-import type { ISessionRepository } from './repositories/interfaces/session.repository.interface';
-import type { IBirthChartRepository } from './repositories/interfaces/birth-chart.repository.interface';
-import type { ICompanionPersonaRepository } from './repositories/interfaces/companion-persona.repository.interface';
-import type { IAstrologyCalculationService } from './domain/services/IAstrologyCalculationService';
-import type { SystemPromptConfig } from './domain/services/SystemPromptBuilder';
-import type { IPasswordService } from './domain/services/IPasswordService';
-import type { IJWTService } from './domain/services/IJWTService';
-import type { IStripeService } from './domain/services/IStripeService';
-import type { IChatGateway } from './domain/services/IChatGateway';
+import type { IUserRepository } from './repositories/interfaces/user.repository.interface.js';
+import type { IConversationRepository } from './repositories/interfaces/conversation.repository.interface.js';
+import type { IMessageRepository } from './repositories/interfaces/message.repository.interface.js';
+import type { ISessionRepository } from './repositories/interfaces/session.repository.interface.js';
+import type { IBirthChartRepository } from './repositories/interfaces/birth-chart.repository.interface.js';
+import type { ICompanionPersonaRepository } from './repositories/interfaces/companion-persona.repository.interface.js';
+import type { IAstrologyCalculationService } from './domain/services/IAstrologyCalculationService.js';
+import type { SystemPromptConfig } from './domain/services/SystemPromptBuilder.js';
+import type { IPasswordService } from './domain/services/IPasswordService.js';
+import type { IJWTService } from './domain/services/IJWTService.js';
+import type { IStripeService } from './domain/services/IStripeService.js';
+import type { IChatGateway } from './domain/services/IChatGateway.js';
 
-import { LoginUser, RegisterUser, RefreshToken } from './use-cases/auth/index';
+import { LoginUser, RegisterUser, RefreshToken } from './use-cases/auth/index.js';
 import {
   SendMessageUseCase,
   GetConversationHistoryUseCase,
-} from './use-cases/chat/index';
-import { CreateCheckoutUseCase } from './use-cases/subscription/index';
-import { CalculateBirthChartUseCase } from './use-cases/astrology/CalculateBirthChartUseCase';
+} from './use-cases/chat/index.js';
+import { CreateCheckoutUseCase } from './use-cases/subscription/index.js';
+import { CalculateBirthChartUseCase } from './use-cases/astrology/CalculateBirthChartUseCase.js';
 
 /**
  * DI Container for managing repository and service instances

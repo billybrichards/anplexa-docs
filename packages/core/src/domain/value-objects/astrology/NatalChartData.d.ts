@@ -4,7 +4,7 @@
  * Contains all calculated astrological data for a complete natal chart.
  * Immutable value object representing the state of the cosmos at birth.
  */
-import { ZodiacSign, type ZodiacSignName } from './ZodiacSign';
+import { ZodiacSign, type ZodiacSignName } from './ZodiacSign.js';
 export interface PlanetPlacement {
     planetName: string;
     sign: ZodiacSign;

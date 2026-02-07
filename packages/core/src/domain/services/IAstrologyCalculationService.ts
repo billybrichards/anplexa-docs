@@ -5,8 +5,8 @@
  * Implementation lives in infrastructure layer (services package).
  */
 
-import type { BirthData } from '../value-objects/astrology/BirthData';
-import type { NatalChartData } from '../value-objects/astrology/NatalChartData';
+import type { BirthData } from '../value-objects/astrology/BirthData.js';
+import type { NatalChartData } from '../value-objects/astrology/NatalChartData.js';
 
 export interface CalculationOptions {
   houseSystem?: 'placidus' | 'whole_sign' | 'koch' | 'equal';

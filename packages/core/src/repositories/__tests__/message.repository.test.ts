@@ -9,8 +9,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 import { sqlite as schema } from '@anplexa/database';
-import { MessageRepository } from '../message.repository';
-import type { CreateMessageData } from '../interfaces/message.repository.interface';
+import { MessageRepository } from '../message.repository.js';
+import type { CreateMessageData } from '../interfaces/message.repository.interface.js';
 
 describe('MessageRepository', () => {
   let sqlite: Database.Database;

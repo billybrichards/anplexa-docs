@@ -8,16 +8,16 @@
  */
 
 // Entities
-export { User } from './entities/User';
-export { Conversation } from './entities/Conversation';
-export { Message, type MessageRole } from './entities/Message';
-export { Session } from './entities/Session';
-export * from './entities/index';
+export { User } from './entities/User.js';
+export { Conversation } from './entities/Conversation.js';
+export { Message, type MessageRole } from './entities/Message.js';
+export { Session } from './entities/Session.js';
+export * from './entities/index.js';
 
 // Errors
-export { DomainError } from './errors/DomainError';
-export { ValidationError } from './errors/ValidationError';
-export { AuthenticationError } from './errors/AuthenticationError';
-export { AuthorizationError } from './errors/AuthorizationError';
-export { NotFoundError } from './errors/NotFoundError';
-export * from './errors/index';
+export { DomainError } from './errors/DomainError.js';
+export { ValidationError } from './errors/ValidationError.js';
+export { AuthenticationError } from './errors/AuthenticationError.js';
+export { AuthorizationError } from './errors/AuthorizationError.js';
+export { NotFoundError } from './errors/NotFoundError.js';
+export * from './errors/index.js';

@@ -1,4 +1,4 @@
 // Email service exports
-export * from './client';
-export * from './templates';
-export * from './resend';
+export * from './client.js';
+export * from './templates.js';
+export * from './resend.js';

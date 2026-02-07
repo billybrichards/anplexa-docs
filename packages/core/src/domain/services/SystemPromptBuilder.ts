@@ -9,7 +9,7 @@
  * This is a pure domain service with no external dependencies.
  */
 
-import type { CompanionPersona } from '../entities/CompanionPersona';
+import type { CompanionPersona } from '../entities/CompanionPersona.js';
 
 /**
  * Configuration for system prompt building

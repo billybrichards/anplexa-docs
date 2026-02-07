@@ -10,8 +10,8 @@ import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { sqlite as schema } from '@anplexa/database';
 import type { User } from '@anplexa/database';
-import { UserRepository } from '../user.repository';
-import type { CreateUserData } from '../interfaces/user.repository.interface';
+import { UserRepository } from '../user.repository.js';
+import type { CreateUserData } from '../interfaces/user.repository.interface.js';
 
 describe('UserRepository', () => {
   let sqliteDb: Database.Database;

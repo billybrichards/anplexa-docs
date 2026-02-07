@@ -11,7 +11,7 @@ import type {
   IUserFeedbackRepository,
   CreateUserFeedbackData,
   UserFeedbackStats,
-} from './interfaces/user-feedback.repository.interface';
+} from './interfaces/user-feedback.repository.interface.js';
 
 export class UserFeedbackRepository implements IUserFeedbackRepository {
   constructor(private readonly db: Database) {}

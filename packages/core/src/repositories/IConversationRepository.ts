@@ -5,7 +5,7 @@
  * Implemented by infrastructure layer (e.g., DrizzleConversationRepository)
  */
 
-import type { Conversation } from '../domain/entities/Conversation';
+import type { Conversation } from '../domain/entities/Conversation.js';
 
 export interface IConversationRepository {
   /**

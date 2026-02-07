@@ -290,17 +290,17 @@ export declare const AmplexaProfileSchema: z.ZodObject<{
     pace: z.ZodOptional<z.ZodString>;
     tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strict", z.ZodTypeAny, {
+    communicationStyle?: string;
     funnel?: string;
     funnelName?: string;
     primaryNeed?: string;
-    communicationStyle?: string;
     pace?: string;
     tags?: string[];
 }, {
+    communicationStyle?: string;
     funnel?: string;
     funnelName?: string;
     primaryNeed?: string;
-    communicationStyle?: string;
     pace?: string;
     tags?: string[];
 }>;

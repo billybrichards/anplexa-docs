@@ -9,10 +9,10 @@
  * 5. Returns session ID and checkout URL
  */
 
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
-import type { IStripeService } from '../../domain/services/IStripeService';
-import { ValidationError } from '../../domain/errors/ValidationError';
-import { AuthenticationError } from '../../domain/errors/AuthenticationError';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { IStripeService } from '../../domain/services/IStripeService.js';
+import { ValidationError } from '../../domain/errors/ValidationError.js';
+import { AuthenticationError } from '../../domain/errors/AuthenticationError.js';
 
 export interface CreateCheckoutRequest {
   userId: string;

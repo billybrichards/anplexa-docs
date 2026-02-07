@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import * as stripeModule from './client';
-import * as checkoutModule from './checkout';
-import * as subscriptionModule from './subscription';
-import * as webhookModule from './webhook';
+import * as stripeModule from './client.js';
+import * as checkoutModule from './checkout.js';
+import * as subscriptionModule from './subscription.js';
+import * as webhookModule from './webhook.js';
 
 // Mock Stripe SDK
 vi.mock('stripe', () => {

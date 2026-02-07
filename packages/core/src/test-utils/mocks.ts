@@ -5,7 +5,7 @@
  * These factories ensure consistency across test files and reduce boilerplate.
  */
 
-import type { User } from '../repositories/UserRepository';
+import type { User } from '../repositories/UserRepository.js';
 
 /**
  * Creates a mock user with default values.

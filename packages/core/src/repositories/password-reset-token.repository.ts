@@ -8,11 +8,11 @@
 import { randomUUID } from 'crypto';
 import type { Database } from '@anplexa/database';
 import { postgres as schema, eq, lt, and, isNull, gt } from '@anplexa/database';
-import { PasswordResetToken } from '../domain/entities/PasswordResetToken';
+import { PasswordResetToken } from '../domain/entities/PasswordResetToken.js';
 import type {
   IPasswordResetTokenRepository,
   CreatePasswordResetTokenData,
-} from './interfaces/password-reset-token.repository.interface';
+} from './interfaces/password-reset-token.repository.interface.js';
 
 /**
  * Drizzle ORM implementation of the Password Reset Token Repository

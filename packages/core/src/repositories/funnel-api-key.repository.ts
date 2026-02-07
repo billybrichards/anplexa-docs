@@ -10,7 +10,7 @@ import { funnelApiKeys, type FunnelApiKey, eq } from '@anplexa/database';
 import type {
   IFunnelApiKeyRepository,
   CreateFunnelApiKeyData,
-} from './interfaces/funnel-api-key.repository.interface';
+} from './interfaces/funnel-api-key.repository.interface.js';
 
 export class FunnelApiKeyRepository implements IFunnelApiKeyRepository {
   constructor(private readonly db: Database) {}

@@ -9,10 +9,10 @@
  * - Auth: Authentication service (planned)
  * - AI: AI provider abstraction (planned)
  */
-export * from './analytics';
-export * from './stripe/index';
-export * from './email/index';
-export * from './auth';
-export * from './ai';
-export { SimplifiedAstrologyService } from './astrology/SimplifiedAstrologyService';
+export * from './analytics.js';
+export * from './stripe/index.js';
+export * from './email/index.js';
+export * from './auth.js';
+export * from './ai.js';
+export { SimplifiedAstrologyService } from './astrology/SimplifiedAstrologyService.js';
 //# sourceMappingURL=index.d.ts.map

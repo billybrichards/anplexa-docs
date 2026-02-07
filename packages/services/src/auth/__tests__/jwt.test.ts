@@ -5,7 +5,7 @@ import {
   TokenPayload,
   createJWTService,
   getJWTService,
-} from '../jwt';
+} from '../jwt.js';
 
 describe('JWTService', () => {
   let jwtService: JWTService;

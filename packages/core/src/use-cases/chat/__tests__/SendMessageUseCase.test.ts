@@ -12,10 +12,10 @@ import {
   UnauthorizedConversationAccessError,
   EmptyMessageError,
   AIServiceError,
-} from '../SendMessageUseCase';
-import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface';
-import type { IMessageRepository } from '../../../repositories/interfaces/message.repository.interface';
-import type { IChatGateway } from '../../../domain/services/IChatGateway';
+} from '../SendMessageUseCase.js';
+import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface.js';
+import type { IMessageRepository } from '../../../repositories/interfaces/message.repository.interface.js';
+import type { IChatGateway } from '../../../domain/services/IChatGateway.js';
 import type { ConversationDTO, MessageDTO } from '@anplexa/contracts';
 
 describe('SendMessageUseCase', () => {

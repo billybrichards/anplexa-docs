@@ -12,11 +12,11 @@ import type {
   IUserRepository,
   CreateUserData,
   PaginationOptions,
-} from './interfaces/user.repository.interface';
+} from './interfaces/user.repository.interface.js';
 import {
   createUserWithSQLiteBooleans,
   prepareUpdateData,
-} from '../utils/sqlite-type-mapper';
+} from '../utils/sqlite-type-mapper.js';
 
 /** Maximum limit for queries when offset is used without an explicit limit */
 const MAX_QUERY_LIMIT = 1_000_000;

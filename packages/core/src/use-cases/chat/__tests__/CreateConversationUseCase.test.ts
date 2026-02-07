@@ -10,9 +10,9 @@ import {
   CreateConversationUseCase,
   UserNotFoundError,
   InvalidTitleError,
-} from '../CreateConversationUseCase';
-import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface';
-import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface';
+} from '../CreateConversationUseCase.js';
+import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface.js';
+import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface.js';
 import type { ConversationDTO } from '@anplexa/contracts';
 import type { User } from '@anplexa/database';
 

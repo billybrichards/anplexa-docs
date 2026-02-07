@@ -4,4 +4,4 @@
  * Use cases for AI companion persona management.
  */
 
-export * from './GenerateCompanionPersonaUseCase';
+export * from './GenerateCompanionPersonaUseCase.js';

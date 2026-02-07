@@ -6,14 +6,14 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { RegisterUserUseCase } from '../RegisterUserUseCase';
-import type { IUserRepository } from '../../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../../repositories/ISessionRepository';
-import { User } from '../../../domain/entities/User';
-import { Session } from '../../../domain/entities/Session';
-import { ValidationError } from '../../../domain/errors/ValidationError';
-import type { IJWTService } from '../../../domain/services/IJWTService';
-import type { IPasswordService } from '../../../domain/services/IPasswordService';
+import { RegisterUserUseCase } from '../RegisterUserUseCase.js';
+import type { IUserRepository } from '../../../repositories/IUserRepository.js';
+import type { ISessionRepository } from '../../../repositories/ISessionRepository.js';
+import { User } from '../../../domain/entities/User.js';
+import { Session } from '../../../domain/entities/Session.js';
+import { ValidationError } from '../../../domain/errors/ValidationError.js';
+import type { IJWTService } from '../../../domain/services/IJWTService.js';
+import type { IPasswordService } from '../../../domain/services/IPasswordService.js';
 
 describe('RegisterUserUseCase', () => {
   let useCase: RegisterUserUseCase;

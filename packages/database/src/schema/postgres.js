@@ -109,6 +109,26 @@ export const birthCharts = pgTable('birth_charts', {
     createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
     updatedAt: text('updated_at').default('CURRENT_TIMESTAMP'),
 });
+// Companion Personas
+export const companionPersonas = pgTable('companion_personas', {
+    id: text('id').primaryKey(),
+    userId: text('user_id').references(() => users.id).notNull(),
+    birthChartId: text('birth_chart_id').references(() => birthCharts.id).notNull(),
+    // Persona attributes
+    name: text('name').notNull(),
+    personalityTraits: text('personality_traits').notNull(), // JSON: PersonalityTraitsProps
+    communicationStyle: text('communication_style').notNull(), // JSON: CommunicationStyleProps
+    emotionalApproach: text('emotional_approach').notNull(), // JSON: EmotionalApproachProps
+    systemPrompt: text('system_prompt').notNull(),
+    // Generation metadata
+    llmModel: text('llm_model').notNull(), // Which LLM generated this persona
+    generationReasoning: text('generation_reasoning'), // Why these choices were made
+    generatedAt: text('generated_at').notNull(),
+    // Status
+    isActive: boolean('is_active').default(true),
+    createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+    updatedAt: text('updated_at').default('CURRENT_TIMESTAMP'),
+});
 // Conversations
 export const conversations = pgTable('conversations', {
     id: text('id').primaryKey(),
@@ -233,14 +253,26 @@ export const apiUsageDaily = pgTable('api_usage_daily', {
 export const usersRelations = relations(users, ({ many, one }) => ({
     conversations: many(conversations),
     birthCharts: many(birthCharts),
+    companionPersonas: many(companionPersonas),
     preferences: one(userPreferences),
     feedback: many(userFeedback),
     sessions: many(sessions),
 }));
-export const birthChartsRelations = relations(birthCharts, ({ one }) => ({
+export const birthChartsRelations = relations(birthCharts, ({ one, many }) => ({
     user: one(users, {
         fields: [birthCharts.userId],
         references: [users.id],
+    }),
+    personas: many(companionPersonas),
+}));
+export const companionPersonasRelations = relations(companionPersonas, ({ one }) => ({
+    user: one(users, {
+        fields: [companionPersonas.userId],
+        references: [users.id],
+    }),
+    birthChart: one(birthCharts, {
+        fields: [companionPersonas.birthChartId],
+        references: [birthCharts.id],
     }),
 }));
 export const conversationsRelations = relations(conversations, ({ one, many }) => ({

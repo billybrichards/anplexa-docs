@@ -3,7 +3,7 @@
  * Abstracts PostHog implementation to support both browser and Node.js environments
  * Provides type-safe event tracking across all Anplexa applications
  */
-import type { EventName, EventProperties, UserProperties } from './events';
+import type { EventName, EventProperties, UserProperties } from './events.js';
 /**
  * Configuration options for analytics client initialization
  */

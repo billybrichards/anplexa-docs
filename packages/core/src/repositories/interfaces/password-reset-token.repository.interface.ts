@@ -6,7 +6,7 @@
  * outer layers (infrastructure) implement it.
  */
 
-import { PasswordResetToken } from '../../domain/entities/PasswordResetToken';
+import { PasswordResetToken } from '../../domain/entities/PasswordResetToken.js';
 
 // Re-export PasswordResetToken for use by other modules
 export { PasswordResetToken };

@@ -7,10 +7,10 @@
 
 import type { Database } from '@anplexa/database';
 import { birthCharts, eq, and, desc } from '@anplexa/database';
-import type { IBirthChartRepository, CreateBirthChartData, UpdateBirthChartData, PaginationOptions } from './interfaces/birth-chart.repository.interface';
-import { BirthChart } from '../domain/entities/BirthChart';
-import { BirthData } from '../domain/value-objects/astrology/BirthData';
-import { NatalChartData } from '../domain/value-objects/astrology/NatalChartData';
+import type { IBirthChartRepository, CreateBirthChartData, UpdateBirthChartData, PaginationOptions } from './interfaces/birth-chart.repository.interface.js';
+import { BirthChart } from '../domain/entities/BirthChart.js';
+import { BirthData } from '../domain/value-objects/astrology/BirthData.js';
+import { NatalChartData } from '../domain/value-objects/astrology/NatalChartData.js';
 
 export class BirthChartRepository implements IBirthChartRepository {
   constructor(private readonly db: Database) {}

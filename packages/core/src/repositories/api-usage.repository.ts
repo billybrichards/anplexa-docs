@@ -11,7 +11,7 @@ import type {
   IApiUsageRepository,
   CreateApiUsageData,
   ApiUsageStats,
-} from './interfaces/api-usage.repository.interface';
+} from './interfaces/api-usage.repository.interface.js';
 
 export class ApiUsageRepository implements IApiUsageRepository {
   constructor(private readonly db: Database) {}

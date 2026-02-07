@@ -7,9 +7,9 @@ import {
   UpdateSubscriptionUseCase,
   UpdateSubscriptionUseCaseError,
   type UpdateSubscriptionRequest,
-} from '../UpdateSubscriptionUseCase';
-import type { UserRepository, User } from '../../../repositories/UserRepository';
-import type { IStripeService, SubscriptionResult } from '../../../domain/services/IStripeService';
+} from '../UpdateSubscriptionUseCase.js';
+import type { UserRepository, User } from '../../../repositories/UserRepository.js';
+import type { IStripeService, SubscriptionResult } from '../../../domain/services/IStripeService.js';
 
 describe('UpdateSubscriptionUseCase', () => {
   let useCase: UpdateSubscriptionUseCase;

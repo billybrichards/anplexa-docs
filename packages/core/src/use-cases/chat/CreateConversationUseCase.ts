@@ -10,8 +10,8 @@
  */
 
 import type { ConversationDTO } from '@anplexa/contracts';
-import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface';
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
+import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 
 /**
  * Input parameters for creating a conversation

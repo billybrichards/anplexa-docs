@@ -5,7 +5,7 @@
  * Determines how well a planet can express its nature.
  */
 
-import type { ZodiacSignName } from './ZodiacSign';
+import type { ZodiacSignName } from './ZodiacSign.js';
 
 export type DignityType =
   | 'domicile' // Planet's home sign (strongest)

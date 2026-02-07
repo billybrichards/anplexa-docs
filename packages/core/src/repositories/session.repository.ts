@@ -8,11 +8,11 @@
 import { randomUUID } from 'crypto';
 import type { Database } from '@anplexa/database';
 import { sessions, eq, lt } from '@anplexa/database';
-import { Session } from '../domain/entities/Session';
+import { Session } from '../domain/entities/Session.js';
 import type {
   ISessionRepository,
   CreateSessionData,
-} from './interfaces/session.repository.interface';
+} from './interfaces/session.repository.interface.js';
 
 /**
  * Drizzle ORM implementation of the Session Repository

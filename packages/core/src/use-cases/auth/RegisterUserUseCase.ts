@@ -9,14 +9,14 @@
  * - Creates initial session
  */
 
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
-import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface';
-import { User } from '../../domain/entities/User';
-import { Session } from '../../domain/entities/Session';
-import { ValidationError } from '../../domain/errors/ValidationError';
-import type { IJWTService } from '../../domain/services/IJWTService';
-import type { TokenPair } from '../../domain/services/IJWTService';
-import type { IPasswordService } from '../../domain/services/IPasswordService';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
+import { User } from '../../domain/entities/User.js';
+import { Session } from '../../domain/entities/Session.js';
+import { ValidationError } from '../../domain/errors/ValidationError.js';
+import type { IJWTService } from '../../domain/services/IJWTService.js';
+import type { TokenPair } from '../../domain/services/IJWTService.js';
+import type { IPasswordService } from '../../domain/services/IPasswordService.js';
 
 export interface RegisterUserInput {
   email: string;

@@ -5,9 +5,9 @@
  * Implementation lives in the infrastructure layer.
  */
 
-import type { BirthChart } from '../../domain/entities/BirthChart';
-import type { BirthData } from '../../domain/value-objects/astrology/BirthData';
-import type { NatalChartData } from '../../domain/value-objects/astrology/NatalChartData';
+import type { BirthChart } from '../../domain/entities/BirthChart.js';
+import type { BirthData } from '../../domain/value-objects/astrology/BirthData.js';
+import type { NatalChartData } from '../../domain/value-objects/astrology/NatalChartData.js';
 
 export interface CreateBirthChartData {
   id: string;

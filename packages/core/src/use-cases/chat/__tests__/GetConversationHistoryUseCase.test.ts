@@ -11,9 +11,9 @@ import {
   ConversationNotFoundError,
   UnauthorizedConversationAccessError,
   InvalidPaginationError,
-} from '../GetConversationHistoryUseCase';
-import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface';
-import type { IMessageRepository } from '../../../repositories/interfaces/message.repository.interface';
+} from '../GetConversationHistoryUseCase.js';
+import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface.js';
+import type { IMessageRepository } from '../../../repositories/interfaces/message.repository.interface.js';
 import type { ConversationDTO, MessageDTO } from '@anplexa/contracts';
 
 describe('GetConversationHistoryUseCase', () => {

@@ -5,9 +5,9 @@
  * Immutable value object representing the state of the cosmos at birth.
  */
 
-import { ZodiacSign, type ZodiacSignName } from './ZodiacSign';
-import { EnhancedChartAnalysis } from './EnhancedChartAnalysis';
-import { PlanetaryDignity } from './PlanetaryDignity';
+import { ZodiacSign, type ZodiacSignName } from './ZodiacSign.js';
+import { EnhancedChartAnalysis } from './EnhancedChartAnalysis.js';
+import { PlanetaryDignity } from './PlanetaryDignity.js';
 
 export interface PlanetPlacement {
   planetName: string;

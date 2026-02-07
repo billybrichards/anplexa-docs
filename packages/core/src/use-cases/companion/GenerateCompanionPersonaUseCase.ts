@@ -14,15 +14,15 @@
  * 7. Return preview data for immediate UI feedback
  */
 
-import type { IBirthChartRepository } from '../../repositories/interfaces/birth-chart.repository.interface';
-import type { ICompanionPersonaRepository } from '../../repositories/interfaces/companion-persona.repository.interface';
-import type { ILLMService, GeneratePersonaInput } from '../../domain/services/ILLMService';
-import { CompanionPersona } from '../../domain/entities/CompanionPersona';
-import { PersonalityTraits } from '../../domain/value-objects/companion/PersonalityTraits';
-import { CommunicationStyle, type ToneType } from '../../domain/value-objects/companion/CommunicationStyle';
-import { EmotionalApproach } from '../../domain/value-objects/companion/EmotionalApproach';
-import { NotFoundError } from '../../domain/errors/NotFoundError';
-import { DomainError } from '../../domain/errors/DomainError';
+import type { IBirthChartRepository } from '../../repositories/interfaces/birth-chart.repository.interface.js';
+import type { ICompanionPersonaRepository } from '../../repositories/interfaces/companion-persona.repository.interface.js';
+import type { ILLMService, GeneratePersonaInput } from '../../domain/services/ILLMService.js';
+import { CompanionPersona } from '../../domain/entities/CompanionPersona.js';
+import { PersonalityTraits } from '../../domain/value-objects/companion/PersonalityTraits.js';
+import { CommunicationStyle, type ToneType } from '../../domain/value-objects/companion/CommunicationStyle.js';
+import { EmotionalApproach } from '../../domain/value-objects/companion/EmotionalApproach.js';
+import { NotFoundError } from '../../domain/errors/NotFoundError.js';
+import { DomainError } from '../../domain/errors/DomainError.js';
 
 // ============================================================================
 // Input/Output DTOs

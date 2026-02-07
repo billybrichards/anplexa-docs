@@ -5,10 +5,10 @@
  * Orchestrates domain entities, repository, and calculation service.
  */
 
-import type { IBirthChartRepository } from '../../repositories/interfaces/birth-chart.repository.interface';
-import type { IAstrologyCalculationService } from '../../domain/services/IAstrologyCalculationService';
-import { BirthChart } from '../../domain/entities/BirthChart';
-import { BirthData } from '../../domain/value-objects/astrology/BirthData';
+import type { IBirthChartRepository } from '../../repositories/interfaces/birth-chart.repository.interface.js';
+import type { IAstrologyCalculationService } from '../../domain/services/IAstrologyCalculationService.js';
+import { BirthChart } from '../../domain/entities/BirthChart.js';
+import { BirthData } from '../../domain/value-objects/astrology/BirthData.js';
 
 /**
  * Input DTO

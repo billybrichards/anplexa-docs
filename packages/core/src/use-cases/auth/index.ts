@@ -10,19 +10,19 @@
  * - ResetPassword: Reset user password via secure token
  */
 
-export { LoginUser, type LoginUserRequest, type LoginUserResponse } from './LoginUser';
+export { LoginUser, type LoginUserRequest, type LoginUserResponse } from './LoginUser.js';
 export {
   RegisterUser,
   type RegisterUserRequest,
   type RegisterUserResponse,
-} from './RegisterUser';
+} from './RegisterUser.js';
 export {
   RefreshToken,
   type RefreshTokenRequest,
   type RefreshTokenResponse,
-} from './RefreshToken';
+} from './RefreshToken.js';
 export {
   ResetPasswordUseCase,
   type ResetPasswordInput,
   type ResetPasswordOutput,
-} from './ResetPasswordUseCase';
+} from './ResetPasswordUseCase.js';

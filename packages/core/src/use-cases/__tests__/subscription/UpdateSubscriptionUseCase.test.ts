@@ -10,14 +10,14 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface';
+import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface.js';
 import type { User } from '@anplexa/database';
-import type { IStripeService, SubscriptionResult } from '../../../domain/services/IStripeService';
+import type { IStripeService, SubscriptionResult } from '../../../domain/services/IStripeService.js';
 
 import {
   UpdateSubscriptionUseCase,
   UpdateSubscriptionUseCaseError,
-} from '../../subscription/UpdateSubscriptionUseCase';
+} from '../../subscription/UpdateSubscriptionUseCase.js';
 
 describe('UpdateSubscriptionUseCase', () => {
   let useCase: UpdateSubscriptionUseCase;

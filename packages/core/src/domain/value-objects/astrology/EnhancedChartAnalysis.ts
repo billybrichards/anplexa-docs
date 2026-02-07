@@ -9,8 +9,8 @@
  * - Additional sensitive points
  */
 
-import type { ZodiacSignName } from './ZodiacSign';
-import { ChartPatterns } from './ChartPatterns';
+import type { ZodiacSignName } from './ZodiacSign.js';
+import { ChartPatterns } from './ChartPatterns.js';
 
 export interface HemisphereEmphasis {
   northern: number; // Planets in houses 1-6

@@ -4,7 +4,7 @@ import {
   PasswordConfig,
   createPasswordService,
   getPasswordService,
-} from '../password';
+} from '../password.js';
 
 describe('PasswordService', () => {
   let passwordService: PasswordService;

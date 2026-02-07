@@ -5,9 +5,9 @@
  * Contains the system prompt and behavioral parameters that personalize the AI.
  */
 
-import { CommunicationStyle, type CommunicationStyleProps } from '../value-objects/companion/CommunicationStyle';
-import { EmotionalApproach, type EmotionalApproachProps } from '../value-objects/companion/EmotionalApproach';
-import { PersonalityTraits, type PersonalityTraitsProps } from '../value-objects/companion/PersonalityTraits';
+import { CommunicationStyle, type CommunicationStyleProps } from '../value-objects/companion/CommunicationStyle.js';
+import { EmotionalApproach, type EmotionalApproachProps } from '../value-objects/companion/EmotionalApproach.js';
+import { PersonalityTraits, type PersonalityTraitsProps } from '../value-objects/companion/PersonalityTraits.js';
 
 export interface CompanionPersonaProps {
   id: string;

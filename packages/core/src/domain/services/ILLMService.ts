@@ -6,11 +6,11 @@
  * to generate personalized companion personalities from astrological birth charts.
  */
 
-import type { NatalChartData } from '../value-objects/astrology/NatalChartData';
-import type { BirthData } from '../value-objects/astrology/BirthData';
-import type { PersonalityTraits } from '../value-objects/companion/PersonalityTraits';
-import type { CommunicationStyle } from '../value-objects/companion/CommunicationStyle';
-import type { EmotionalApproach } from '../value-objects/companion/EmotionalApproach';
+import type { NatalChartData } from '../value-objects/astrology/NatalChartData.js';
+import type { BirthData } from '../value-objects/astrology/BirthData.js';
+import type { PersonalityTraits } from '../value-objects/companion/PersonalityTraits.js';
+import type { CommunicationStyle } from '../value-objects/companion/CommunicationStyle.js';
+import type { EmotionalApproach } from '../value-objects/companion/EmotionalApproach.js';
 
 /**
  * Input for persona generation

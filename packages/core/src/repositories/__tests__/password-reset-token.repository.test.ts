@@ -8,8 +8,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { PasswordResetTokenRepository } from '../password-reset-token.repository';
-import type { CreatePasswordResetTokenData } from '../interfaces/password-reset-token.repository.interface';
+import { PasswordResetTokenRepository } from '../password-reset-token.repository.js';
+import type { CreatePasswordResetTokenData } from '../interfaces/password-reset-token.repository.interface.js';
 
 describe('PasswordResetTokenRepository', () => {
   let db: ReturnType<typeof drizzle>;

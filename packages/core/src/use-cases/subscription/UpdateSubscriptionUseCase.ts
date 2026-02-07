@@ -25,8 +25,8 @@
 import type {
   IStripeService,
   SubscriptionResult,
-} from '../../domain/services/IStripeService';
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
+} from '../../domain/services/IStripeService.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 
 export type SubscriptionAction =
   | 'change_plan'

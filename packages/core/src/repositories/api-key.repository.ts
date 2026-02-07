@@ -10,7 +10,7 @@ import { apiKeys, type ApiKey, eq } from '@anplexa/database';
 import type {
   IApiKeyRepository,
   CreateApiKeyData,
-} from './interfaces/api-key.repository.interface';
+} from './interfaces/api-key.repository.interface.js';
 
 export class ApiKeyRepository implements IApiKeyRepository {
   constructor(private readonly db: Database) {}

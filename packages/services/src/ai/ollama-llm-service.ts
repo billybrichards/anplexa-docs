@@ -13,8 +13,8 @@ import type {
 import { PersonalityTraits } from '@anplexa/core/domain/value-objects/companion/PersonalityTraits';
 import { CommunicationStyle } from '@anplexa/core/domain/value-objects/companion/CommunicationStyle';
 import { EmotionalApproach } from '@anplexa/core/domain/value-objects/companion/EmotionalApproach';
-import { OllamaGateway, type OllamaConfig } from './ollama';
-import { buildPersonaGenerationMessages } from './persona-prompt-builder';
+import { OllamaGateway, type OllamaConfig } from './ollama.js';
+import { buildPersonaGenerationMessages } from './persona-prompt-builder.js';
 
 /**
  * Raw JSON response from Ollama (before validation)

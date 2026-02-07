@@ -11,7 +11,7 @@ import type {
   IConversationRepository,
   CreateConversationData,
   PaginationOptions,
-} from './interfaces/conversation.repository.interface';
+} from './interfaces/conversation.repository.interface.js';
 import type { Conversation } from '@anplexa/database';
 
 /**

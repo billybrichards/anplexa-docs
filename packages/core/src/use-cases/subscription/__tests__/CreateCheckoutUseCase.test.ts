@@ -7,9 +7,9 @@ import {
   CreateCheckoutUseCase,
   CreateCheckoutUseCaseError,
   type CreateCheckoutRequest,
-} from '../CreateCheckoutUseCase';
-import type { UserRepository, User } from '../../../repositories/UserRepository';
-import type { IStripeService } from '../../../domain/services/IStripeService';
+} from '../CreateCheckoutUseCase.js';
+import type { UserRepository, User } from '../../../repositories/UserRepository.js';
+import type { IStripeService } from '../../../domain/services/IStripeService.js';
 
 describe('CreateCheckoutUseCase', () => {
   let useCase: CreateCheckoutUseCase;

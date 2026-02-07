@@ -7,10 +7,10 @@ import {
   HandleWebhookUseCase,
   HandleWebhookUseCaseError,
   type HandleWebhookRequest,
-} from '../HandleWebhookUseCase';
-import type { UserRepository, User } from '../../../repositories/UserRepository';
-import type { IStripeService } from '../../../domain/services/IStripeService';
-import { createMockUser } from '../../../test-utils/mocks';
+} from '../HandleWebhookUseCase.js';
+import type { UserRepository, User } from '../../../repositories/UserRepository.js';
+import type { IStripeService } from '../../../domain/services/IStripeService.js';
+import { createMockUser } from '../../../test-utils/mocks.js';
 
 describe('HandleWebhookUseCase', () => {
   let useCase: HandleWebhookUseCase;

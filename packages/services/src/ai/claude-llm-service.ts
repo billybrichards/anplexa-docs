@@ -14,7 +14,7 @@ import type {
 import { PersonalityTraits } from '@anplexa/core/domain/value-objects/companion/PersonalityTraits';
 import { CommunicationStyle } from '@anplexa/core/domain/value-objects/companion/CommunicationStyle';
 import { EmotionalApproach } from '@anplexa/core/domain/value-objects/companion/EmotionalApproach';
-import { buildPersonaGenerationMessages } from './persona-prompt-builder';
+import { buildPersonaGenerationMessages } from './persona-prompt-builder.js';
 
 export interface ClaudeLLMConfig {
   apiKey: string;

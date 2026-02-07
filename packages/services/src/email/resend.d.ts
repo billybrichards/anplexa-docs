@@ -1,4 +1,4 @@
-import type { EmailTemplate } from './templates';
+import type { EmailTemplate } from './templates.js';
 export interface SendEmailOptions {
     to: string;
     subject: string;

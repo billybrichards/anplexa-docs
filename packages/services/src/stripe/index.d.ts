@@ -1,5 +1,5 @@
-export * from './client';
-export * from './checkout';
-export * from './subscription';
-export * from './webhook';
+export * from './client.js';
+export * from './checkout.js';
+export * from './subscription.js';
+export * from './webhook.js';
 //# sourceMappingURL=index.d.ts.map

@@ -4,21 +4,21 @@ export {
   JWTService,
   createJWTService,
   getJWTService,
-} from './jwt';
+} from './jwt.js';
 
 export type {
   JWTConfig,
   TokenPayload,
   TokenPair,
-} from './jwt';
+} from './jwt.js';
 
 export {
   PasswordService,
   createPasswordService,
   getPasswordService,
-} from './password';
+} from './password.js';
 
 export type {
   PasswordConfig,
   GeneratedApiKey,
-} from './password';
+} from './password.js';

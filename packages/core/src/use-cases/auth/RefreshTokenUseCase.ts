@@ -9,12 +9,12 @@
  * - Returns new token pair
  */
 
-import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface';
-import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface';
-import { AuthenticationError } from '../../domain/errors/AuthenticationError';
-import { ValidationError } from '../../domain/errors/ValidationError';
-import type { IJWTService } from '../../domain/services/IJWTService';
-import type { TokenPair } from '../../domain/services/IJWTService';
+import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
+import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
+import { AuthenticationError } from '../../domain/errors/AuthenticationError.js';
+import { ValidationError } from '../../domain/errors/ValidationError.js';
+import type { IJWTService } from '../../domain/services/IJWTService.js';
+import type { TokenPair } from '../../domain/services/IJWTService.js';
 
 export interface RefreshTokenInput {
   refreshToken: string;

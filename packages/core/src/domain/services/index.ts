@@ -9,14 +9,14 @@
 export type {
   IAstrologyCalculationService,
   CalculationOptions,
-} from './IAstrologyCalculationService';
+} from './IAstrologyCalculationService.js';
 
 // LLM Service Interface (for persona generation)
 export type {
   ILLMService,
   GeneratePersonaInput,
   GeneratePersonaOutput,
-} from './ILLMService';
+} from './ILLMService.js';
 
 // System Prompt Builder
 export {
@@ -24,4 +24,4 @@ export {
   createSystemPromptBuilder,
   type SystemPromptConfig,
   type ConversationContext,
-} from './SystemPromptBuilder';
+} from './SystemPromptBuilder.js';

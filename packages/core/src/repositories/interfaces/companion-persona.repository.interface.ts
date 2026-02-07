@@ -4,10 +4,10 @@
  * Defines the contract for persisting and retrieving companion personas.
  */
 
-import { CompanionPersona } from '../../domain/entities/CompanionPersona';
-import { PersonalityTraits } from '../../domain/value-objects/companion/PersonalityTraits';
-import { CommunicationStyle } from '../../domain/value-objects/companion/CommunicationStyle';
-import { EmotionalApproach } from '../../domain/value-objects/companion/EmotionalApproach';
+import { CompanionPersona } from '../../domain/entities/CompanionPersona.js';
+import { PersonalityTraits } from '../../domain/value-objects/companion/PersonalityTraits.js';
+import { CommunicationStyle } from '../../domain/value-objects/companion/CommunicationStyle.js';
+import { EmotionalApproach } from '../../domain/value-objects/companion/EmotionalApproach.js';
 
 export interface CreateCompanionPersonaData {
   id: string;

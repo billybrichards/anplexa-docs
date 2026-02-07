@@ -6,14 +6,14 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { RefreshTokenUseCase } from '../RefreshTokenUseCase';
-import type { IUserRepository } from '../../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../../repositories/ISessionRepository';
-import { User } from '../../../domain/entities/User';
-import { Session } from '../../../domain/entities/Session';
-import { ValidationError } from '../../../domain/errors/ValidationError';
-import { AuthenticationError } from '../../../domain/errors/AuthenticationError';
-import type { IJWTService } from '../../../domain/services/IJWTService';
+import { RefreshTokenUseCase } from '../RefreshTokenUseCase.js';
+import type { IUserRepository } from '../../../repositories/IUserRepository.js';
+import type { ISessionRepository } from '../../../repositories/ISessionRepository.js';
+import { User } from '../../../domain/entities/User.js';
+import { Session } from '../../../domain/entities/Session.js';
+import { ValidationError } from '../../../domain/errors/ValidationError.js';
+import { AuthenticationError } from '../../../domain/errors/AuthenticationError.js';
+import type { IJWTService } from '../../../domain/services/IJWTService.js';
 
 describe('RefreshTokenUseCase', () => {
   let useCase: RefreshTokenUseCase;

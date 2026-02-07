@@ -6,8 +6,8 @@
  * Immutable once created - charts are snapshots in time.
  */
 
-import { BirthData, type BirthDataProps } from '../value-objects/astrology/BirthData';
-import { NatalChartData, type NatalChartDataProps } from '../value-objects/astrology/NatalChartData';
+import { BirthData, type BirthDataProps } from '../value-objects/astrology/BirthData.js';
+import { NatalChartData, type NatalChartDataProps } from '../value-objects/astrology/NatalChartData.js';
 
 export interface BirthChartProps {
   id: string;
