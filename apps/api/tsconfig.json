@@ -4,8 +4,8 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "types": ["node"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "composite": true,
     "declaration": true,
     "declarationMap": true

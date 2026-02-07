@@ -9,7 +9,7 @@
 
 import { Router, type Request, type Response } from 'express';
 import type { Container } from '../../container.js';
-import openapiSpec from '../../docs/openapi.json';
+import openapiSpec from '../../docs/openapi.json' with { type: 'json' };
 
 /**
  * Swagger UI HTML template with dark theme
