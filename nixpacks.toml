@@ -13,11 +13,9 @@ nixPkgs = ["nodejs_20", "pnpm"]
 cmds = ["pnpm install --frozen-lockfile"]
 
 [phases.build]
-# Default build command - builds all packages except docs
-# Individual services should override this via railway.json buildCommand
-cmds = ["pnpm build --filter=!@anplexa/docs"]
+# Build the API app and its dependencies
+cmds = ["pnpm build --filter=@anplexa/api..."]
 
 [start]
-# This is a fallback - each service should specify its own start command
-# in railway.json's deploy.startCommand
-cmd = "echo 'No start command specified. Configure startCommand in railway.json for your service.'"
+# Start the API server
+cmd = "cd apps/api && node dist/index.js"
