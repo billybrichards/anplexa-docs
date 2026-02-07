@@ -81,6 +81,22 @@
     "./domain/value-objects/astrology/ZodiacSign": {
       "types": "./dist/domain/value-objects/astrology/ZodiacSign.d.ts",
       "default": "./dist/domain/value-objects/astrology/ZodiacSign.js"
+    },
+    "./domain/value-objects/companion/PersonalityTraits": {
+      "types": "./dist/domain/value-objects/companion/PersonalityTraits.d.ts",
+      "default": "./dist/domain/value-objects/companion/PersonalityTraits.js"
+    },
+    "./domain/value-objects/companion/CommunicationStyle": {
+      "types": "./dist/domain/value-objects/companion/CommunicationStyle.d.ts",
+      "default": "./dist/domain/value-objects/companion/CommunicationStyle.js"
+    },
+    "./domain/value-objects/companion/EmotionalApproach": {
+      "types": "./dist/domain/value-objects/companion/EmotionalApproach.d.ts",
+      "default": "./dist/domain/value-objects/companion/EmotionalApproach.js"
+    },
+    "./domain/services/ILLMService": {
+      "types": "./dist/domain/services/ILLMService.d.ts",
+      "default": "./dist/domain/services/ILLMService.js"
     }
   },
   "scripts": {
