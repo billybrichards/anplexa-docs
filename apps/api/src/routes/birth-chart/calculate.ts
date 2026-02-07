@@ -35,6 +35,10 @@ export function createCalculateBirthChartRoutes(container: Container): Router {
     try {
       const body = calculateBirthChartSchema.parse(req.body);
 
+      if (!useCases.calculateBirthChart) {
+        return res.status(501).json({ error: 'Birth chart calculation is not available' });
+      }
+
       // Execute calculation use case
       const result = await useCases.calculateBirthChart.execute({
         userId: body.userId,

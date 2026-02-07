@@ -3,20 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "./dist/services/src/index.js",
-  "types": "./dist/services/src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/services/src/index.d.ts",
-      "default": "./dist/services/src/index.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./stripe": {
-      "types": "./dist/services/src/stripe/index.d.ts",
-      "default": "./dist/services/src/stripe/index.js"
+      "types": "./dist/stripe/index.d.ts",
+      "default": "./dist/stripe/index.js"
     },
     "./ai": {
-      "types": "./dist/services/src/ai/index.d.ts",
-      "default": "./dist/services/src/ai/index.js"
+      "types": "./dist/ai/index.d.ts",
+      "default": "./dist/ai/index.js"
     }
   },
   "scripts": {

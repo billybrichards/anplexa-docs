@@ -74,6 +74,7 @@ export {
   ApiUsageRepository,
   UserFeedbackRepository,
   BirthChartRepository,
+  CompanionPersonaRepository,
 } from './repositories/index';
 
 // ============================================================================

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
+    "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
     "composite": true,
@@ -13,6 +14,10 @@
     "noImplicitAny": false,
     "strictNullChecks": false
   },
+  "references": [
+    { "path": "../contracts" },
+    { "path": "../database" }
+  ],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

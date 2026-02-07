@@ -3,84 +3,84 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "./dist/core/src/index.js",
-  "types": "./dist/core/src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/core/src/index.d.ts",
-      "default": "./dist/core/src/index.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./domain": {
-      "types": "./dist/core/src/domain/index.d.ts",
-      "default": "./dist/core/src/domain/index.js"
+      "types": "./dist/domain/index.d.ts",
+      "default": "./dist/domain/index.js"
     },
     "./domain/entities": {
-      "types": "./dist/core/src/domain/entities/index.d.ts",
-      "default": "./dist/core/src/domain/entities/index.js"
+      "types": "./dist/domain/entities/index.d.ts",
+      "default": "./dist/domain/entities/index.js"
     },
     "./domain/errors": {
-      "types": "./dist/core/src/domain/errors/index.d.ts",
-      "default": "./dist/core/src/domain/errors/index.js"
+      "types": "./dist/domain/errors/index.d.ts",
+      "default": "./dist/domain/errors/index.js"
     },
     "./repositories": {
-      "types": "./dist/core/src/repositories/index.d.ts",
-      "default": "./dist/core/src/repositories/index.js"
+      "types": "./dist/repositories/index.d.ts",
+      "default": "./dist/repositories/index.js"
     },
     "./repositories/interfaces": {
-      "types": "./dist/core/src/repositories/interfaces/index.d.ts",
-      "default": "./dist/core/src/repositories/interfaces/index.js"
+      "types": "./dist/repositories/interfaces/index.d.ts",
+      "default": "./dist/repositories/interfaces/index.js"
     },
     "./use-cases": {
-      "types": "./dist/core/src/use-cases/index.d.ts",
-      "default": "./dist/core/src/use-cases/index.js"
+      "types": "./dist/use-cases/index.d.ts",
+      "default": "./dist/use-cases/index.js"
     },
     "./use-cases/auth": {
-      "types": "./dist/core/src/use-cases/auth/index.d.ts",
-      "default": "./dist/core/src/use-cases/auth/index.js"
+      "types": "./dist/use-cases/auth/index.d.ts",
+      "default": "./dist/use-cases/auth/index.js"
     },
     "./use-cases/chat": {
-      "types": "./dist/core/src/use-cases/chat/index.d.ts",
-      "default": "./dist/core/src/use-cases/chat/index.js"
+      "types": "./dist/use-cases/chat/index.d.ts",
+      "default": "./dist/use-cases/chat/index.js"
     },
     "./use-cases/subscription": {
-      "types": "./dist/core/src/use-cases/subscription/index.d.ts",
-      "default": "./dist/core/src/use-cases/subscription/index.js"
+      "types": "./dist/use-cases/subscription/index.d.ts",
+      "default": "./dist/use-cases/subscription/index.js"
     },
     "./factories": {
-      "types": "./dist/core/src/factories.d.ts",
-      "default": "./dist/core/src/factories.js"
+      "types": "./dist/factories.d.ts",
+      "default": "./dist/factories.js"
     },
     "./domain/services/IAstrologyCalculationService": {
-      "types": "./dist/core/src/domain/services/IAstrologyCalculationService.d.ts",
-      "default": "./dist/core/src/domain/services/IAstrologyCalculationService.js"
+      "types": "./dist/domain/services/IAstrologyCalculationService.d.ts",
+      "default": "./dist/domain/services/IAstrologyCalculationService.js"
     },
     "./domain/services/IPasswordService": {
-      "types": "./dist/core/src/domain/services/IPasswordService.d.ts",
-      "default": "./dist/core/src/domain/services/IPasswordService.js"
+      "types": "./dist/domain/services/IPasswordService.d.ts",
+      "default": "./dist/domain/services/IPasswordService.js"
     },
     "./domain/services/IJWTService": {
-      "types": "./dist/core/src/domain/services/IJWTService.d.ts",
-      "default": "./dist/core/src/domain/services/IJWTService.js"
+      "types": "./dist/domain/services/IJWTService.d.ts",
+      "default": "./dist/domain/services/IJWTService.js"
     },
     "./domain/services/IStripeService": {
-      "types": "./dist/core/src/domain/services/IStripeService.d.ts",
-      "default": "./dist/core/src/domain/services/IStripeService.js"
+      "types": "./dist/domain/services/IStripeService.d.ts",
+      "default": "./dist/domain/services/IStripeService.js"
     },
     "./domain/services/IChatGateway": {
-      "types": "./dist/core/src/domain/services/IChatGateway.d.ts",
-      "default": "./dist/core/src/domain/services/IChatGateway.js"
+      "types": "./dist/domain/services/IChatGateway.d.ts",
+      "default": "./dist/domain/services/IChatGateway.js"
     },
     "./domain/value-objects/astrology/BirthData": {
-      "types": "./dist/core/src/domain/value-objects/astrology/BirthData.d.ts",
-      "default": "./dist/core/src/domain/value-objects/astrology/BirthData.js"
+      "types": "./dist/domain/value-objects/astrology/BirthData.d.ts",
+      "default": "./dist/domain/value-objects/astrology/BirthData.js"
     },
     "./domain/value-objects/astrology/NatalChartData": {
-      "types": "./dist/core/src/domain/value-objects/astrology/NatalChartData.d.ts",
-      "default": "./dist/core/src/domain/value-objects/astrology/NatalChartData.js"
+      "types": "./dist/domain/value-objects/astrology/NatalChartData.d.ts",
+      "default": "./dist/domain/value-objects/astrology/NatalChartData.js"
     },
     "./domain/value-objects/astrology/ZodiacSign": {
-      "types": "./dist/core/src/domain/value-objects/astrology/ZodiacSign.d.ts",
-      "default": "./dist/core/src/domain/value-objects/astrology/ZodiacSign.js"
+      "types": "./dist/domain/value-objects/astrology/ZodiacSign.d.ts",
+      "default": "./dist/domain/value-objects/astrology/ZodiacSign.js"
     }
   },
   "scripts": {

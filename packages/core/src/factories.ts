@@ -72,6 +72,7 @@ export interface DIContainer {
   stripeService?: IStripeService;
   astrologyService?: IAstrologyCalculationService;
   chatGateway?: IChatGateway;
+  ollamaGateway?: IChatGateway;
   /** Optional configuration for system prompt building */
   systemPromptConfig?: SystemPromptConfig;
 }
