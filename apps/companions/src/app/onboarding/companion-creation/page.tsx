@@ -6,6 +6,7 @@ import { Starfield } from '@/components/Starfield';
 import { CosmicButton } from '@/components/CosmicButton';
 import { CosmicCard, CosmicCardBody, CosmicCardFooter } from '@/components/CosmicCard';
 import { SectionLabel } from '@/components/SectionHeader';
+import { StorageService, STORAGE_KEYS } from '@/lib/storage/StorageService';
 
 const AI_GENERATION_STEPS = [
   'Analyzing your Sun, Moon, and Rising signs...',
@@ -45,7 +46,7 @@ export default function CompanionCreation() {
 
   useEffect(() => {
     // Check if birth data exists
-    const birthData = sessionStorage.getItem('birthData');
+    const birthData = StorageService.getSessionItem(STORAGE_KEYS.BIRTH_DATA);
     if (!birthData) {
       router.push('/onboarding/birth-data');
       return;
@@ -87,7 +88,7 @@ export default function CompanionCreation() {
 
   const handleGetStarted = () => {
     // Store companion data
-    sessionStorage.setItem('companion', JSON.stringify(companion));
+    StorageService.setSessionItem(STORAGE_KEYS.COMPANION, companion);
     // Navigate to chat
     router.push('/chat');
   };
@@ -98,7 +99,7 @@ export default function CompanionCreation() {
 
       <div className="relative z-10 max-w-3xl mx-auto space-y-8 animate-fade-up">
         <div className="text-center space-y-4">
-          <SectionLabel className="animate-fade-in">Step 3 of 3</SectionLabel>
+          <SectionLabel className="animate-fade-in">Step 5 of 5</SectionLabel>
 
           <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal leading-tight">
             {isComplete ? (
