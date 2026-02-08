@@ -1,3 +1,4 @@
+/* global console, setTimeout */
 import { getResendClient, getFromEmail } from './client';
 /**
  * Send email using Resend

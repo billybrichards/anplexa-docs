@@ -1,3 +1,4 @@
+/* global Buffer, process, console */
 import { getUncachableStripeClient } from './client';
 /**
  * Verify and construct a Stripe webhook event

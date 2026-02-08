@@ -1,3 +1,4 @@
+/* global process, console, fetch */
 import { Resend } from 'resend';
 let resendClient = null;
 let cachedCredentials = null;

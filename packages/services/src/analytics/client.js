@@ -1,3 +1,4 @@
+/* global console, window */
 /**
  * Unified Analytics Client Wrapper
  * Abstracts PostHog implementation to support both browser and Node.js environments

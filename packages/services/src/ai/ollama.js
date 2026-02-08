@@ -1,3 +1,4 @@
+/* global fetch, TextDecoder, process */
 /**
  * Ollama AI Service
  * Integrates with local Ollama instances for LLM inference

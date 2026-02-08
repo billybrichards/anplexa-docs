@@ -1,3 +1,4 @@
+/* global process */
 import Stripe from 'stripe';
 let cachedStripeClient = null;
 let cachedCredentials = null;
