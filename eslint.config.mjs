@@ -12,6 +12,8 @@ export default tseslint.config(
       '**/build/**',
       '**/.turbo/**',
       '**/coverage/**',
+      // Drizzle ORM generated type definitions
+      '**/packages/database/src/schema/*.d.ts',
     ],
   },
   {

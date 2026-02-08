@@ -1,6 +1,0 @@
-node_modules
-dist
-drizzle
-*.config.ts
-# Drizzle ORM generated type definitions
-src/schema/*.d.ts
