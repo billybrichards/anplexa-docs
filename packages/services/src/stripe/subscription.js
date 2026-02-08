@@ -1,28 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCustomer = createCustomer;
-exports.getCustomer = getCustomer;
-exports.updateCustomer = updateCustomer;
-exports.deleteCustomer = deleteCustomer;
-exports.getSubscription = getSubscription;
-exports.listCustomerSubscriptions = listCustomerSubscriptions;
-exports.updateSubscription = updateSubscription;
-exports.cancelSubscription = cancelSubscription;
-exports.scheduleSubscriptionCancellation = scheduleSubscriptionCancellation;
-exports.unscheduleSubscriptionCancellation = unscheduleSubscriptionCancellation;
-exports.changeSubscriptionPrice = changeSubscriptionPrice;
-exports.createBillingPortalSession = createBillingPortalSession;
-exports.getProduct = getProduct;
-exports.listProducts = listProducts;
-exports.getPrice = getPrice;
-exports.listPricesForProduct = listPricesForProduct;
-exports.listPrices = listPrices;
-const client_js_1 = require("./client.js");
+import { getUncachableStripeClient } from './client';
 /**
  * Create a Stripe customer
  */
-async function createCustomer(email, options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function createCustomer(email, options) {
+    const stripe = getUncachableStripeClient();
     const metadata = options?.metadata || {};
     if (options?.userId) {
         metadata.userId = options.userId;
@@ -37,36 +18,36 @@ async function createCustomer(email, options) {
 /**
  * Get a Stripe customer by ID
  */
-async function getCustomer(customerId) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function getCustomer(customerId) {
+    const stripe = getUncachableStripeClient();
     return await stripe.customers.retrieve(customerId);
 }
 /**
  * Update a Stripe customer
  */
-async function updateCustomer(customerId, options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function updateCustomer(customerId, options) {
+    const stripe = getUncachableStripeClient();
     return await stripe.customers.update(customerId, options);
 }
 /**
  * Delete a Stripe customer
  */
-async function deleteCustomer(customerId) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function deleteCustomer(customerId) {
+    const stripe = getUncachableStripeClient();
     return await stripe.customers.del(customerId);
 }
 /**
  * Get a subscription by ID
  */
-async function getSubscription(subscriptionId) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function getSubscription(subscriptionId) {
+    const stripe = getUncachableStripeClient();
     return await stripe.subscriptions.retrieve(subscriptionId);
 }
 /**
  * List subscriptions for a customer
  */
-async function listCustomerSubscriptions(customerId, options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function listCustomerSubscriptions(customerId, options) {
+    const stripe = getUncachableStripeClient();
     return await stripe.subscriptions.list({
         customer: customerId,
         limit: options?.limit,
@@ -77,15 +58,15 @@ async function listCustomerSubscriptions(customerId, options) {
 /**
  * Update a subscription
  */
-async function updateSubscription(subscriptionId, options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function updateSubscription(subscriptionId, options) {
+    const stripe = getUncachableStripeClient();
     return await stripe.subscriptions.update(subscriptionId, options);
 }
 /**
  * Cancel a subscription immediately
  */
-async function cancelSubscription(subscriptionId, options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function cancelSubscription(subscriptionId, options) {
+    const stripe = getUncachableStripeClient();
     return await stripe.subscriptions.cancel(subscriptionId, {
         invoice_now: options?.invoiceNow,
         prorate: options?.prorate,
@@ -94,8 +75,8 @@ async function cancelSubscription(subscriptionId, options) {
 /**
  * Schedule a subscription cancellation at period end
  */
-async function scheduleSubscriptionCancellation(subscriptionId) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function scheduleSubscriptionCancellation(subscriptionId) {
+    const stripe = getUncachableStripeClient();
     return await stripe.subscriptions.update(subscriptionId, {
         cancel_at_period_end: true,
     });
@@ -103,8 +84,8 @@ async function scheduleSubscriptionCancellation(subscriptionId) {
 /**
  * Unschedule a subscription cancellation
  */
-async function unscheduleSubscriptionCancellation(subscriptionId) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function unscheduleSubscriptionCancellation(subscriptionId) {
+    const stripe = getUncachableStripeClient();
     return await stripe.subscriptions.update(subscriptionId, {
         cancel_at_period_end: false,
     });
@@ -112,8 +93,8 @@ async function unscheduleSubscriptionCancellation(subscriptionId) {
 /**
  * Change subscription price/plan
  */
-async function changeSubscriptionPrice(subscriptionId, newPriceId, options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function changeSubscriptionPrice(subscriptionId, newPriceId, options) {
+    const stripe = getUncachableStripeClient();
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     if (!subscription.items.data[0]) {
         throw new Error('Subscription has no items');
@@ -132,8 +113,8 @@ async function changeSubscriptionPrice(subscriptionId, newPriceId, options) {
 /**
  * Create a billing portal session for customer subscription management
  */
-async function createBillingPortalSession(customerId, returnUrl) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function createBillingPortalSession(customerId, returnUrl) {
+    const stripe = getUncachableStripeClient();
     return await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: returnUrl,
@@ -142,15 +123,15 @@ async function createBillingPortalSession(customerId, returnUrl) {
 /**
  * Retrieve a product by ID
  */
-async function getProduct(productId) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function getProduct(productId) {
+    const stripe = getUncachableStripeClient();
     return await stripe.products.retrieve(productId);
 }
 /**
  * List products
  */
-async function listProducts(options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function listProducts(options) {
+    const stripe = getUncachableStripeClient();
     return await stripe.products.list({
         active: options?.active,
         limit: options?.limit,
@@ -160,15 +141,15 @@ async function listProducts(options) {
 /**
  * Get a price by ID
  */
-async function getPrice(priceId) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function getPrice(priceId) {
+    const stripe = getUncachableStripeClient();
     return await stripe.prices.retrieve(priceId);
 }
 /**
  * List prices for a product
  */
-async function listPricesForProduct(productId, options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function listPricesForProduct(productId, options) {
+    const stripe = getUncachableStripeClient();
     return await stripe.prices.list({
         product: productId,
         active: options?.active,
@@ -179,8 +160,8 @@ async function listPricesForProduct(productId, options) {
 /**
  * List all prices
  */
-async function listPrices(options) {
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+export async function listPrices(options) {
+    const stripe = getUncachableStripeClient();
     return await stripe.prices.list({
         active: options?.active,
         limit: options?.limit,

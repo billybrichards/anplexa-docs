@@ -66,45 +66,45 @@ export interface GroupedConversations {
 export declare const CreateConversationRequestSchema: z.ZodObject<{
     title: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    title?: string | undefined;
+    title?: string;
 }, {
-    title?: string | undefined;
+    title?: string;
 }>;
 export declare const UpdateConversationRequestSchema: z.ZodObject<{
     title: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    title: string;
+    title?: string;
 }, {
-    title: string;
+    title?: string;
 }>;
 export declare const SaveMessagesRequestSchema: z.ZodObject<{
     messages: z.ZodArray<z.ZodObject<{
         role: z.ZodEnum<["user", "assistant", "system"]>;
         content: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        role: "user" | "assistant" | "system";
-        content: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }, {
-        role: "user" | "assistant" | "system";
-        content: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
-    messages: {
-        role: "user" | "assistant" | "system";
-        content: string;
+    messages?: {
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }[];
 }, {
-    messages: {
-        role: "user" | "assistant" | "system";
-        content: string;
+    messages?: {
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }[];
 }>;
 export declare const DeleteConversationRequestSchema: z.ZodObject<{
     conversationId: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    conversationId: string;
+    conversationId?: string;
 }, {
-    conversationId: string;
+    conversationId?: string;
 }>;
 export declare const GetConversationsRequestSchema: z.ZodObject<{
     limit: z.ZodOptional<z.ZodNumber>;
@@ -112,15 +112,15 @@ export declare const GetConversationsRequestSchema: z.ZodObject<{
     sortBy: z.ZodOptional<z.ZodEnum<["created", "updated"]>>;
     sortOrder: z.ZodOptional<z.ZodEnum<["asc", "desc"]>>;
 }, "strip", z.ZodTypeAny, {
-    limit?: number | undefined;
-    offset?: number | undefined;
-    sortBy?: "created" | "updated" | undefined;
-    sortOrder?: "asc" | "desc" | undefined;
+    limit?: number;
+    offset?: number;
+    sortBy?: "created" | "updated";
+    sortOrder?: "asc" | "desc";
 }, {
-    limit?: number | undefined;
-    offset?: number | undefined;
-    sortBy?: "created" | "updated" | undefined;
-    sortOrder?: "asc" | "desc" | undefined;
+    limit?: number;
+    offset?: number;
+    sortBy?: "created" | "updated";
+    sortOrder?: "asc" | "desc";
 }>;
 export declare const ConversationSummarySchema: z.ZodObject<{
     id: z.ZodString;
@@ -130,19 +130,19 @@ export declare const ConversationSummarySchema: z.ZodObject<{
     messageCount: z.ZodOptional<z.ZodNumber>;
     lastMessage: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    title: string | null;
-    messageCount?: number | undefined;
-    lastMessage?: string | undefined;
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    title?: string;
+    messageCount?: number;
+    lastMessage?: string;
 }, {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    title: string | null;
-    messageCount?: number | undefined;
-    lastMessage?: string | undefined;
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    title?: string;
+    messageCount?: number;
+    lastMessage?: string;
 }>;
 export declare const ConversationListResponseSchema: z.ZodObject<{
     conversations: z.ZodArray<z.ZodObject<{
@@ -153,41 +153,41 @@ export declare const ConversationListResponseSchema: z.ZodObject<{
         messageCount: z.ZodOptional<z.ZodNumber>;
         lastMessage: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }>, "many">;
     total: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    conversations: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    conversations?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
-    total: number;
+    total?: number;
 }, {
-    conversations: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    conversations?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
-    total: number;
+    total?: number;
 }>;
 export declare const ConversationDetailResponseSchema: z.ZodObject<{
     id: z.ZodString;
@@ -202,43 +202,43 @@ export declare const ConversationDetailResponseSchema: z.ZodObject<{
         content: z.ZodString;
         createdAt: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        createdAt: string;
-        conversationId: string;
-        role: "user" | "assistant" | "system";
-        content: string;
+        id?: string;
+        createdAt?: string;
+        conversationId?: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }, {
-        id: string;
-        createdAt: string;
-        conversationId: string;
-        role: "user" | "assistant" | "system";
-        content: string;
+        id?: string;
+        createdAt?: string;
+        conversationId?: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-    title: string | null;
-    messages: {
-        id: string;
-        createdAt: string;
-        conversationId: string;
-        role: "user" | "assistant" | "system";
-        content: string;
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    userId?: string;
+    title?: string;
+    messages?: {
+        id?: string;
+        createdAt?: string;
+        conversationId?: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }[];
 }, {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-    title: string | null;
-    messages: {
-        id: string;
-        createdAt: string;
-        conversationId: string;
-        role: "user" | "assistant" | "system";
-        content: string;
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    userId?: string;
+    title?: string;
+    messages?: {
+        id?: string;
+        createdAt?: string;
+        conversationId?: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }[];
 }>;
 export declare const ConversationMessagesResponseSchema: z.ZodObject<{
@@ -250,49 +250,49 @@ export declare const ConversationMessagesResponseSchema: z.ZodObject<{
         content: z.ZodString;
         createdAt: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        createdAt: string;
-        conversationId: string;
-        role: "user" | "assistant" | "system";
-        content: string;
+        id?: string;
+        createdAt?: string;
+        conversationId?: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }, {
-        id: string;
-        createdAt: string;
-        conversationId: string;
-        role: "user" | "assistant" | "system";
-        content: string;
+        id?: string;
+        createdAt?: string;
+        conversationId?: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }>, "many">;
     hasMore: z.ZodBoolean;
 }, "strip", z.ZodTypeAny, {
-    messages: {
-        id: string;
-        createdAt: string;
-        conversationId: string;
-        role: "user" | "assistant" | "system";
-        content: string;
+    messages?: {
+        id?: string;
+        createdAt?: string;
+        conversationId?: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }[];
-    conversationId: string;
-    hasMore: boolean;
+    conversationId?: string;
+    hasMore?: boolean;
 }, {
-    messages: {
-        id: string;
-        createdAt: string;
-        conversationId: string;
-        role: "user" | "assistant" | "system";
-        content: string;
+    messages?: {
+        id?: string;
+        createdAt?: string;
+        conversationId?: string;
+        role?: "user" | "assistant" | "system";
+        content?: string;
     }[];
-    conversationId: string;
-    hasMore: boolean;
+    conversationId?: string;
+    hasMore?: boolean;
 }>;
 export declare const DeleteConversationResponseSchema: z.ZodObject<{
     message: z.ZodString;
     conversationId: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    conversationId: string;
-    message: string;
+    conversationId?: string;
+    message?: string;
 }, {
-    conversationId: string;
-    message: string;
+    conversationId?: string;
+    message?: string;
 }>;
 export declare const GroupedConversationsSchema: z.ZodObject<{
     today: z.ZodArray<z.ZodObject<{
@@ -303,19 +303,19 @@ export declare const GroupedConversationsSchema: z.ZodObject<{
         messageCount: z.ZodOptional<z.ZodNumber>;
         lastMessage: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }>, "many">;
     yesterday: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
@@ -325,19 +325,19 @@ export declare const GroupedConversationsSchema: z.ZodObject<{
         messageCount: z.ZodOptional<z.ZodNumber>;
         lastMessage: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }>, "many">;
     thisWeek: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
@@ -347,19 +347,19 @@ export declare const GroupedConversationsSchema: z.ZodObject<{
         messageCount: z.ZodOptional<z.ZodNumber>;
         lastMessage: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }>, "many">;
     older: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
@@ -369,85 +369,85 @@ export declare const GroupedConversationsSchema: z.ZodObject<{
         messageCount: z.ZodOptional<z.ZodNumber>;
         lastMessage: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }, {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
-    today: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    today?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
-    yesterday: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    yesterday?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
-    thisWeek: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    thisWeek?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
-    older: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    older?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
 }, {
-    today: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    today?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
-    yesterday: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    yesterday?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
-    thisWeek: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    thisWeek?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
-    older: {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        title: string | null;
-        messageCount?: number | undefined;
-        lastMessage?: string | undefined;
+    older?: {
+        id?: string;
+        createdAt?: string;
+        updatedAt?: string;
+        title?: string;
+        messageCount?: number;
+        lastMessage?: string;
     }[];
 }>;
 export type ValidatedCreateConversationRequest = z.infer<typeof CreateConversationRequestSchema>;

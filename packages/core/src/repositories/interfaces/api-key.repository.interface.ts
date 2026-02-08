@@ -9,7 +9,7 @@ import type { ApiKey } from '@anplexa/database';
 
 export interface CreateApiKeyData {
   id: string;
-  userId: string;
+  userId?: string | null;
   name: string;
   keyHash: string;
   keyPrefix: string;

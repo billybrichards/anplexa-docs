@@ -1,4 +1,3 @@
-"use strict";
 /**
  * User API Contracts
  *
@@ -6,18 +5,16 @@
  * Includes user preferences, subscription status, and credits management.
  * Includes Zod validation schemas for request validation.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserProfileSchema = exports.PurchaseCreditsRequestSchema = exports.UpdateUserPreferencesRequestSchema = exports.UpdateUserProfileRequestSchema = exports.CreditsInfoSchema = exports.CreditTransactionSchema = exports.SubscriptionInfoSchema = exports.UserPreferencesSchema = void 0;
-const zod_1 = require("zod");
+import { z } from 'zod';
 // ============================================================================
 // Zod Validation Schemas
 // ============================================================================
-const uuidSchema = zod_1.z.string().uuid();
-const emailSchema = zod_1.z.string().email('Invalid email address');
-const themeSchema = zod_1.z.enum(['light', 'dark', 'system']);
-const lengthSchema = zod_1.z.enum(['brief', 'moderate', 'detailed']);
-const styleSchema = zod_1.z.enum(['casual', 'thoughtful', 'creative']);
-const personalityModeSchema = zod_1.z.enum([
+const uuidSchema = z.string().uuid();
+const emailSchema = z.string().email('Invalid email address');
+const themeSchema = z.enum(['light', 'dark', 'system']);
+const lengthSchema = z.enum(['brief', 'moderate', 'detailed']);
+const styleSchema = z.enum(['casual', 'thoughtful', 'creative']);
+const personalityModeSchema = z.enum([
     'nurturing',
     'playful',
     'dominant',
@@ -25,73 +22,73 @@ const personalityModeSchema = zod_1.z.enum([
     'intimate_companion',
     'intellectual_muse',
 ]);
-exports.UserPreferencesSchema = zod_1.z.object({
+export const UserPreferencesSchema = z.object({
     userId: uuidSchema,
     theme: themeSchema.optional(),
-    language: zod_1.z.string().optional(),
-    notifications: zod_1.z.boolean().optional(),
-    chatPreferences: zod_1.z
+    language: z.string().optional(),
+    notifications: z.boolean().optional(),
+    chatPreferences: z
         .object({
         length: lengthSchema.optional(),
         style: styleSchema.optional(),
     })
         .optional(),
-    customPreferences: zod_1.z.record(zod_1.z.unknown()).optional(),
+    customPreferences: z.record(z.unknown()).optional(),
 });
-exports.SubscriptionInfoSchema = zod_1.z.object({
+export const SubscriptionInfoSchema = z.object({
     userId: uuidSchema,
-    status: zod_1.z.enum(['subscribed', 'not_subscribed', 'canceled', 'past_due']),
-    stripeCustomerId: zod_1.z.string().nullable(),
-    stripeSubscriptionId: zod_1.z.string().nullable(),
-    currentPeriodStart: zod_1.z.string().datetime().optional(),
-    currentPeriodEnd: zod_1.z.string().datetime().optional(),
-    canceledAt: zod_1.z.string().datetime().optional(),
-    cancelAtPeriodEnd: zod_1.z.boolean().optional(),
+    status: z.enum(['subscribed', 'not_subscribed', 'canceled', 'past_due']),
+    stripeCustomerId: z.string().nullable(),
+    stripeSubscriptionId: z.string().nullable(),
+    currentPeriodStart: z.string().datetime().optional(),
+    currentPeriodEnd: z.string().datetime().optional(),
+    canceledAt: z.string().datetime().optional(),
+    cancelAtPeriodEnd: z.boolean().optional(),
 });
-exports.CreditTransactionSchema = zod_1.z.object({
+export const CreditTransactionSchema = z.object({
     id: uuidSchema,
     userId: uuidSchema,
-    amount: zod_1.z.number(),
-    operation: zod_1.z.enum(['set', 'add', 'subtract', 'purchase']),
-    reason: zod_1.z.string().optional(),
-    timestamp: zod_1.z.string().datetime(),
+    amount: z.number(),
+    operation: z.enum(['set', 'add', 'subtract', 'purchase']),
+    reason: z.string().optional(),
+    timestamp: z.string().datetime(),
 });
-exports.CreditsInfoSchema = zod_1.z.object({
+export const CreditsInfoSchema = z.object({
     userId: uuidSchema,
-    balance: zod_1.z.number().nonnegative(),
-    lastUpdated: zod_1.z.string().datetime(),
-    history: zod_1.z.array(exports.CreditTransactionSchema).optional(),
+    balance: z.number().nonnegative(),
+    lastUpdated: z.string().datetime(),
+    history: z.array(CreditTransactionSchema).optional(),
 });
-exports.UpdateUserProfileRequestSchema = zod_1.z.object({
-    displayName: zod_1.z.string().max(255).optional(),
+export const UpdateUserProfileRequestSchema = z.object({
+    displayName: z.string().max(255).optional(),
     email: emailSchema.optional(),
 });
-exports.UpdateUserPreferencesRequestSchema = zod_1.z.object({
+export const UpdateUserPreferencesRequestSchema = z.object({
     theme: themeSchema.optional(),
-    language: zod_1.z.string().optional(),
-    notifications: zod_1.z.boolean().optional(),
-    chatPreferences: zod_1.z
+    language: z.string().optional(),
+    notifications: z.boolean().optional(),
+    chatPreferences: z
         .object({
         length: lengthSchema.optional(),
         style: styleSchema.optional(),
     })
         .optional(),
-    customPreferences: zod_1.z.record(zod_1.z.unknown()).optional(),
+    customPreferences: z.record(z.unknown()).optional(),
 });
-exports.PurchaseCreditsRequestSchema = zod_1.z.object({
-    amount: zod_1.z.number().positive('Amount must be greater than 0'),
-    paymentMethodId: zod_1.z.string().optional(),
+export const PurchaseCreditsRequestSchema = z.object({
+    amount: z.number().positive('Amount must be greater than 0'),
+    paymentMethodId: z.string().optional(),
 });
-exports.UserProfileSchema = zod_1.z.object({
+export const UserProfileSchema = z.object({
     id: uuidSchema,
     email: emailSchema,
-    displayName: zod_1.z.string().nullable(),
-    chatName: zod_1.z.string().nullable(),
+    displayName: z.string().nullable(),
+    chatName: z.string().nullable(),
     personalityMode: personalityModeSchema.nullable(),
-    isAdmin: zod_1.z.boolean(),
-    credits: zod_1.z.number().nonnegative(),
-    subscriptionStatus: zod_1.z.enum(['subscribed', 'not_subscribed']),
-    stripeCustomerId: zod_1.z.string().nullable(),
-    createdAt: zod_1.z.string().datetime(),
-    updatedAt: zod_1.z.string().datetime(),
+    isAdmin: z.boolean(),
+    credits: z.number().nonnegative(),
+    subscriptionStatus: z.enum(['subscribed', 'not_subscribed']),
+    stripeCustomerId: z.string().nullable(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
 });

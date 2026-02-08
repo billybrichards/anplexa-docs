@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AnalyticsClient } from './client';
-import { AnalyticsEvents } from './events';
+import { AnalyticsClient } from './client.js';
+import { AnalyticsEvents } from './events.js';
 
 describe('AnalyticsClient', () => {
   let client: AnalyticsClient;

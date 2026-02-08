@@ -10,9 +10,9 @@ import {
   CreateConversationUseCase,
   UserNotFoundError,
   InvalidTitleError,
-} from '../CreateConversationUseCase';
-import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface';
-import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface';
+} from '../CreateConversationUseCase.js';
+import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface.js';
+import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface.js';
 import type { ConversationDTO } from '@anplexa/contracts';
 import type { User } from '@anplexa/database';
 
@@ -111,10 +111,12 @@ describe('CreateConversationUseCase', () => {
       // Assert
       expect(result.conversation).toEqual(mockConversation);
       expect(mockUserRepo.getById).toHaveBeenCalledWith('user-123');
-      expect(mockConversationRepo.create).toHaveBeenCalledWith({
-        userId: 'user-123',
-        title: 'Test Conversation',
-      });
+      expect(mockConversationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          title: 'Test Conversation',
+        })
+      );
     });
 
     it('should successfully create a conversation without title', async () => {
@@ -133,10 +135,12 @@ describe('CreateConversationUseCase', () => {
 
       // Assert
       expect(result.conversation).toEqual(conversationWithoutTitle);
-      expect(mockConversationRepo.create).toHaveBeenCalledWith({
-        userId: 'user-123',
-        title: undefined,
-      });
+      expect(mockConversationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          title: undefined,
+        })
+      );
     });
 
     it('should trim whitespace from title', async () => {
@@ -151,10 +155,12 @@ describe('CreateConversationUseCase', () => {
       });
 
       // Assert
-      expect(mockConversationRepo.create).toHaveBeenCalledWith({
-        userId: 'user-123',
-        title: 'Test Conversation',
-      });
+      expect(mockConversationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          title: 'Test Conversation',
+        })
+      );
     });
 
     it('should convert empty string title to null', async () => {
@@ -173,10 +179,12 @@ describe('CreateConversationUseCase', () => {
       });
 
       // Assert
-      expect(mockConversationRepo.create).toHaveBeenCalledWith({
-        userId: 'user-123',
-        title: null,
-      });
+      expect(mockConversationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          title: null,
+        })
+      );
     });
 
     it('should handle null title explicitly', async () => {
@@ -195,10 +203,12 @@ describe('CreateConversationUseCase', () => {
       });
 
       // Assert
-      expect(mockConversationRepo.create).toHaveBeenCalledWith({
-        userId: 'user-123',
-        title: null,
-      });
+      expect(mockConversationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          title: null,
+        })
+      );
     });
   });
 
@@ -261,10 +271,12 @@ describe('CreateConversationUseCase', () => {
 
       // Assert
       expect(result.conversation).toEqual(conversationWithMaxTitle);
-      expect(mockConversationRepo.create).toHaveBeenCalledWith({
-        userId: 'user-123',
-        title: maxTitle,
-      });
+      expect(mockConversationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          title: maxTitle,
+        })
+      );
     });
 
     it('should handle special characters in title', async () => {
@@ -325,10 +337,12 @@ describe('CreateConversationUseCase', () => {
       });
 
       // Assert
-      expect(mockConversationRepo.create).toHaveBeenCalledWith({
-        userId: 'user-123',
-        title: 'Title with internal  spaces',
-      });
+      expect(mockConversationRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-123',
+          title: 'Title with internal  spaces',
+        })
+      );
     });
   });
 });

@@ -1,5 +1,9 @@
 import { defineConfig } from 'drizzle-kit';
-import 'dotenv/config';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load .env from project root (../../.env from packages/database)
+config({ path: resolve(__dirname, '../../.env') });
 
 const DATABASE_URL = process.env.DATABASE_URL || 'file:./data/companion.db';
 const isPostgres = DATABASE_URL.startsWith('postgres');

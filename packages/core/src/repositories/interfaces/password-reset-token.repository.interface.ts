@@ -50,6 +50,12 @@ export interface IPasswordResetTokenRepository {
   markAsUsed(id: string): Promise<void>;
 
   /**
+   * Gets all valid (non-expired, unused) password reset tokens
+   * @returns Promise resolving to array of valid tokens
+   */
+  getAllValid(): Promise<PasswordResetToken[]>;
+
+  /**
    * Removes all expired tokens from the database
    * Useful for periodic cleanup operations
    * @returns Promise resolving to the count of deleted tokens

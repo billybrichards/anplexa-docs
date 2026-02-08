@@ -11,7 +11,7 @@
  */
 
 // Analytics Service - Type-safe event tracking
-export * from './analytics';
+export * from './analytics/index.js';
 
 // Stripe payment service
 export * from './stripe/index.js';
@@ -20,7 +20,10 @@ export * from './stripe/index.js';
 export * from './email/index.js';
 
 // Auth Services
-export * from './auth';
+export * from './auth/index.js';
 
 // AI Services
-export * from './ai';
+export * from './ai/index.js';
+
+// Astrology Services
+export { SimplifiedAstrologyService } from './astrology/SimplifiedAstrologyService.js';

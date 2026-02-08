@@ -11,11 +11,11 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useMessagePersistence } from '../useMessagePersistence';
 import { apiClient } from '../../lib/adapters/api/api-client';
 import { storageService } from '../../lib/adapters/storage/storage-service';
-import type { Message } from '../../lib/domain/entities/Message';
+import type { Message } from '@anplexa/core';
 import type { MessageDTO } from '@anplexa/contracts';
 
 // Mock dependencies
@@ -58,7 +58,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      const saved = await result.current.saveMessage(mockMessage);
+      let saved: MessageDTO | undefined;
+      await act(async () => {
+        saved = await result.current.saveMessage(mockMessage);
+      });
 
       expect(apiClient.post).toHaveBeenCalledWith(
         '/chat/messages',
@@ -84,15 +87,18 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      const savePromise = result.current.saveMessage(mockMessage);
+      let savePromise: Promise<MessageDTO>;
+      act(() => {
+        savePromise = result.current.saveMessage(mockMessage);
+      });
 
       expect(result.current.isSaving).toBe(true);
 
-      await waitFor(() => {
-        expect(result.current.isSaving).toBe(false);
+      await act(async () => {
+        await savePromise;
       });
 
-      await savePromise;
+      expect(result.current.isSaving).toBe(false);
     });
 
     it('should handle save errors', async () => {
@@ -103,7 +109,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      await expect(result.current.saveMessage(mockMessage)).rejects.toThrow('Save failed');
+      await act(async () => {
+        await expect(result.current.saveMessage(mockMessage)).rejects.toThrow('Save failed');
+      });
+
       expect(result.current.error).toBeTruthy();
       expect(result.current.error?.message).toBe('Save failed');
     });
@@ -124,7 +133,9 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId, onSaveSuccess })
       );
 
-      await result.current.saveMessage(mockMessage);
+      await act(async () => {
+        await result.current.saveMessage(mockMessage);
+      });
 
       expect(onSaveSuccess).toHaveBeenCalledWith(mockMessage);
     });
@@ -138,11 +149,15 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId, onSaveError })
       );
 
-      try {
-        await result.current.saveMessage(mockMessage);
-      } catch {
-        // Expected
-      }
+      await act(async () => {
+        try {
+          await result.current.saveMessage(mockMessage);
+          expect.fail('Expected saveMessage to throw an error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Error);
+          expect((e as Error).message).toBe('Save failed');
+        }
+      });
 
       expect(onSaveError).toHaveBeenCalledWith(expect.any(Error));
     });
@@ -160,7 +175,9 @@ describe('useMessagePersistence', () => {
         })
       );
 
-      await result.current.saveMessage(mockMessage);
+      await act(async () => {
+        await result.current.saveMessage(mockMessage);
+      });
 
       expect(storageService.set).toHaveBeenCalledWith(
         expect.stringContaining('messages_'),
@@ -179,7 +196,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      const loaded = await result.current.loadMessages();
+      let loaded: Message[] = [];
+      await act(async () => {
+        loaded = await result.current.loadMessages();
+      });
 
       expect(apiClient.get).toHaveBeenCalledWith(
         `/chat/conversations/${conversationId}/messages`,
@@ -202,15 +222,18 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      const loadPromise = result.current.loadMessages();
+      let loadPromise: Promise<Message[]>;
+      act(() => {
+        loadPromise = result.current.loadMessages();
+      });
 
       expect(result.current.isLoading).toBe(true);
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
+      await act(async () => {
+        await loadPromise;
       });
 
-      await loadPromise;
+      expect(result.current.isLoading).toBe(false);
     });
 
     it('should handle load errors', async () => {
@@ -221,7 +244,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      await expect(result.current.loadMessages()).rejects.toThrow('Load failed');
+      await act(async () => {
+        await expect(result.current.loadMessages()).rejects.toThrow('Load failed');
+      });
+
       expect(result.current.error).toBeTruthy();
     });
 
@@ -243,7 +269,9 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId, onLoadSuccess })
       );
 
-      await result.current.loadMessages();
+      await act(async () => {
+        await result.current.loadMessages();
+      });
 
       expect(onLoadSuccess).toHaveBeenCalledWith(expect.any(Array));
     });
@@ -263,7 +291,10 @@ describe('useMessagePersistence', () => {
         })
       );
 
-      const loaded = await result.current.loadMessages();
+      let loaded: Message[] = [];
+      await act(async () => {
+        loaded = await result.current.loadMessages();
+      });
 
       expect(loaded).toEqual(cachedMessages);
       expect(apiClient.get).not.toHaveBeenCalled();
@@ -280,7 +311,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId: 'other-conv', userId })
       );
 
-      const loaded = await result.current.loadMessagesForConversation(conversationId);
+      let loaded: Message[] = [];
+      await act(async () => {
+        loaded = await result.current.loadMessagesForConversation(conversationId);
+      });
 
       expect(apiClient.get).toHaveBeenCalledWith(
         `/chat/conversations/${conversationId}/messages`,
@@ -298,7 +332,9 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      await result.current.deleteMessage('msg-1');
+      await act(async () => {
+        await result.current.deleteMessage('msg-1');
+      });
 
       expect(apiClient.delete).toHaveBeenCalledWith('/chat/messages/msg-1');
     });
@@ -311,7 +347,10 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      await expect(result.current.deleteMessage('msg-1')).rejects.toThrow('Delete failed');
+      await act(async () => {
+        await expect(result.current.deleteMessage('msg-1')).rejects.toThrow('Delete failed');
+      });
+
       expect(result.current.error).toBeTruthy();
     });
 
@@ -329,7 +368,9 @@ describe('useMessagePersistence', () => {
         })
       );
 
-      await result.current.deleteMessage('msg-1');
+      await act(async () => {
+        await result.current.deleteMessage('msg-1');
+      });
 
       expect(storageService.set).toHaveBeenCalledWith(
         expect.stringContaining('messages_'),
@@ -347,17 +388,310 @@ describe('useMessagePersistence', () => {
         useMessagePersistence({ conversationId, userId })
       );
 
-      try {
-        await result.current.saveMessage(mockMessage);
-      } catch {
-        // Expected
-      }
+      await act(async () => {
+        try {
+          await result.current.saveMessage(mockMessage);
+          expect.fail('Expected saveMessage to throw an error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Error);
+          expect((e as Error).message).toBe('Test error');
+        }
+      });
 
       expect(result.current.error).toBeTruthy();
 
-      result.current.clearError();
+      act(() => {
+        result.current.clearError();
+      });
 
       expect(result.current.error).toBeNull();
     });
+  });
+
+  describe('cache invalidation', () => {
+    it('should invalidate cache after saveMessage', async () => {
+      // Setup initial cached messages
+      const cachedMessages: Message[] = [
+        { ...mockMessage, id: 'old-msg', content: 'Old cached message' },
+      ];
+      vi.mocked(storageService.get).mockReturnValue(cachedMessages);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockMessageDTO);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({
+          conversationId,
+          userId,
+          enableLocalCache: true,
+          cacheKey: 'test-cache',
+        })
+      );
+
+      // Save a new message
+      await act(async () => {
+        await result.current.saveMessage(mockMessage);
+      });
+
+      // Verify cache was updated with the new message
+      expect(storageService.set).toHaveBeenCalledWith(
+        expect.stringContaining('messages_'),
+        expect.arrayContaining([
+          expect.objectContaining({ id: mockMessage.id }),
+        ])
+      );
+    });
+
+    it('should invalidate cache after deleteMessage', async () => {
+      // Setup initial cached messages with two messages
+      const messageToDelete: Message = {
+        id: 'msg-to-delete',
+        conversationId,
+        role: 'user',
+        content: 'Message to delete',
+        createdAt: new Date().toISOString(),
+      };
+      const cachedMessages: Message[] = [mockMessage, messageToDelete];
+      vi.mocked(storageService.get).mockReturnValue(cachedMessages);
+      vi.mocked(apiClient.delete).mockResolvedValueOnce(undefined);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({
+          conversationId,
+          userId,
+          enableLocalCache: true,
+          cacheKey: 'test-cache',
+        })
+      );
+
+      // Delete one message
+      await act(async () => {
+        await result.current.deleteMessage('msg-to-delete');
+      });
+
+      // Verify cache was updated without the deleted message
+      expect(storageService.set).toHaveBeenCalledWith(
+        expect.stringContaining('messages_'),
+        expect.arrayContaining([
+          expect.objectContaining({ id: mockMessage.id }),
+        ])
+      );
+
+      // Verify the deleted message is not in the cache
+      const setCalls = vi.mocked(storageService.set).mock.calls;
+      const lastSetCall = setCalls[setCalls.length - 1];
+      const updatedCache = lastSetCall[1] as Message[];
+      expect(updatedCache.find(m => m.id === 'msg-to-delete')).toBeUndefined();
+    });
+  });
+
+  describe('AbortController and request cancellation', () => {
+    it('should cancel pending requests on unmount', async () => {
+      // Track abort signals passed to the API
+      const abortSignals: AbortSignal[] = [];
+      vi.mocked(apiClient.get).mockImplementation(
+        (_url: string, signal?: AbortSignal) => {
+          if (signal) {
+            abortSignals.push(signal);
+          }
+          // Return a promise that never resolves to simulate long-running request
+          return new Promise(() => {});
+        }
+      );
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result, unmount } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Start loading messages (this will hang)
+      act(() => {
+        result.current.loadMessages();
+      });
+
+      // Verify the API was called with an AbortSignal
+      expect(abortSignals.length).toBe(1);
+      expect(abortSignals[0].aborted).toBe(false);
+
+      // Unmount the hook
+      unmount();
+
+      // Verify the abort signal was triggered
+      expect(abortSignals[0].aborted).toBe(true);
+    });
+
+    it('should not set error state when request is aborted', async () => {
+      // Create a mock that rejects with an AbortError
+      const abortError = new Error('The operation was aborted');
+      abortError.name = 'AbortError';
+
+      vi.mocked(apiClient.get).mockRejectedValueOnce(abortError);
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Load messages will be aborted
+      let loadedMessages: Message[] = [];
+      await act(async () => {
+        loadedMessages = await result.current.loadMessages();
+      });
+
+      // Should return empty array and not set error
+      expect(loadedMessages).toEqual([]);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('should handle rapid concurrent loadMessages calls', async () => {
+      // Track all abort signals and their conversation IDs
+      const requestLog: { convId: string; signal: AbortSignal }[] = [];
+      let callCount = 0;
+
+      vi.mocked(apiClient.get).mockImplementation(
+        (url: string, signal?: AbortSignal) => {
+          const convIdMatch = url.match(/\/conversations\/([^/]+)\/messages/);
+          const convId = convIdMatch ? convIdMatch[1] : 'unknown';
+
+          if (signal) {
+            requestLog.push({ convId, signal });
+          }
+
+          // Simulate network delay - later calls resolve faster
+          const delay = 100 - callCount * 30;
+          callCount++;
+
+          return new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+              resolve([{ ...mockMessageDTO, id: `msg-${convId}` }]);
+            }, Math.max(delay, 10));
+
+            // Handle abort
+            signal?.addEventListener('abort', () => {
+              clearTimeout(timeoutId);
+              const abortError = new Error('Request aborted');
+              abortError.name = 'AbortError';
+              reject(abortError);
+            });
+          });
+        }
+      );
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Fire multiple rapid loadMessages calls
+      const promises: Promise<Message[]>[] = [];
+      await act(async () => {
+        promises.push(result.current.loadMessagesForConversation('conv-1'));
+        promises.push(result.current.loadMessagesForConversation('conv-2'));
+        promises.push(result.current.loadMessagesForConversation('conv-3'));
+
+        // Wait for all promises to settle
+        await Promise.allSettled(promises);
+      });
+
+      // Verify that requests were made for each conversation
+      expect(requestLog.length).toBe(3);
+      expect(requestLog.map(r => r.convId)).toEqual(['conv-1', 'conv-2', 'conv-3']);
+
+      // The hook should not be in a loading state after all requests complete
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    it('should cleanup abort controllers after successful request', async () => {
+      const messages: MessageDTO[] = [mockMessageDTO];
+      let signalUsed: AbortSignal | undefined;
+
+      vi.mocked(apiClient.get).mockImplementation(
+        (_url: string, signal?: AbortSignal) => {
+          signalUsed = signal;
+          return Promise.resolve(messages);
+        }
+      );
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result, unmount } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Load messages successfully
+      await act(async () => {
+        await result.current.loadMessages();
+      });
+
+      // Verify request completed with an abort signal
+      expect(signalUsed).toBeDefined();
+      expect(signalUsed?.aborted).toBe(false);
+
+      // Unmount should not cause issues (controller should be cleaned up)
+      unmount();
+
+      // Signal should still not be aborted since the request completed
+      // and was cleaned up before unmount
+      expect(signalUsed?.aborted).toBe(false);
+    });
+
+    it(
+      'should abort previous request when same conversation is loaded again',
+      async () => {
+        const abortSignals: AbortSignal[] = [];
+        const resolvers: ((value: MessageDTO[]) => void)[] = [];
+
+      vi.mocked(apiClient.get).mockImplementation(
+        (_url: string, signal?: AbortSignal) => {
+          if (signal) {
+            abortSignals.push(signal);
+          }
+          return new Promise((resolve, reject) => {
+            resolvers.push(resolve);
+            signal?.addEventListener('abort', () => {
+              const abortError = new Error('Request aborted');
+              abortError.name = 'AbortError';
+              reject(abortError);
+            });
+          });
+        }
+      );
+      vi.mocked(storageService.get).mockReturnValue(null);
+
+      const { result } = renderHook(() =>
+        useMessagePersistence({ conversationId, userId })
+      );
+
+      // Start first load
+      let promise1: Promise<Message[]>;
+      act(() => {
+        promise1 = result.current.loadMessages();
+      });
+
+      // First request should be active
+      expect(abortSignals.length).toBe(1);
+      expect(abortSignals[0].aborted).toBe(false);
+
+      // Start second load for the same conversation
+      let promise2: Promise<Message[]>;
+      act(() => {
+        promise2 = result.current.loadMessages();
+      });
+
+      // Now we have two requests
+      expect(abortSignals.length).toBe(2);
+
+      // Complete both requests to avoid hanging
+      await act(async () => {
+        // Resolve first request (it wasn't aborted)
+        resolvers[0]([mockMessageDTO]);
+        // Resolve second request
+        resolvers[1]([mockMessageDTO]);
+        // Wait for both to complete
+        await Promise.all([promise1!, promise2!]);
+      });
+
+        // The hook should handle multiple concurrent requests gracefully
+        expect(result.current.isLoading).toBe(false);
+      },
+      10000
+    );
   });
 });

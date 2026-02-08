@@ -23,11 +23,16 @@ export interface StorageOptions {
  * Handles JSON serialization and includes optional expiration support.
  */
 export class StorageService {
-  private storage: Storage;
+  private storage: Storage | null;
   private prefix: string = 'anplexa_';
 
   constructor(type: 'localStorage' | 'sessionStorage' = 'localStorage') {
-    this.storage = type === 'localStorage' ? window.localStorage : window.sessionStorage;
+    // Check if window is defined (SSR safety)
+    if (typeof window !== 'undefined') {
+      this.storage = type === 'localStorage' ? window.localStorage : window.sessionStorage;
+    } else {
+      this.storage = null;
+    }
   }
 
   /**
@@ -36,6 +41,8 @@ export class StorageService {
    * @returns Parsed value or null if not found or expired
    */
   get<T>(key: string): T | null {
+    if (!this.storage) return null; // SSR safety
+
     try {
       const prefixedKey = this.getPrefixedKey(key);
       const item = this.storage.getItem(prefixedKey);
@@ -66,6 +73,8 @@ export class StorageService {
    * @param options - Storage options (e.g., expiration)
    */
   set<T>(key: string, value: T, options?: StorageOptions): void {
+    if (!this.storage) return; // SSR safety
+
     try {
       const prefixedKey = this.getPrefixedKey(key);
       const data: { value: T; expiresAt?: number } = { value };
@@ -85,6 +94,8 @@ export class StorageService {
    * @param key - Storage key
    */
   remove(key: string): void {
+    if (!this.storage) return; // SSR safety
+
     try {
       const prefixedKey = this.getPrefixedKey(key);
       this.storage.removeItem(prefixedKey);
@@ -97,6 +108,8 @@ export class StorageService {
    * Clear all storage items with anplexa prefix
    */
   clear(): void {
+    if (!this.storage) return; // SSR safety
+
     try {
       const keysToRemove: string[] = [];
 
@@ -107,7 +120,7 @@ export class StorageService {
         }
       }
 
-      keysToRemove.forEach(key => this.storage.removeItem(key));
+      keysToRemove.forEach(key => this.storage?.removeItem(key));
     } catch (error) {
       console.warn('Failed to clear storage:', error);
     }
@@ -119,6 +132,8 @@ export class StorageService {
    * @returns true if key exists and is not expired
    */
   has(key: string): boolean {
+    if (!this.storage) return false; // SSR safety
+
     try {
       const prefixedKey = this.getPrefixedKey(key);
       const item = this.storage.getItem(prefixedKey);
@@ -146,6 +161,8 @@ export class StorageService {
    * Get all keys in storage with anplexa prefix
    */
   keys(): string[] {
+    if (!this.storage) return []; // SSR safety
+
     const keys: string[] = [];
 
     for (let i = 0; i < this.storage.length; i++) {

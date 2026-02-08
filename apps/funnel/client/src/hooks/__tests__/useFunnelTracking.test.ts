@@ -4,20 +4,21 @@
 
 import { renderHook, act } from '@testing-library/react';
 import { useFunnelTracking } from '../useFunnelTracking';
-
-// Mock fetch
-global.fetch = jest.fn();
+import { vi } from 'vitest';
 
 // Mock console
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 
+// Mock fetch before tests
+vi.stubGlobal('fetch', vi.fn());
+
 describe('useFunnelTracking', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    (global.fetch as jest.Mock).mockClear();
-    console.log = jest.fn();
-    console.error = jest.fn();
+    vi.clearAllMocks();
+    vi.mocked(fetch).mockClear();
+    console.log = vi.fn();
+    console.error = vi.fn();
   });
 
   afterEach(() => {
@@ -151,7 +152,7 @@ describe('useFunnelTracking', () => {
 
   describe('API Calls', () => {
     test('submitFunnelData() should make POST request', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         json: async () => ({ success: true }),
       });
@@ -170,7 +171,7 @@ describe('useFunnelTracking', () => {
         await result.current.submitFunnelData(funnelData);
       });
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/funnel-responses'),
         expect.objectContaining({
           method: 'POST',
@@ -180,7 +181,7 @@ describe('useFunnelTracking', () => {
     });
 
     test('submitEmail() should submit email to backend', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         json: async () => ({ success: true }),
       });
@@ -191,7 +192,7 @@ describe('useFunnelTracking', () => {
         await result.current.submitEmail('user@example.com', 'A');
       });
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/emails'),
         expect.objectContaining({
           method: 'POST',
@@ -205,72 +206,60 @@ describe('useFunnelTracking', () => {
     });
 
     test('checkUserExists() should return true if user exists', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         json: async () => ({ exists: true }),
       });
 
       const { result } = renderHook(() => useFunnelTracking());
 
-      let exists: boolean;
-      await act(async () => {
-        exists = await result.current.checkUserExists('user@example.com');
-      });
+      const exists = await result.current.checkUserExists('user@example.com');
 
-      expect(exists!).toBe(true);
+      expect(exists).toBe(true);
     });
 
     test('checkUserExists() should return false if user does not exist', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      vi.mocked(fetch).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ exists: false }),
-      });
+        json: vi.fn().mockResolvedValueOnce({ exists: false, subscribed: false }),
+      } as unknown as Response);
 
       const { result } = renderHook(() => useFunnelTracking());
 
-      let exists: boolean;
-      await act(async () => {
-        exists = await result.current.checkUserExists('newuser@example.com');
-      });
+      const exists = await result.current.checkUserExists('newuser@example.com');
 
-      expect(exists!).toBe(false);
+      expect(exists).toBe(false);
     });
 
     test('checkUserExists() should return false on error', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      (fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
 
       const { result } = renderHook(() => useFunnelTracking());
 
-      let exists: boolean;
-      await act(async () => {
-        exists = await result.current.checkUserExists('user@example.com');
-      });
+      const exists = await result.current.checkUserExists('user@example.com');
 
-      expect(exists!).toBe(false);
+      expect(exists).toBe(false);
     });
 
     test('createCheckoutSession() should return checkout URL', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         json: async () => ({ url: 'https://checkout.stripe.com/session123' }),
       });
 
       const { result } = renderHook(() => useFunnelTracking());
 
-      let checkoutUrl: string;
-      await act(async () => {
-        checkoutUrl = await result.current.createCheckoutSession(
-          'user@example.com',
-          'price_123',
-          'A'
-        );
-      });
+      const checkoutUrl = await result.current.createCheckoutSession(
+        'user@example.com',
+        'price_123',
+        'A'
+      );
 
-      expect(checkoutUrl!).toBe('https://checkout.stripe.com/session123');
+      expect(checkoutUrl).toBe('https://checkout.stripe.com/session123');
     });
 
     test('createCheckoutSession() should throw on error', async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: false,
         json: async () => ({ error: 'User already registered' }),
       });
@@ -287,7 +276,7 @@ describe('useFunnelTracking', () => {
 
   describe('Error Handling', () => {
     test('submitFunnelData() should handle errors', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      (fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
 
       const { result } = renderHook(() => useFunnelTracking());
 
@@ -307,7 +296,7 @@ describe('useFunnelTracking', () => {
     });
 
     test('submitEmail() should handle errors', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      (fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
 
       const { result } = renderHook(() => useFunnelTracking());
 

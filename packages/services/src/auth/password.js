@@ -1,13 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PasswordService = void 0;
-exports.createPasswordService = createPasswordService;
-exports.getPasswordService = getPasswordService;
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const crypto_1 = __importDefault(require("crypto"));
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 /**
  * Password Service
  * Handles password hashing, verification, and API key generation
@@ -24,7 +16,7 @@ const crypto_1 = __importDefault(require("crypto"));
  * // Generate an API key
  * const apiKey = await passwordService.generateApiKey();
  */
-class PasswordService {
+export class PasswordService {
     saltRounds;
     minLength;
     constructor(config = {}) {
@@ -47,7 +39,7 @@ class PasswordService {
         if (password.length < this.minLength) {
             throw new Error(`Password must be at least ${this.minLength} characters long`);
         }
-        return bcryptjs_1.default.hash(password, this.saltRounds);
+        return bcrypt.hash(password, this.saltRounds);
     }
     /**
      * Verify a password against its hash
@@ -60,7 +52,7 @@ class PasswordService {
             return false;
         }
         try {
-            return await bcryptjs_1.default.compare(password, hash);
+            return await bcrypt.compare(password, hash);
         }
         catch {
             return false;
@@ -76,10 +68,10 @@ class PasswordService {
         let randomPart = '';
         // Generate 32 random characters
         for (let i = 0; i < 32; i++) {
-            randomPart += chars.charAt(crypto_1.default.randomInt(chars.length));
+            randomPart += chars.charAt(crypto.randomInt(chars.length));
         }
         const key = `tc_${randomPart}`;
-        const keyHash = await bcryptjs_1.default.hash(key, 10);
+        const keyHash = await bcrypt.hash(key, 10);
         const keyPrefix = key.substring(0, 8); // tc_abcd...
         return { key, keyHash, keyPrefix };
     }
@@ -94,7 +86,7 @@ class PasswordService {
             return false;
         }
         try {
-            return await bcryptjs_1.default.compare(key, hash);
+            return await bcrypt.compare(key, hash);
         }
         catch {
             return false;
@@ -115,7 +107,7 @@ class PasswordService {
             return { valid: false, errors, score: 0 };
         }
         if (password.length < this.minLength) {
-            errors.push(`Password must be at least ${this.minLength} characters`);
+            errors.push(`Password must be at least ${this.minLength} characters long`);
         }
         else {
             score += 20;
@@ -147,7 +139,7 @@ class PasswordService {
             errors.push('Password should contain numbers');
         }
         // Special character check
-        if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+        if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
             score += 15;
         }
         else {
@@ -162,11 +154,10 @@ class PasswordService {
         };
     }
 }
-exports.PasswordService = PasswordService;
 /**
  * Create a singleton password service instance
  */
-function createPasswordService(config = {}) {
+export function createPasswordService(config = {}) {
     return new PasswordService(config);
 }
 // Singleton instance (lazy-loaded)
@@ -174,7 +165,7 @@ let passwordServiceInstance = null;
 /**
  * Get or create the singleton password service instance
  */
-function getPasswordService() {
+export function getPasswordService() {
     if (!passwordServiceInstance) {
         passwordServiceInstance = createPasswordService();
     }

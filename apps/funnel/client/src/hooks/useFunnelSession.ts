@@ -15,7 +15,7 @@ export interface UseFunnelSessionReturn {
   currentStep: number;
   totalSteps: number;
   progress: number;
-  responses: Record<string, any>;
+  responses: Record<string, string>;
   persona?: Persona;
   email?: string;
   sessionId: string;
@@ -26,7 +26,7 @@ export interface UseFunnelSessionReturn {
   goToStep: (step: number) => void;
 
   // Data Management
-  recordResponse: (stepId: string, response: any) => void;
+  recordResponse: (stepId: string, response: string) => void;
   setPersona: (persona: Persona) => void;
   setEmail: (email: string) => void;
   resetSession: () => void;
@@ -38,7 +38,7 @@ export interface UseFunnelSessionReturn {
 
 interface StoredSessionState {
   currentStep: number;
-  responses: Record<string, any>;
+  responses: Record<string, string>;
   persona?: Persona;
   email?: string;
   sessionId: string;
@@ -75,7 +75,7 @@ export function useFunnelSession(steps: FunnelQuestion[]): UseFunnelSessionRetur
     return 0;
   });
 
-  const [responses, setResponses] = useState<Record<string, any>>(() => {
+  const [responses, setResponses] = useState<Record<string, string>>(() => {
     if (typeof window === 'undefined') return {};
     const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
     if (stored) {
@@ -139,7 +139,7 @@ export function useFunnelSession(steps: FunnelQuestion[]): UseFunnelSessionRetur
   }, [totalSteps]);
 
   // Data management
-  const recordResponse = useCallback((stepId: string, response: any) => {
+  const recordResponse = useCallback((stepId: string, response: string) => {
     setResponses((prev) => ({
       ...prev,
       [stepId]: response,

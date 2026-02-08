@@ -132,9 +132,105 @@ jobs:
         if: success()
         run: echo "All services deployed successfully to Production"
 
-      - name: Deployment failed notification
+      - name: Create GitHub Issue on Deployment Failure
         if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const runId = context.runId;
+            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${runId}`;
+            const sha = context.sha.substring(0, 7);
+            const actor = context.actor;
+
+            const issueBody = [
+              '## Production Deployment Failed',
+              '',
+              `**Commit:** ${context.sha}`,
+              `**Actor:** @${actor}`,
+              `**Run ID:** ${runId}`,
+              `**Workflow Run:** ${runUrl}`,
+              '',
+              '### Action Required',
+              `Please review the [workflow logs](${runUrl}) to identify and fix the deployment issue.`,
+              '',
+              '### Checklist',
+              '- [ ] Reviewed deployment logs',
+              '- [ ] Identified root cause',
+              '- [ ] Applied fix',
+              '- [ ] Re-deployed successfully',
+              '',
+              '---',
+              '*This issue was automatically created by the deployment workflow.*'
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title: `[Production Deploy Failed] Deployment failed for commit ${sha}`,
+              body: issueBody,
+              labels: ['deployment', 'production', 'urgent']
+            });
+
+            console.log('Created GitHub issue for deployment failure');
+
+      - name: Notify Slack on Deployment Failure (if configured)
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_ACTOR: ${{ github.actor }}
+          GH_REF_NAME: ${{ github.ref_name }}
+          GH_SHA: ${{ github.sha }}
+          GH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          echo "Production deployment failed"
-          echo "Check the logs above for details"
-          exit 1
+          SHORT_SHA="${GH_SHA:0:7}"
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"blocks\": [
+                {
+                  \"type\": \"header\",
+                  \"text\": {
+                    \"type\": \"plain_text\",
+                    \"text\": \"Production Deployment Failed\",
+                    \"emoji\": true
+                  }
+                },
+                {
+                  \"type\": \"section\",
+                  \"fields\": [
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Repository:*\n${GH_REPOSITORY}\"
+                    },
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Commit:*\n\\\`${SHORT_SHA}\\\`\"
+                    },
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Actor:*\n${GH_ACTOR}\"
+                    },
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Branch:*\n${GH_REF_NAME}\"
+                    }
+                  ]
+                },
+                {
+                  \"type\": \"actions\",
+                  \"elements\": [
+                    {
+                      \"type\": \"button\",
+                      \"text\": {
+                        \"type\": \"plain_text\",
+                        \"text\": \"View Workflow Logs\"
+                      },
+                      \"url\": \"${GH_RUN_URL}\"
+                    }
+                  ]
+                }
+              ]
+            }" \
+            "$SLACK_WEBHOOK_URL"

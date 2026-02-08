@@ -17,6 +17,8 @@ export interface UsePreferencesReturn {
   updatePreferences: (prefs: Partial<CompanionPreferences>) => void;
   resetPreferences: () => void;
   isLoading: boolean;
+  error: Error | null;
+  clearError: () => void;
 }
 
 const DEFAULT_PREFERENCES: CompanionPreferences = {
@@ -37,6 +39,14 @@ const DEFAULT_PREFERENCES: CompanionPreferences = {
 export function usePreferences(): UsePreferencesReturn {
   const [preferences, setPreferences] = useState<CompanionPreferences>(DEFAULT_PREFERENCES);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  /**
+   * Clear the current error state
+   */
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
 
   // Load preferences from storage on mount
   useEffect(() => {
@@ -49,8 +59,10 @@ export function usePreferences(): UsePreferencesReturn {
             setPreferences((prev) => ({ ...prev, ...parsed }));
           }
         }
-      } catch (error) {
-        console.error('Failed to load preferences:', error);
+      } catch (err) {
+        const loadError = err instanceof Error ? err : new Error('Failed to load preferences');
+        console.error('Failed to load preferences:', loadError);
+        setError(loadError);
       } finally {
         setIsLoading(false);
       }
@@ -61,28 +73,37 @@ export function usePreferences(): UsePreferencesReturn {
 
   // Update preferences and persist to storage
   const updatePreferences = useCallback((updates: Partial<CompanionPreferences>) => {
-    try {
-      setPreferences((prev) => {
-        const updated = { ...prev, ...updates };
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(updated));
-        }
-        return updated;
-      });
-    } catch (error) {
-      console.error('Failed to update preferences:', error);
+    setError(null);
+    // Compute the new preferences first
+    const newPreferences = { ...preferences, ...updates };
+
+    // Update state
+    setPreferences(newPreferences);
+
+    // Persist to storage outside of the state updater to avoid side effects during render
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(newPreferences));
+      } catch (err) {
+        const updateError = err instanceof Error ? err : new Error('Failed to update preferences');
+        console.error('Failed to update preferences:', updateError);
+        setError(updateError);
+      }
     }
-  }, []);
+  }, [preferences]);
 
   // Reset to default preferences
   const resetPreferences = useCallback(() => {
+    setError(null);
     try {
       setPreferences(DEFAULT_PREFERENCES);
       if (typeof window !== 'undefined') {
         localStorage.removeItem(PREFERENCES_STORAGE_KEY);
       }
-    } catch (error) {
-      console.error('Failed to reset preferences:', error);
+    } catch (err) {
+      const resetError = err instanceof Error ? err : new Error('Failed to reset preferences');
+      console.error('Failed to reset preferences:', resetError);
+      setError(resetError);
     }
   }, []);
 
@@ -91,5 +112,7 @@ export function usePreferences(): UsePreferencesReturn {
     updatePreferences,
     resetPreferences,
     isLoading,
+    error,
+    clearError,
   };
 }

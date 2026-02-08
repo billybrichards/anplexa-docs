@@ -2,14 +2,53 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { usePreferences } from '../usePreferences';
 
+/**
+ * Mock localStorage implementation for testing
+ */
+const createLocalStorageMock = () => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value;
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: vi.fn((index: number) => Object.keys(store)[index] || null),
+  };
+};
+
+// Store original localStorage
+const originalLocalStorage = globalThis.localStorage;
+
 describe('usePreferences', () => {
+  let localStorageMock: ReturnType<typeof createLocalStorageMock>;
+
   beforeEach(() => {
-    localStorage.clear();
+    // Create a fresh localStorage mock for each test
+    localStorageMock = createLocalStorageMock();
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: localStorageMock,
+      writable: true,
+      configurable: true,
+    });
     vi.clearAllMocks();
   });
 
   afterEach(() => {
-    localStorage.clear();
+    // Restore original localStorage
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: originalLocalStorage,
+      writable: true,
+      configurable: true,
+    });
   });
 
   it('should initialize with default preferences', () => {
@@ -74,8 +113,23 @@ describe('usePreferences', () => {
 
   it('should handle localStorage errors gracefully', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const storageSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-      throw new Error('Storage error');
+
+    // Create a mock that throws on setItem
+    const errorThrowingMock = {
+      getItem: vi.fn(() => null),
+      setItem: vi.fn(() => {
+        throw new Error('Storage error');
+      }),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      length: 0,
+      key: vi.fn(() => null),
+    };
+
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: errorThrowingMock,
+      writable: true,
+      configurable: true,
     });
 
     const { result } = renderHook(() => usePreferences());
@@ -85,7 +139,6 @@ describe('usePreferences', () => {
     });
 
     expect(consoleSpy).toHaveBeenCalled();
-    storageSpy.mockRestore();
     consoleSpy.mockRestore();
   });
 

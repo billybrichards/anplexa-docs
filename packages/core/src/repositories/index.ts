@@ -27,3 +27,5 @@ export { ApiUsageRepository } from './api-usage.repository.js';
 export { UserFeedbackRepository } from './user-feedback.repository.js';
 export { ApiKeyRepository } from './api-key.repository.js';
 export { FunnelApiKeyRepository } from './funnel-api-key.repository.js';
+export { BirthChartRepository } from './birth-chart.repository.js';
+export { CompanionPersonaRepository } from './companion-persona.repository.js';

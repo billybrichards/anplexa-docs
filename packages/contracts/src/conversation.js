@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Conversation API Contracts
  *
@@ -6,79 +5,77 @@
  * Includes request/response types for creating, updating, and retrieving conversations.
  * Includes Zod validation schemas for request validation.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GroupedConversationsSchema = exports.DeleteConversationResponseSchema = exports.ConversationMessagesResponseSchema = exports.ConversationDetailResponseSchema = exports.ConversationListResponseSchema = exports.ConversationSummarySchema = exports.GetConversationsRequestSchema = exports.DeleteConversationRequestSchema = exports.SaveMessagesRequestSchema = exports.UpdateConversationRequestSchema = exports.CreateConversationRequestSchema = void 0;
-const zod_1 = require("zod");
+import { z } from 'zod';
 // ============================================================================
 // Zod Validation Schemas
 // ============================================================================
-const uuidSchema = zod_1.z.string().uuid();
-const messageRoleSchema = zod_1.z.enum(['user', 'assistant', 'system']);
-exports.CreateConversationRequestSchema = zod_1.z.object({
-    title: zod_1.z.string().max(500).optional(),
+const uuidSchema = z.string().uuid();
+const messageRoleSchema = z.enum(['user', 'assistant', 'system']);
+export const CreateConversationRequestSchema = z.object({
+    title: z.string().max(500).optional(),
 });
-exports.UpdateConversationRequestSchema = zod_1.z.object({
-    title: zod_1.z.string().min(1, 'Title cannot be empty').max(500),
+export const UpdateConversationRequestSchema = z.object({
+    title: z.string().min(1, 'Title cannot be empty').max(500),
 });
-exports.SaveMessagesRequestSchema = zod_1.z.object({
-    messages: zod_1.z.array(zod_1.z.object({
+export const SaveMessagesRequestSchema = z.object({
+    messages: z.array(z.object({
         role: messageRoleSchema,
-        content: zod_1.z.string().min(1, 'Message content cannot be empty').max(10000),
+        content: z.string().min(1, 'Message content cannot be empty').max(10000),
     })),
 });
-exports.DeleteConversationRequestSchema = zod_1.z.object({
+export const DeleteConversationRequestSchema = z.object({
     conversationId: uuidSchema,
 });
-exports.GetConversationsRequestSchema = zod_1.z.object({
-    limit: zod_1.z.number().positive().max(100).optional(),
-    offset: zod_1.z.number().nonnegative().optional(),
-    sortBy: zod_1.z.enum(['created', 'updated']).optional(),
-    sortOrder: zod_1.z.enum(['asc', 'desc']).optional(),
+export const GetConversationsRequestSchema = z.object({
+    limit: z.number().positive().max(100).optional(),
+    offset: z.number().nonnegative().optional(),
+    sortBy: z.enum(['created', 'updated']).optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
 });
-exports.ConversationSummarySchema = zod_1.z.object({
+export const ConversationSummarySchema = z.object({
     id: uuidSchema,
-    title: zod_1.z.string().nullable(),
-    createdAt: zod_1.z.string().datetime(),
-    updatedAt: zod_1.z.string().datetime(),
-    messageCount: zod_1.z.number().nonnegative().optional(),
-    lastMessage: zod_1.z.string().optional(),
+    title: z.string().nullable(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    messageCount: z.number().nonnegative().optional(),
+    lastMessage: z.string().optional(),
 });
-exports.ConversationListResponseSchema = zod_1.z.object({
-    conversations: zod_1.z.array(exports.ConversationSummarySchema),
-    total: zod_1.z.number().nonnegative(),
+export const ConversationListResponseSchema = z.object({
+    conversations: z.array(ConversationSummarySchema),
+    total: z.number().nonnegative(),
 });
-exports.ConversationDetailResponseSchema = zod_1.z.object({
+export const ConversationDetailResponseSchema = z.object({
     id: uuidSchema,
     userId: uuidSchema,
-    title: zod_1.z.string().nullable(),
-    createdAt: zod_1.z.string().datetime(),
-    updatedAt: zod_1.z.string().datetime(),
-    messages: zod_1.z.array(zod_1.z.object({
+    title: z.string().nullable(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    messages: z.array(z.object({
         id: uuidSchema,
         conversationId: uuidSchema,
         role: messageRoleSchema,
-        content: zod_1.z.string(),
-        createdAt: zod_1.z.string().datetime(),
+        content: z.string(),
+        createdAt: z.string().datetime(),
     })),
 });
-exports.ConversationMessagesResponseSchema = zod_1.z.object({
+export const ConversationMessagesResponseSchema = z.object({
     conversationId: uuidSchema,
-    messages: zod_1.z.array(zod_1.z.object({
+    messages: z.array(z.object({
         id: uuidSchema,
         conversationId: uuidSchema,
         role: messageRoleSchema,
-        content: zod_1.z.string(),
-        createdAt: zod_1.z.string().datetime(),
+        content: z.string(),
+        createdAt: z.string().datetime(),
     })),
-    hasMore: zod_1.z.boolean(),
+    hasMore: z.boolean(),
 });
-exports.DeleteConversationResponseSchema = zod_1.z.object({
-    message: zod_1.z.string(),
+export const DeleteConversationResponseSchema = z.object({
+    message: z.string(),
     conversationId: uuidSchema,
 });
-exports.GroupedConversationsSchema = zod_1.z.object({
-    today: zod_1.z.array(exports.ConversationSummarySchema),
-    yesterday: zod_1.z.array(exports.ConversationSummarySchema),
-    thisWeek: zod_1.z.array(exports.ConversationSummarySchema),
-    older: zod_1.z.array(exports.ConversationSummarySchema),
+export const GroupedConversationsSchema = z.object({
+    today: z.array(ConversationSummarySchema),
+    yesterday: z.array(ConversationSummarySchema),
+    thisWeek: z.array(ConversationSummarySchema),
+    older: z.array(ConversationSummarySchema),
 });

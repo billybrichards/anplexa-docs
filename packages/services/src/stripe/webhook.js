@@ -1,20 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.constructWebhookEvent = constructWebhookEvent;
-exports.processWebhook = processWebhook;
-exports.handleCheckoutCompleted = handleCheckoutCompleted;
-exports.handleSubscriptionCreated = handleSubscriptionCreated;
-exports.handleSubscriptionUpdated = handleSubscriptionUpdated;
-exports.handleSubscriptionDeleted = handleSubscriptionDeleted;
-exports.handleInvoicePaid = handleInvoicePaid;
-exports.handleInvoicePaymentFailed = handleInvoicePaymentFailed;
-exports.isSubscriptionActive = isSubscriptionActive;
-exports.isSubscriptionCanceled = isSubscriptionCanceled;
-const client_js_1 = require("./client.js");
+import { getUncachableStripeClient } from './client';
 /**
  * Verify and construct a Stripe webhook event
  */
-function constructWebhookEvent(payload, signature) {
+export function constructWebhookEvent(payload, signature) {
     if (typeof payload === 'string') {
         payload = Buffer.from(payload);
     }
@@ -24,7 +12,7 @@ function constructWebhookEvent(payload, signature) {
             'This usually means express.json() parsed the body before reaching this handler. ' +
             'FIX: Ensure webhook route is registered BEFORE app.use(express.json()).');
     }
-    const stripe = (0, client_js_1.getUncachableStripeClient)();
+    const stripe = getUncachableStripeClient();
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) {
         throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
@@ -34,7 +22,7 @@ function constructWebhookEvent(payload, signature) {
 /**
  * Process a Stripe webhook with signature verification
  */
-function processWebhook(payload, signature) {
+export function processWebhook(payload, signature) {
     const event = constructWebhookEvent(payload, signature);
     console.log(`Processing Stripe webhook event: ${event.type}`);
     return event;
@@ -42,7 +30,7 @@ function processWebhook(payload, signature) {
 /**
  * Handle checkout.session.completed event
  */
-function handleCheckoutCompleted(session) {
+export function handleCheckoutCompleted(session) {
     const customerId = session.customer;
     const subscriptionId = session.subscription;
     const email = session.customer_details?.email || null;
@@ -60,7 +48,7 @@ function handleCheckoutCompleted(session) {
 /**
  * Handle customer.subscription.created event
  */
-function handleSubscriptionCreated(subscription) {
+export function handleSubscriptionCreated(subscription) {
     const customerId = subscription.customer;
     const subscriptionId = subscription.id;
     const status = subscription.status;
@@ -81,7 +69,7 @@ function handleSubscriptionCreated(subscription) {
 /**
  * Handle customer.subscription.updated event
  */
-function handleSubscriptionUpdated(subscription) {
+export function handleSubscriptionUpdated(subscription) {
     const customerId = subscription.customer;
     const subscriptionId = subscription.id;
     const status = subscription.status;
@@ -104,7 +92,7 @@ function handleSubscriptionUpdated(subscription) {
 /**
  * Handle customer.subscription.deleted event
  */
-function handleSubscriptionDeleted(subscription) {
+export function handleSubscriptionDeleted(subscription) {
     const customerId = subscription.customer;
     const subscriptionId = subscription.id;
     const canceledAt = subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null;
@@ -121,7 +109,7 @@ function handleSubscriptionDeleted(subscription) {
 /**
  * Handle invoice.paid event
  */
-function handleInvoicePaid(invoice) {
+export function handleInvoicePaid(invoice) {
     const customerId = invoice.customer;
     const subscriptionId = invoice.subscription;
     const invoiceId = invoice.id;
@@ -146,7 +134,7 @@ function handleInvoicePaid(invoice) {
 /**
  * Handle invoice.payment_failed event
  */
-function handleInvoicePaymentFailed(invoice) {
+export function handleInvoicePaymentFailed(invoice) {
     const customerId = invoice.customer;
     const subscriptionId = invoice.subscription;
     const invoiceId = invoice.id;
@@ -171,12 +159,12 @@ function handleInvoicePaymentFailed(invoice) {
 /**
  * Determine if a subscription is considered "active"
  */
-function isSubscriptionActive(status) {
+export function isSubscriptionActive(status) {
     return ['active', 'trialing'].includes(status);
 }
 /**
  * Determine if a subscription is considered "canceled" or "in trouble"
  */
-function isSubscriptionCanceled(status) {
+export function isSubscriptionCanceled(status) {
     return ['canceled', 'unpaid', 'past_due'].includes(status);
 }

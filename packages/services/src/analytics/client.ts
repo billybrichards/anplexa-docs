@@ -4,8 +4,8 @@
  * Provides type-safe event tracking across all Anplexa applications
  */
 
-import type { EventName, EventProperties, UserProperties } from './events';
-import { isValidEventProperties } from './events';
+import type { EventName, EventProperties, UserProperties } from './events.js';
+import { isValidEventProperties } from './events.js';
 
 /**
  * Configuration options for analytics client initialization

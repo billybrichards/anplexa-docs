@@ -29,7 +29,7 @@ A custom hook for managing message persistence operations through the API adapte
 
 ```typescript
 import { useMessagePersistence } from '@/hooks';
-import type { Message } from '@/lib/domain/entities';
+import type { Message } from '@anplexa/core';
 
 function ChatComponent() {
   const {
@@ -139,9 +139,9 @@ interface UseMessagePersistenceReturn {
 
 The hook follows clean architecture principles:
 
-1. **Domain Layer** (`src/lib/domain/entities/`)
+1. **Domain Layer** (`@anplexa/core`)
    - `Message` entity representing a message in a conversation
-   - Helper functions for creating and checking message types
+   - Shared domain entities across all Anplexa apps
 
 2. **Adapter Layer** (`src/lib/adapters/`)
    - `apiClient`: HTTP client for all API communications
@@ -258,4 +258,4 @@ The cache is automatically updated when:
 
 - [API Client Documentation](../lib/adapters/api/README.md)
 - [Storage Service Documentation](../lib/adapters/storage/README.md)
-- [Domain Entities](../lib/domain/entities/README.md)
+- [Core Domain Entities](@anplexa/core - shared domain entities)

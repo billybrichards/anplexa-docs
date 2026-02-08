@@ -117,6 +117,30 @@ export class FunnelApiKeyRepository implements IFunnelApiKeyRepository {
   }
 
   /**
+   * Activate a funnel API key
+   */
+  async activate(id: string): Promise<void> {
+    try {
+      // Check if funnel API key exists
+      const existingKey = await this.getById(id);
+      if (!existingKey) {
+        throw new Error(`Funnel API key with id ${id} not found`);
+      }
+
+      // Activate the key
+      await this.db
+        .update(funnelApiKeys)
+        .set({ isActive: 1 as any }) // Use 1 for SQLite compatibility (boolean mode)
+        .where(eq(funnelApiKeys.id, id));
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('not found')) {
+        throw error;
+      }
+      throw new Error(`Failed to activate funnel API key: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
    * Delete a funnel API key (hard delete)
    */
   async delete(id: string): Promise<void> {

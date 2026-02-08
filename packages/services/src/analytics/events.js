@@ -1,12 +1,8 @@
-"use strict";
 /**
  * Analytics Event Definitions
  * Unified event types extracted from all Anplexa applications
  * Supports type-safe event tracking across browser and Node.js environments
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AnalyticsEvents = void 0;
-exports.isValidEventProperties = isValidEventProperties;
 /**
  * All possible analytics event names
  * Covers events from:
@@ -14,7 +10,7 @@ exports.isValidEventProperties = isValidEventProperties;
  * - Funnel app (conversion funnel, pricing, registration)
  * - Backend (subscription management, webhooks)
  */
-exports.AnalyticsEvents = {
+export const AnalyticsEvents = {
     // Authentication Events
     USER_SIGNED_UP: 'user_signed_up',
     USER_LOGGED_IN: 'user_logged_in',
@@ -73,7 +69,7 @@ exports.AnalyticsEvents = {
  * Validate that an event has valid properties
  * This is a runtime check to catch incorrect event usage
  */
-function isValidEventProperties(_eventName, properties) {
+export function isValidEventProperties(_eventName, properties) {
     if (typeof properties !== 'object' || properties === null) {
         return false;
     }

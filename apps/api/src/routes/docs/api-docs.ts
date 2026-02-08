@@ -9,7 +9,7 @@
 
 import { Router, type Request, type Response } from 'express';
 import type { Container } from '../../container.js';
-import openapiSpec from '../../docs/openapi.json';
+import openapiSpec from '../../docs/openapi.json' with { type: 'json' };
 
 /**
  * Swagger UI HTML template with dark theme
@@ -27,51 +27,57 @@ function getSwaggerHTML(): string {
   <style>
     html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
     *, *:before, *:after { box-sizing: inherit; }
-    body { margin: 0; background: #0f0f1a; font-family: 'Inter', sans-serif; }
+    body { margin: 0; background: linear-gradient(to bottom, #0a0a12, #12121f); font-family: 'Inter', sans-serif; }
 
     .anplexa-header {
-      background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%);
       padding: 16px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: white;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+      color: #faf8f5;
+      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
     }
-    .anplexa-header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; }
+    .anplexa-header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #d4af37; }
     .anplexa-header nav a {
-      color: white;
+      color: #faf8f5;
       text-decoration: none;
       margin-left: 20px;
       font-weight: 500;
       font-size: 0.9rem;
       opacity: 0.9;
-      transition: opacity 0.2s;
+      transition: all 0.3s ease;
     }
-    .anplexa-header nav a:hover { opacity: 1; }
+    .anplexa-header nav a:hover { opacity: 1; color: #d4af37; }
     .version-badge {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(212, 175, 55, 0.2);
       padding: 4px 10px;
       border-radius: 12px;
       font-size: 0.75rem;
       font-weight: 600;
+      color: #d4af37;
+      border: 1px solid rgba(212, 175, 55, 0.3);
     }
 
-    .swagger-ui { background: #0f0f1a; }
-    .swagger-ui .info .title { color: #f1f5f9; }
-    .swagger-ui .info p, .swagger-ui .info li { color: #cbd5e1; }
-    .swagger-ui .scheme-container { background: #1e1b4b; border-top: 1px solid #4c1d95; }
-    .swagger-ui .opblock { border-radius: 12px; border: none; margin-bottom: 16px; }
-    .swagger-ui .opblock-tag { color: #f1f5f9; border-bottom: 1px solid #4c1d95; }
-    .swagger-ui .opblock-summary-path { color: #e2e8f0; }
-    .swagger-ui .opblock-section-header { background: #1e1b4b; }
-    .swagger-ui .opblock-body pre { background: #1e1b4b; color: #86efac; }
-    .swagger-ui .responses-inner { background: #1e1b4b; }
-    .swagger-ui .response-col_status { color: #10b981; }
-    .swagger-ui .response-col_description { color: #e2e8f0; }
-    .swagger-ui .btn.authorize { background: #6366f1; border-color: #6366f1; color: white; }
-    .swagger-ui .btn.execute { background: #10b981; border-color: #10b981; color: white; }
-    .swagger-ui input[type=text], .swagger-ui textarea { background: #1e1b4b; border: 1px solid #4c1d95; color: white; }
+    .swagger-ui { background: linear-gradient(to bottom, #0a0a12, #12121f); }
+    .swagger-ui .info .title { color: #faf8f5; }
+    .swagger-ui .info p, .swagger-ui .info li { color: #8b8ba3; }
+    .swagger-ui .scheme-container { background: #1a1a2e; border-top: 1px solid rgba(212, 175, 55, 0.15); }
+    .swagger-ui .opblock { border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.15); margin-bottom: 16px; background: #1a1a2e; }
+    .swagger-ui .opblock-tag { color: #faf8f5; border-bottom: 1px solid rgba(212, 175, 55, 0.15); }
+    .swagger-ui .opblock-summary-path { color: #c9b8ff; }
+    .swagger-ui .opblock-section-header { background: #2d2d4a; }
+    .swagger-ui .opblock-body pre { background: #1a1a2e; color: #c9b8ff; }
+    .swagger-ui .responses-inner { background: #1a1a2e; }
+    .swagger-ui .response-col_status { color: #d4af37; }
+    .swagger-ui .response-col_description { color: #faf8f5; }
+    .swagger-ui .btn.authorize { background: #d4af37; border-color: #d4af37; color: #0a0a12; font-weight: 600; }
+    .swagger-ui .btn.authorize:hover { background: #f4e4a6; }
+    .swagger-ui .btn.execute { background: #c9b8ff; border-color: #c9b8ff; color: #0a0a12; font-weight: 600; }
+    .swagger-ui .btn.execute:hover { opacity: 0.9; }
+    .swagger-ui input[type=text], .swagger-ui textarea { background: #2d2d4a; border: 1px solid rgba(212, 175, 55, 0.3); color: #faf8f5; }
+    .swagger-ui input[type=text]:focus, .swagger-ui textarea:focus { border-color: #d4af37; }
   </style>
 </head>
 <body>
@@ -87,7 +93,7 @@ function getSwaggerHTML(): string {
     </nav>
   </div>
   <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"><\/script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
   <script>
     window.onload = function() {
       window.ui = SwaggerUIBundle({
@@ -101,7 +107,7 @@ function getSwaggerHTML(): string {
         layout: "BaseLayout"
       });
     };
-  <\/script>
+  </script>
 </body>
 </html>`;
 }

@@ -105,62 +105,63 @@ function generateEndpointsHTML(categories: EndpointCategory[]): string {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #0f0a1a; color: #e2e8f0; line-height: 1.6; }
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #0a0a12, #12121f); color: #faf8f5; line-height: 1.6; }
     code, pre { font-family: 'Fira Code', monospace; }
-    .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%); padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; }
-    .header h1 { font-size: 1.5rem; font-weight: 700; color: white; }
-    .header .version { background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; color: white; margin-left: 12px; }
-    .header nav a { color: white; text-decoration: none; margin-left: 24px; font-weight: 500; opacity: 0.9; }
-    .header nav a:hover { opacity: 1; }
+    .header { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%); padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3); border-bottom: 1px solid rgba(212, 175, 55, 0.15); }
+    .header h1 { font-size: 1.5rem; font-weight: 700; color: #d4af37; }
+    .header .version { background: rgba(212, 175, 55, 0.2); padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; color: #d4af37; margin-left: 12px; border: 1px solid rgba(212, 175, 55, 0.3); }
+    .header nav a { color: #faf8f5; text-decoration: none; margin-left: 24px; font-weight: 500; opacity: 0.9; transition: all 0.3s ease; }
+    .header nav a:hover { opacity: 1; color: #d4af37; }
     .layout { display: flex; max-width: 1600px; margin: 0 auto; }
-    .sidebar { width: 260px; background: #1a1025; padding: 24px; position: sticky; top: 0; height: 100vh; overflow-y: auto; border-right: 1px solid #2d1f42; }
-    .sidebar h3 { color: #a78bfa; margin-bottom: 16px; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px; }
-    .sidebar a { display: block; color: #94a3b8; text-decoration: none; padding: 8px 12px; border-radius: 6px; margin-bottom: 4px; font-size: 0.875rem; }
-    .sidebar a:hover { background: #2d1f42; color: #e2e8f0; }
+    .sidebar { width: 260px; background: #1a1a2e; padding: 24px; position: sticky; top: 0; height: 100vh; overflow-y: auto; border-right: 1px solid rgba(212, 175, 55, 0.15); }
+    .sidebar h3 { color: #d4af37; margin-bottom: 16px; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 1px; }
+    .sidebar a { display: block; color: #8b8ba3; text-decoration: none; padding: 8px 12px; border-radius: 6px; margin-bottom: 4px; font-size: 0.875rem; transition: all 0.3s ease; }
+    .sidebar a:hover { background: #2d2d4a; color: #faf8f5; }
     .main { flex: 1; padding: 40px; min-width: 0; }
-    .intro { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 32px; border-radius: 16px; margin-bottom: 40px; border: 1px solid #4c1d95; }
-    .intro h1 { font-size: 2rem; margin-bottom: 12px; }
-    .intro p { color: #a5b4fc; margin-bottom: 20px; }
+    .intro { background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%); padding: 32px; border-radius: 16px; margin-bottom: 40px; border: 1px solid rgba(212, 175, 55, 0.3); box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2); }
+    .intro h1 { font-size: 2rem; margin-bottom: 12px; color: #d4af37; }
+    .intro p { color: #c9b8ff; margin-bottom: 20px; }
     .auth-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 24px; }
-    .auth-card { background: rgba(0,0,0,0.3); padding: 16px; border-radius: 10px; border: 1px solid #4c1d95; }
-    .auth-card h4 { color: #86efac; margin-bottom: 8px; }
-    .auth-card code { color: #fbbf24; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
-    .auth-card p { color: #94a3b8; font-size: 0.85rem; margin-top: 8px; }
+    .auth-card { background: rgba(10, 10, 18, 0.5); padding: 16px; border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.2); }
+    .auth-card h4 { color: #d4af37; margin-bottom: 8px; }
+    .auth-card code { color: #c9b8ff; background: rgba(10, 10, 18, 0.6); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+    .auth-card p { color: #8b8ba3; font-size: 0.85rem; margin-top: 8px; }
     .buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
-    .btn { padding: 10px 20px; border-radius: 8px; font-weight: 500; text-decoration: none; border: none; cursor: pointer; font-size: 0.9rem; }
-    .btn-primary { background: #6366f1; color: white; }
-    .btn-primary:hover { background: #4f46e5; }
-    .btn-secondary { background: #4c1d95; color: white; }
-    .btn-secondary:hover { background: #5b21b6; }
+    .btn { padding: 10px 20px; border-radius: 8px; font-weight: 500; text-decoration: none; border: none; cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease; }
+    .btn-primary { background: #d4af37; color: #0a0a12; font-weight: 600; }
+    .btn-primary:hover { background: #f4e4a6; }
+    .btn-secondary { background: #2d2d4a; color: #faf8f5; border: 1px solid rgba(212, 175, 55, 0.3); }
+    .btn-secondary:hover { background: #1a1a2e; border-color: #d4af37; }
     .category { margin-bottom: 48px; }
-    .category h2 { color: #a78bfa; font-size: 1.5rem; margin-bottom: 8px; padding-bottom: 12px; border-bottom: 2px solid #4c1d95; }
-    .cat-desc { color: #94a3b8; margin-bottom: 20px; }
-    .endpoint { background: #1a1025; border: 1px solid #2d1f42; border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: all 0.2s; }
-    .endpoint:hover { border-color: #4c1d95; }
+    .category h2 { color: #d4af37; font-size: 1.5rem; margin-bottom: 8px; padding-bottom: 12px; border-bottom: 2px solid rgba(212, 175, 55, 0.3); }
+    .cat-desc { color: #8b8ba3; margin-bottom: 20px; }
+    .endpoint { background: #1a1a2e; border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: all 0.3s ease; }
+    .endpoint:hover { border-color: rgba(212, 175, 55, 0.4); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15); }
     .endpoint-header { display: flex; align-items: center; padding: 16px 20px; cursor: pointer; gap: 12px; flex-wrap: wrap; }
     .method { padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: white; text-transform: uppercase; }
-    .path { color: #86efac; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 6px; flex: 1; min-width: 200px; }
-    .auth-badge { background: #312e81; color: #a5b4fc; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; }
-    .expand-icon { color: #6366f1; font-size: 1.2rem; font-weight: bold; margin-left: auto; }
-    .endpoint-desc { padding: 0 20px 16px; color: #94a3b8; font-size: 0.9rem; }
-    .endpoint-details { display: none; padding: 0 20px 20px; border-top: 1px solid #2d1f42; margin-top: 8px; padding-top: 16px; }
+    .path { color: #c9b8ff; background: rgba(10, 10, 18, 0.5); padding: 6px 12px; border-radius: 6px; flex: 1; min-width: 200px; }
+    .auth-badge { background: #2d2d4a; color: #c9b8ff; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; }
+    .expand-icon { color: #d4af37; font-size: 1.2rem; font-weight: bold; margin-left: auto; }
+    .endpoint-desc { padding: 0 20px 16px; color: #8b8ba3; font-size: 0.9rem; }
+    .endpoint-details { display: none; padding: 0 20px 20px; border-top: 1px solid rgba(212, 175, 55, 0.15); margin-top: 8px; padding-top: 16px; }
     .endpoint-details.open { display: block; }
     .section { margin-bottom: 20px; }
-    .section h4 { color: #a78bfa; margin-bottom: 12px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    .schema { background: rgba(0,0,0,0.4); padding: 16px; border-radius: 8px; }
-    .schema pre { color: #86efac; font-size: 0.85rem; white-space: pre-wrap; word-break: break-word; }
-    .prop { padding: 6px 0; border-bottom: 1px solid #2d1f42; }
+    .section h4 { color: #d4af37; margin-bottom: 12px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .schema { background: rgba(10, 10, 18, 0.6); padding: 16px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.1); }
+    .schema pre { color: #c9b8ff; font-size: 0.85rem; white-space: pre-wrap; word-break: break-word; }
+    .prop { padding: 6px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.1); }
     .prop:last-child { border-bottom: none; }
-    .key { color: #a78bfa; font-weight: 600; }
-    .type { color: #86efac; }
-    .example { color: #fbbf24; font-size: 0.8rem; margin-left: 8px; }
-    .desc { color: #64748b; font-size: 0.8rem; display: block; margin-top: 4px; }
+    .key { color: #d4af37; font-weight: 600; }
+    .type { color: #c9b8ff; }
+    .example { color: #f4e4a6; font-size: 0.8rem; margin-left: 8px; }
+    .desc { color: #8b8ba3; font-size: 0.8rem; display: block; margin-top: 4px; }
     .response-code { margin-bottom: 8px; }
     .code { padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
-    .code.success { background: #065f46; color: #6ee7b7; }
-    .code.error { background: #7f1d1d; color: #fca5a5; }
-    .footer { text-align: center; padding: 40px; color: #64748b; border-top: 1px solid #2d1f42; margin-top: 60px; }
-    .footer a { color: #a78bfa; }
+    .code.success { background: rgba(212, 175, 55, 0.2); color: #d4af37; border: 1px solid rgba(212, 175, 55, 0.3); }
+    .code.error { background: rgba(201, 184, 255, 0.2); color: #c9b8ff; border: 1px solid rgba(201, 184, 255, 0.3); }
+    .footer { text-align: center; padding: 40px; color: #8b8ba3; border-top: 1px solid rgba(212, 175, 55, 0.15); margin-top: 60px; }
+    .footer a { color: #d4af37; transition: all 0.3s ease; }
+    .footer a:hover { color: #f4e4a6; }
     @media (max-width: 900px) { .sidebar { display: none; } .layout { flex-direction: column; } }
   </style>
 </head>
@@ -265,7 +266,7 @@ function generateEndpointsHTML(categories: EndpointCategory[]): string {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
-  <\/script>
+  </script>
 </body>
 </html>`;
 }

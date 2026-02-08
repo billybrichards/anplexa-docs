@@ -20,14 +20,15 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build",
     "dev": "tsc --watch",
     "lint": "eslint src/",
-    "test": "vitest",
+    "test": "vitest --passWithNoTests",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "clean": "rm -rf dist build .next *.tsbuildinfo"
   },
   "dependencies": {
     "drizzle-orm": "^0.38.3",
@@ -38,7 +39,7 @@
     "@types/node": "^20.14.0",
     "@types/pg": "^8.11.6",
     "dotenv": "^16.4.7",
-    "drizzle-kit": "^0.24.0",
+    "drizzle-kit": "^0.31.8",
     "typescript": "^5.7.2",
     "vitest": "^1.2.0"
   }

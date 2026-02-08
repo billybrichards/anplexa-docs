@@ -8,10 +8,10 @@
  * 4. Returns formatted messages
  */
 
-import type { IConversationRepository } from '../../repositories/IConversationRepository';
-import type { IMessageRepository } from '../../repositories/IMessageRepository';
-import { NotFoundError } from '../../domain/errors/NotFoundError';
-import { AuthorizationError } from '../../domain/errors/AuthorizationError';
+import type { IConversationRepository } from '../../repositories/IConversationRepository.js';
+import type { IMessageRepository } from '../../repositories/IMessageRepository.js';
+import { NotFoundError } from '../../domain/errors/NotFoundError.js';
+import { AuthorizationError } from '../../domain/errors/AuthorizationError.js';
 
 export interface GetConversationHistoryRequest {
   conversationId: string;

@@ -10,26 +10,20 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-
-export interface Message {
-  id: string;
-  conversationId: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  createdAt: Date;
-}
-
-export interface Conversation {
-  id: string;
-  userId: string;
-  title: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Message, Conversation } from '@anplexa/core/domain/entities';
+import {
+  conversationToStored,
+  storedToConversation,
+  messagesToStored,
+  storedToMessages,
+  type StoredMessage,
+  type StoredConversation,
+} from '../lib/adapters/domain-adapters';
 
 export interface UseGuestChatOptions {
   userId?: string;
   onUpgradePrompt?: () => void;
+  onPersistError?: (error: Error) => void;
 }
 
 export interface UseGuestChatReturn {
@@ -42,6 +36,8 @@ export interface UseGuestChatReturn {
   guestMessageCount: number;
   guestConversation: Conversation | null;
   saveGuestConversation: (conversation: Conversation) => void;
+  error: Error | null;
+  clearError: () => void;
 }
 
 /**
@@ -89,13 +85,31 @@ const GUEST_MESSAGE_LIMIT = 6;
  * ```
  */
 export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
-  const { userId, onUpgradePrompt } = options;
+  const { userId, onUpgradePrompt, onPersistError } = options;
 
   // State management
   const [guestMessages, setGuestMessages] = useState<Message[]>([]);
   const [guestConversation, setGuestConversation] = useState<Conversation | null>(null);
   const [guestMessageCount, setGuestMessageCount] = useState(0);
   const [, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  /**
+   * Clear the current error state
+   */
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  /**
+   * Helper to handle storage errors consistently
+   */
+  const handleStorageError = useCallback((err: unknown, operation: string): void => {
+    const storageError = err instanceof Error ? err : new Error(`Failed to ${operation}`);
+    console.error(`Failed to ${operation}:`, storageError);
+    setError(storageError);
+    onPersistError?.(storageError);
+  }, [onPersistError]);
 
   // Track whether upgrade prompt has been shown to avoid multiple triggers
   const upgradePromptShownRef = useRef(false);
@@ -120,31 +134,31 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
       if (typeof window !== 'undefined') {
         return localStorage.getItem(key);
       }
-    } catch (error) {
-      console.error(`Failed to get item from localStorage (${key}):`, error);
+    } catch (err) {
+      handleStorageError(err, `get item from localStorage (${key})`);
     }
     return null;
-  }, []);
+  }, [handleStorageError]);
 
   const safeSetItem = useCallback((key: string, value: string): void => {
     try {
       if (typeof window !== 'undefined') {
         localStorage.setItem(key, value);
       }
-    } catch (error) {
-      console.error(`Failed to set item in localStorage (${key}):`, error);
+    } catch (err) {
+      handleStorageError(err, `set item in localStorage (${key})`);
     }
-  }, []);
+  }, [handleStorageError]);
 
   const safeRemoveItem = useCallback((key: string): void => {
     try {
       if (typeof window !== 'undefined') {
         localStorage.removeItem(key);
       }
-    } catch (error) {
-      console.error(`Failed to remove item from localStorage (${key}):`, error);
+    } catch (err) {
+      handleStorageError(err, `remove item from localStorage (${key})`);
     }
-  }, []);
+  }, [handleStorageError]);
 
   /**
    * Load guest messages from localStorage
@@ -157,13 +171,8 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
       const storedMessages = safeGetItem(GUEST_MESSAGES_KEY);
       if (storedMessages) {
         try {
-          const parsed = JSON.parse(storedMessages);
-          const messages = Array.isArray(parsed)
-            ? parsed.map((msg: any) => ({
-                ...msg,
-                createdAt: new Date(msg.createdAt),
-              }))
-            : [];
+          const parsed: StoredMessage[] = JSON.parse(storedMessages);
+          const messages = Array.isArray(parsed) ? storedToMessages(parsed) : [];
           setGuestMessages(messages);
         } catch (error) {
           console.error('Failed to parse guest messages:', error);
@@ -175,12 +184,8 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
       const storedConversation = safeGetItem(GUEST_CONVERSATION_KEY);
       if (storedConversation) {
         try {
-          const parsed = JSON.parse(storedConversation);
-          const conversation = {
-            ...parsed,
-            createdAt: new Date(parsed.createdAt),
-            updatedAt: new Date(parsed.updatedAt),
-          };
+          const parsed: StoredConversation = JSON.parse(storedConversation);
+          const conversation = storedToConversation(parsed);
           setGuestConversation(conversation);
         } catch (error) {
           console.error('Failed to parse guest conversation:', error);
@@ -216,7 +221,7 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
 
           // Persist to localStorage
           try {
-            safeSetItem(GUEST_MESSAGES_KEY, JSON.stringify(updated));
+            safeSetItem(GUEST_MESSAGES_KEY, JSON.stringify(messagesToStored(updated)));
           } catch (error) {
             console.error('Failed to persist guest messages:', error);
           }
@@ -249,7 +254,7 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
 
       try {
         setGuestConversation(conversation);
-        safeSetItem(GUEST_CONVERSATION_KEY, JSON.stringify(conversation));
+        safeSetItem(GUEST_CONVERSATION_KEY, JSON.stringify(conversationToStored(conversation)));
       } catch (error) {
         console.error('Failed to save guest conversation:', error);
       }
@@ -315,5 +320,7 @@ export function useGuestChat(options: UseGuestChatOptions): UseGuestChatReturn {
     guestMessageCount,
     guestConversation,
     saveGuestConversation,
+    error,
+    clearError,
   };
 }

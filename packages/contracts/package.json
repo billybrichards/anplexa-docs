@@ -12,11 +12,12 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build",
     "dev": "tsc --watch",
     "lint": "eslint src/",
-    "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "test": "vitest --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist build .next *.tsbuildinfo"
   },
   "dependencies": {
     "zod": "^3.22.4"

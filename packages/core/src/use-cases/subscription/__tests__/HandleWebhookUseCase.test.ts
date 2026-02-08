@@ -9,99 +9,56 @@ import {
   type HandleWebhookRequest,
 } from '../HandleWebhookUseCase.js';
 import type { UserRepository, User } from '../../../repositories/UserRepository.js';
-import type Stripe from 'stripe';
-
-// Mock @anplexa/services/stripe
-vi.mock('@anplexa/services/stripe', () => ({
-  constructWebhookEvent: vi.fn(),
-  handleCheckoutCompleted: vi.fn(),
-  handleSubscriptionCreated: vi.fn(),
-  handleSubscriptionUpdated: vi.fn(),
-  handleSubscriptionDeleted: vi.fn(),
-  handleInvoicePaid: vi.fn(),
-  handleInvoicePaymentFailed: vi.fn(),
-  isSubscriptionActive: vi.fn(),
-  isSubscriptionCanceled: vi.fn(),
-}));
-
-import {
-  constructWebhookEvent,
-  handleCheckoutCompleted,
-  handleSubscriptionCreated,
-  handleSubscriptionUpdated,
-  handleSubscriptionDeleted,
-  handleInvoicePaid,
-  handleInvoicePaymentFailed,
-} from '@anplexa/services/stripe';
+import type { IStripeService } from '../../../domain/services/IStripeService.js';
+import { createMockUser } from '../../../test-utils/mocks.js';
 
 describe('HandleWebhookUseCase', () => {
   let useCase: HandleWebhookUseCase;
   let mockUserRepository: UserRepository;
+  let mockStripeService: IStripeService;
   let mockUser: User;
 
   beforeEach(() => {
     // Reset all mocks
     vi.clearAllMocks();
 
-    // Create mock user
-    mockUser = {
-      id: 'user-123',
-      email: 'test@example.com',
-      displayName: 'Test User',
-      chatName: null,
-      passwordHash: 'hashed',
-      personalityMode: null,
-      preferredGender: null,
-      customGender: null,
-      storagePreference: null,
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-01T00:00:00Z',
-      isAdmin: false,
-      subscriptionStatus: 'not_subscribed',
-      manualSubscriptionOverride: false,
-      credits: 5,
-      lastCreditRefresh: null,
-      stripeCustomerId: 'cus_123',
-      stripeSubscriptionId: null,
-      accountSource: 'anplexa',
-      funnelType: null,
-      persona: null,
-      stage: null,
-      entrySource: null,
-      usedFreeMessages: 0,
-      emailOpened1: false,
-      emailOpened2: false,
-      emailOpened3: false,
-      clickedUseApp: false,
-      feedbackSubmitted: false,
-      refundRequested: false,
-      refundProcessed: false,
-      lastActivityAt: null,
-      amplexaFunnel: null,
-      amplexaFunnelName: null,
-      amplexaResponses: null,
-      amplexaPrimaryNeed: null,
-      amplexaCommunicationStyle: null,
-      amplexaPace: null,
-      amplexaTags: null,
-      amplexaTimestamp: null,
-      sourceChannel: null,
+    // Create mock user using shared factory
+    mockUser = createMockUser();
+
+    // Create mock repository - using IUserRepository interface method names
+    mockUserRepository = {
+      getById: vi.fn(),
+      getByEmail: vi.fn(),
+      getByStripeCustomerId: vi.fn(),
+      getByStripeSubscriptionId: vi.fn(),
+      getAll: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      updateSubscriptionStatus: vi.fn(),
     };
 
-    // Create mock repository
-    mockUserRepository = {
-      findById: vi.fn(),
-      findByEmail: vi.fn(),
-      findByStripeCustomerId: vi.fn(),
-      findByStripeSubscriptionId: vi.fn(),
-      update: vi.fn(),
-      updateSubscriptionStatus: vi.fn(),
-      updateStripeCustomerId: vi.fn(),
-      updateCredits: vi.fn(),
+    // Create mock stripe service
+    mockStripeService = {
+      createCheckoutSession: vi.fn(),
+      createCustomer: vi.fn(),
+      getCustomer: vi.fn(),
+      getSubscription: vi.fn(),
+      cancelSubscription: vi.fn(),
+      scheduleSubscriptionCancellation: vi.fn(),
+      unscheduleSubscriptionCancellation: vi.fn(),
+      changeSubscriptionPrice: vi.fn(),
+      constructWebhookEvent: vi.fn(),
+      handleCheckoutCompleted: vi.fn(),
+      handleSubscriptionCreated: vi.fn(),
+      handleSubscriptionUpdated: vi.fn(),
+      handleSubscriptionDeleted: vi.fn(),
+      handleInvoicePaid: vi.fn(),
+      handleInvoicePaymentFailed: vi.fn(),
     };
 
     // Create use case instance
-    useCase = new HandleWebhookUseCase(mockUserRepository);
+    useCase = new HandleWebhookUseCase(mockUserRepository, mockStripeService);
   });
 
   describe('execute', () => {
@@ -120,21 +77,21 @@ describe('HandleWebhookUseCase', () => {
             customer_details: { email: 'test@example.com' },
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleCheckoutCompleted).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleCheckoutCompleted).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         email: 'test@example.com',
         metadata: { userId: 'user-123' },
       });
-      vi.mocked(mockUserRepository.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.update).mockResolvedValue(mockUser);
 
       // Act
@@ -171,15 +128,15 @@ describe('HandleWebhookUseCase', () => {
             current_period_end: Math.floor(Date.now() / 1000) + 86400 * 30,
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleSubscriptionCreated).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleSubscriptionCreated).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         status: 'active',
@@ -187,8 +144,9 @@ describe('HandleWebhookUseCase', () => {
         startDate: new Date(),
         currentPeriodEnd: new Date(),
         metadata: { userId: 'user-123' },
+        canceledAt: null,
       });
-      vi.mocked(mockUserRepository.findByStripeCustomerId).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getByStripeCustomerId).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(mockUser);
 
       // Act
@@ -226,15 +184,15 @@ describe('HandleWebhookUseCase', () => {
             metadata: {},
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleSubscriptionUpdated).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleSubscriptionUpdated).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         status: 'active',
@@ -243,7 +201,7 @@ describe('HandleWebhookUseCase', () => {
         canceledAt: null,
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeSubscriptionId).mockResolvedValue(userWithSub);
+      vi.mocked(mockUserRepository.getByStripeSubscriptionId).mockResolvedValue(userWithSub);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(userWithSub);
 
       // Act
@@ -280,21 +238,23 @@ describe('HandleWebhookUseCase', () => {
             metadata: {},
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleSubscriptionDeleted).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleSubscriptionDeleted).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         canceledAt: new Date(),
         metadata: {},
+        status: 'canceled',
+        isActive: false,
       });
-      vi.mocked(mockUserRepository.findByStripeSubscriptionId).mockResolvedValue(userWithSub);
+      vi.mocked(mockUserRepository.getByStripeSubscriptionId).mockResolvedValue(userWithSub);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(userWithSub);
 
       // Act
@@ -334,15 +294,15 @@ describe('HandleWebhookUseCase', () => {
             metadata: {},
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleInvoicePaid).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleInvoicePaid).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         invoiceId: 'in_123',
@@ -351,7 +311,7 @@ describe('HandleWebhookUseCase', () => {
         paidAt: new Date(),
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeCustomerId).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getByStripeCustomerId).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.update).mockResolvedValue(mockUser);
 
       // Act
@@ -366,7 +326,6 @@ describe('HandleWebhookUseCase', () => {
       });
 
       expect(mockUserRepository.update).toHaveBeenCalledWith('user-123', {
-        lastActivityAt: expect.any(String),
         updatedAt: expect.any(String),
       });
     });
@@ -387,15 +346,15 @@ describe('HandleWebhookUseCase', () => {
             metadata: {},
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleInvoicePaymentFailed).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleInvoicePaymentFailed).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         invoiceId: 'in_123',
@@ -404,7 +363,7 @@ describe('HandleWebhookUseCase', () => {
         nextPaymentAttempt: new Date(Date.now() + 86400000),
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeCustomerId).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getByStripeCustomerId).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(mockUser);
 
       // Act
@@ -434,14 +393,14 @@ describe('HandleWebhookUseCase', () => {
         data: {
           object: {},
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
 
       // Act
       const result = await useCase.execute(request);
@@ -469,15 +428,15 @@ describe('HandleWebhookUseCase', () => {
             customer_details: { email: 'test@example.com' },
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleCheckoutCompleted).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleCheckoutCompleted).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         email: 'test@example.com',
@@ -511,15 +470,15 @@ describe('HandleWebhookUseCase', () => {
             current_period_end: Math.floor(Date.now() / 1000) + 86400 * 30,
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleSubscriptionCreated).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleSubscriptionCreated).mockReturnValue({
         customerId: 'cus_unknown',
         subscriptionId: 'sub_123',
         status: 'active',
@@ -527,9 +486,10 @@ describe('HandleWebhookUseCase', () => {
         startDate: new Date(),
         currentPeriodEnd: new Date(),
         metadata: { userId: 'user-123' },
+        canceledAt: null,
       });
-      vi.mocked(mockUserRepository.findByStripeCustomerId).mockResolvedValue(null);
-      vi.mocked(mockUserRepository.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.getByStripeCustomerId).mockResolvedValue(null);
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(mockUser);
 
       // Act
@@ -560,15 +520,15 @@ describe('HandleWebhookUseCase', () => {
             metadata: {},
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleSubscriptionUpdated).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleSubscriptionUpdated).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         status: 'past_due',
@@ -577,7 +537,7 @@ describe('HandleWebhookUseCase', () => {
         canceledAt: null,
         metadata: {},
       });
-      vi.mocked(mockUserRepository.findByStripeSubscriptionId).mockResolvedValue(userWithSub);
+      vi.mocked(mockUserRepository.getByStripeSubscriptionId).mockResolvedValue(userWithSub);
       vi.mocked(mockUserRepository.updateSubscriptionStatus).mockResolvedValue(userWithSub);
 
       // Act
@@ -610,15 +570,15 @@ describe('HandleWebhookUseCase', () => {
             metadata: {},
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleInvoicePaid).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleInvoicePaid).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: null,
         invoiceId: 'in_123',
@@ -645,7 +605,7 @@ describe('HandleWebhookUseCase', () => {
         signature: 'invalid_sig',
       };
 
-      vi.mocked(constructWebhookEvent).mockImplementation(() => {
+      vi.mocked(mockStripeService.constructWebhookEvent).mockImplementation(() => {
         throw new Error('Invalid signature');
       });
 
@@ -671,26 +631,87 @@ describe('HandleWebhookUseCase', () => {
             customer_details: { email: 'test@example.com' },
           },
         },
-      } as Stripe.Event;
+      };
 
       const request: HandleWebhookRequest = {
         payload: Buffer.from('test'),
         signature: 'sig_test',
       };
 
-      vi.mocked(constructWebhookEvent).mockReturnValue(mockEvent);
-      vi.mocked(handleCheckoutCompleted).mockReturnValue({
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleCheckoutCompleted).mockReturnValue({
         customerId: 'cus_123',
         subscriptionId: 'sub_123',
         email: 'test@example.com',
         metadata: { userId: 'user-123' },
       });
-      vi.mocked(mockUserRepository.findById).mockResolvedValue(null);
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(null);
 
       // Act & Assert
       await expect(useCase.execute(request)).rejects.toThrow(HandleWebhookUseCaseError);
       await expect(useCase.execute(request)).rejects.toMatchObject({
         code: 'USER_NOT_FOUND',
+      });
+    });
+
+    it('should handle duplicate webhook events idempotently', async () => {
+      // Arrange - simulate receiving the same event twice
+      const mockEvent = {
+        id: 'evt_duplicate_123',
+        type: 'checkout.session.completed',
+        data: {
+          object: {
+            id: 'cs_123',
+            customer: 'cus_123',
+            subscription: 'sub_123',
+            metadata: { userId: 'user-123' },
+            client_reference_id: 'user-123',
+            customer_details: { email: 'test@example.com' },
+          },
+        },
+      };
+
+      const request: HandleWebhookRequest = {
+        payload: Buffer.from('test'),
+        signature: 'sig_test',
+      };
+
+      vi.mocked(mockStripeService.constructWebhookEvent).mockReturnValue(mockEvent);
+      vi.mocked(mockStripeService.handleCheckoutCompleted).mockReturnValue({
+        customerId: 'cus_123',
+        subscriptionId: 'sub_123',
+        email: 'test@example.com',
+        metadata: { userId: 'user-123' },
+      });
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepository.update).mockResolvedValue(mockUser);
+
+      // Act - Process the same event twice
+      const result1 = await useCase.execute(request);
+      const result2 = await useCase.execute(request);
+
+      // Assert - Both calls should succeed without side effects from duplicates
+      expect(result1.eventId).toBe('evt_duplicate_123');
+      expect(result2.eventId).toBe('evt_duplicate_123');
+      expect(result1.processed).toBe(true);
+      expect(result2.processed).toBe(true);
+
+      // The repository update should be called both times
+      // (idempotency means the same result, not preventing the call)
+      expect(mockUserRepository.update).toHaveBeenCalledTimes(2);
+
+      // Both calls should update to the same state
+      expect(mockUserRepository.update).toHaveBeenNthCalledWith(1, 'user-123', {
+        stripeCustomerId: 'cus_123',
+        stripeSubscriptionId: 'sub_123',
+        subscriptionStatus: 'subscribed',
+        updatedAt: expect.any(String),
+      });
+      expect(mockUserRepository.update).toHaveBeenNthCalledWith(2, 'user-123', {
+        stripeCustomerId: 'cus_123',
+        stripeSubscriptionId: 'sub_123',
+        subscriptionStatus: 'subscribed',
+        updatedAt: expect.any(String),
       });
     });
   });

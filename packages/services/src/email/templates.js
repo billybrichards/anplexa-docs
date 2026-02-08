@@ -1,21 +1,6 @@
-"use strict";
 /**
  * Email template definitions for Anplexa
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.wrapEmail = wrapEmail;
-exports.buildTrackingUrl = buildTrackingUrl;
-exports.welcomeEmail = welcomeEmail;
-exports.subscriptionConfirmationEmail = subscriptionConfirmationEmail;
-exports.passwordResetEmail = passwordResetEmail;
-exports.magicLinkEmail = magicLinkEmail;
-exports.emailVerificationEmail = emailVerificationEmail;
-exports.refundConfirmationEmail = refundConfirmationEmail;
-exports.trialExpiringEmail = trialExpiringEmail;
-exports.invoiceEmail = invoiceEmail;
-exports.paymentFailedEmail = paymentFailedEmail;
-exports.subscriptionCanceledEmail = subscriptionCanceledEmail;
-exports.customEmail = customEmail;
 const ANPLEXA_BRAND_COLOR = '#7B2CBF';
 const ANPLEXA_DARK_BG = '#121212';
 const ANPLEXA_CARD_BG = '#1a1a1a';
@@ -104,7 +89,7 @@ const anplexaStyles = `
 /**
  * Wrap email content with Anplexa styling and layout
  */
-function wrapEmail(content) {
+export function wrapEmail(content) {
     return `
 <!DOCTYPE html>
 <html>
@@ -129,13 +114,13 @@ function wrapEmail(content) {
 /**
  * Build tracking URL for email campaigns
  */
-function buildTrackingUrl(baseUrl, campaign, userId) {
+export function buildTrackingUrl(baseUrl, campaign, userId) {
     return `${baseUrl}?src=email&campaign=${campaign}&uid=${userId}`;
 }
 /**
  * Welcome email for new users
  */
-function welcomeEmail(displayName) {
+export function welcomeEmail(displayName) {
     return {
         subject: 'Welcome to Anplexa',
         html: wrapEmail(`
@@ -151,7 +136,7 @@ function welcomeEmail(displayName) {
 /**
  * Subscription confirmation email
  */
-function subscriptionConfirmationEmail(displayName, _plan) {
+export function subscriptionConfirmationEmail(displayName, _plan) {
     return {
         subject: 'You\'re all set',
         html: wrapEmail(`
@@ -168,7 +153,7 @@ function subscriptionConfirmationEmail(displayName, _plan) {
 /**
  * Password reset email
  */
-function passwordResetEmail(resetLink) {
+export function passwordResetEmail(resetLink) {
     return {
         subject: 'Reset your password',
         html: wrapEmail(`
@@ -186,7 +171,7 @@ function passwordResetEmail(resetLink) {
 /**
  * Magic link login email
  */
-function magicLinkEmail(magicLink) {
+export function magicLinkEmail(magicLink) {
     return {
         subject: 'Your login link',
         html: wrapEmail(`
@@ -204,7 +189,7 @@ function magicLinkEmail(magicLink) {
 /**
  * Email verification email
  */
-function emailVerificationEmail(verificationLink) {
+export function emailVerificationEmail(verificationLink) {
     return {
         subject: 'Verify your email address',
         html: wrapEmail(`
@@ -221,7 +206,7 @@ function emailVerificationEmail(verificationLink) {
 /**
  * Refund confirmation email
  */
-function refundConfirmationEmail() {
+export function refundConfirmationEmail() {
     return {
         subject: 'Thanks for trying Anplexa',
         html: wrapEmail(`
@@ -234,7 +219,7 @@ function refundConfirmationEmail() {
 /**
  * Free trial expiring soon notification
  */
-function trialExpiringEmail(daysLeft) {
+export function trialExpiringEmail(daysLeft) {
     return {
         subject: `Your free trial expires in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`,
         html: wrapEmail(`
@@ -252,7 +237,7 @@ function trialExpiringEmail(daysLeft) {
 /**
  * Invoice email
  */
-function invoiceEmail(invoiceUrl, amount, date) {
+export function invoiceEmail(invoiceUrl, amount, date) {
     return {
         subject: 'Your Anplexa invoice',
         html: wrapEmail(`
@@ -269,7 +254,7 @@ function invoiceEmail(invoiceUrl, amount, date) {
 /**
  * Payment failed notification
  */
-function paymentFailedEmail(retryUrl) {
+export function paymentFailedEmail(retryUrl) {
     return {
         subject: 'Payment failed for your Anplexa subscription',
         html: wrapEmail(`
@@ -284,7 +269,7 @@ function paymentFailedEmail(retryUrl) {
 /**
  * Subscription canceled confirmation
  */
-function subscriptionCanceledEmail() {
+export function subscriptionCanceledEmail() {
     return {
         subject: 'Your Anplexa subscription has been canceled',
         html: wrapEmail(`
@@ -298,7 +283,7 @@ function subscriptionCanceledEmail() {
 /**
  * Custom email template
  */
-function customEmail(subject, content) {
+export function customEmail(subject, content) {
     return {
         subject,
         html: wrapEmail(content),

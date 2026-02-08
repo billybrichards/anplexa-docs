@@ -5,12 +5,12 @@
  * Entities represent the core business concepts in the Anplexa system.
  */
 
-export { User } from './User';
-export { Conversation } from './Conversation';
-export { Message, type MessageRole } from './Message';
-export { Session } from './Session';
-export { PasswordResetToken } from './PasswordResetToken';
-export { ApiUsage } from './ApiUsage';
-export { UserFeedback } from './UserFeedback';
-export { ApiKey } from './ApiKey';
-export { FunnelApiKey } from './FunnelApiKey';
+export { User } from './User.js';
+export { Conversation } from './Conversation.js';
+export { Message, type MessageRole } from './Message.js';
+export { Session } from './Session.js';
+export { PasswordResetToken } from './PasswordResetToken.js';
+export { ApiUsage } from './ApiUsage.js';
+export { UserFeedback } from './UserFeedback.js';
+export { ApiKey } from './ApiKey.js';
+export { FunnelApiKey } from './FunnelApiKey.js';

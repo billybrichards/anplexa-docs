@@ -1,19 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmail = sendEmail;
-exports.sendTemplateEmail = sendTemplateEmail;
-exports.sendBatchEmails = sendBatchEmails;
-exports.sendEmailWithRetry = sendEmailWithRetry;
-exports.isValidEmail = isValidEmail;
-exports.sanitizeEmail = sanitizeEmail;
-const client_js_1 = require("./client.js");
+import { getResendClient, getFromEmail } from './client';
 /**
  * Send email using Resend
  */
-async function sendEmail(options) {
+export async function sendEmail(options) {
     try {
-        const client = await (0, client_js_1.getResendClient)();
-        const fromEmail = await (0, client_js_1.getFromEmail)();
+        const client = await getResendClient();
+        const fromEmail = await getFromEmail();
         const response = await client.emails.send({
             from: fromEmail,
             to: options.to,
@@ -48,7 +40,7 @@ async function sendEmail(options) {
 /**
  * Send templated email
  */
-async function sendTemplateEmail(to, template, options) {
+export async function sendTemplateEmail(to, template, options) {
     return sendEmail({
         to,
         subject: template.subject,
@@ -59,14 +51,14 @@ async function sendTemplateEmail(to, template, options) {
 /**
  * Send batch emails
  */
-async function sendBatchEmails(emails) {
+export async function sendBatchEmails(emails) {
     const results = await Promise.all(emails.map((email) => sendEmail(email)));
     return results;
 }
 /**
  * Send email with retry logic
  */
-async function sendEmailWithRetry(options, maxRetries = 3, delayMs = 1000) {
+export async function sendEmailWithRetry(options, maxRetries = 3, delayMs = 1000) {
     let lastError = null;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         const result = await sendEmail(options);
@@ -87,13 +79,13 @@ async function sendEmailWithRetry(options, maxRetries = 3, delayMs = 1000) {
 /**
  * Verify email address is valid (basic check)
  */
-function isValidEmail(email) {
+export function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 /**
  * Sanitize email address
  */
-function sanitizeEmail(email) {
+export function sanitizeEmail(email) {
     return email.toLowerCase().trim();
 }

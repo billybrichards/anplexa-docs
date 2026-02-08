@@ -3,7 +3,7 @@
  * Unified PostHog wrapper for type-safe event tracking
  */
 
-export type { AnalyticsClientConfig } from './client';
+export type { AnalyticsClientConfig } from './client.js';
 export {
   AnalyticsClient,
   getAnalyticsClient,
@@ -13,8 +13,8 @@ export {
   reset,
   pageView,
   flush,
-} from './client';
+} from './client.js';
 
-export { AnalyticsEvents } from './events';
-export type { EventName, EventProperties, UserProperties } from './events';
-export { isValidEventProperties } from './events';
+export { AnalyticsEvents } from './events.js';
+export type { EventName, EventProperties, UserProperties } from './events.js';
+export { isValidEventProperties } from './events.js';

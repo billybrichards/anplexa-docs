@@ -72,3 +72,8 @@ export function clearStripeCache(): void {
   cachedCredentials = null;
   cachedStripeClient = null;
 }
+
+/**
+ * Alias for clearStripeCache (for backwards compatibility)
+ */
+export const clearCache = clearStripeCache;

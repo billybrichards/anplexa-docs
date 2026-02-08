@@ -10,8 +10,8 @@ import type { FunnelResponse, Persona } from '../types';
 
 export interface UseFunnelTrackingReturn {
   trackStepView: (stepId: string, stepNumber?: number) => void;
-  trackResponse: (stepId: string, response: any) => void;
-  trackCompletion: (responses: Record<string, any>) => void;
+  trackResponse: (stepId: string, response: string) => void;
+  trackCompletion: (responses: Record<string, string>) => void;
   trackPersonaSelection: (persona: Persona) => void;
   trackEmailSubmitted: (email: string, path: 'free' | 'paid') => void;
   trackCheckoutStarted: (persona: Persona, priceId: string) => void;
@@ -21,7 +21,7 @@ export interface UseFunnelTrackingReturn {
   submitEmail: (email: string, persona: Persona) => Promise<void>;
   checkUserExists: (email: string) => Promise<boolean>;
   createCheckoutSession: (email: string, priceId: string, persona: Persona) => Promise<string>;
-  identifyUser: (email: string, properties: Record<string, any>) => void;
+  identifyUser: (email: string, properties: Record<string, unknown>) => void;
 }
 
 // Analytics tracking functions (PostHog integration)
@@ -58,16 +58,16 @@ const trackAnalytics = {
     // TODO: posthog.capture('account_created', { persona, email });
     console.log('[Analytics] account_created', { persona, email });
   },
-  identify: (email: string, properties: Record<string, any>) => {
+  identify: (email: string, properties: Record<string, unknown>) => {
     // TODO: posthog.identify(email, properties);
     console.log('[Analytics] identify', { email, properties });
   },
 };
 
 // Meta Pixel (Facebook) integration
-const trackPixelEvent = (eventName: string, eventData?: Record<string, any>) => {
+const trackPixelEvent = (eventName: string, eventData?: Record<string, unknown>) => {
   if (typeof window !== 'undefined' && 'fbq' in window) {
-    const fbq = (window as any).fbq;
+    const fbq = (window as unknown as { fbq: (...args: unknown[]) => void }).fbq;
     fbq('track', eventName, eventData);
   }
 };
@@ -129,11 +129,11 @@ export function useFunnelTracking(): UseFunnelTrackingReturn {
     trackAnalytics.stepViewed(stepId, stepNumber);
   }, []);
 
-  const trackResponse = useCallback((stepId: string, response: any) => {
+  const trackResponse = useCallback((stepId: string, response: string) => {
     trackAnalytics.questionAnswered('A', stepId, response);
   }, []);
 
-  const trackCompletion = useCallback((responses: Record<string, any>) => {
+  const trackCompletion = useCallback((responses: Record<string, string>) => {
     // Track all responses
     Object.entries(responses).forEach(([stepId, response]) => {
       trackResponse(stepId, response);
@@ -144,7 +144,7 @@ export function useFunnelTracking(): UseFunnelTrackingReturn {
     trackAnalytics.personaSelected(persona);
   }, []);
 
-  const trackEmailSubmitted = useCallback((email: string, path: 'free' | 'paid') => {
+  const trackEmailSubmitted = useCallback((_email: string, path: 'free' | 'paid') => {
     trackAnalytics.emailSubmitted('A', path);
   }, []);
 
@@ -163,10 +163,10 @@ export function useFunnelTracking(): UseFunnelTrackingReturn {
     trackPixelEvent('Lead', { content_name: persona });
   }, []);
 
-  const identifyUser = useCallback((email: string, properties: Record<string, any>) => {
+  const identifyUser = useCallback((email: string, properties: Record<string, unknown>) => {
     trackAnalytics.identify(email, properties);
     if (typeof window !== 'undefined' && 'fbq' in window) {
-      const fbq = (window as any).fbq;
+      const fbq = (window as unknown as { fbq: (...args: unknown[]) => void }).fbq;
       fbq('init', process.env.REACT_APP_FACEBOOK_PIXEL_ID);
     }
   }, []);

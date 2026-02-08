@@ -5,8 +5,8 @@
  * Domain errors represent business logic failures with semantic meaning.
  */
 
-export { DomainError } from './DomainError';
-export { ValidationError } from './ValidationError';
-export { AuthenticationError } from './AuthenticationError';
-export { AuthorizationError } from './AuthorizationError';
-export { NotFoundError } from './NotFoundError';
+export { DomainError } from './DomainError.js';
+export { ValidationError } from './ValidationError.js';
+export { AuthenticationError } from './AuthenticationError.js';
+export { AuthorizationError } from './AuthorizationError.js';
+export { NotFoundError } from './NotFoundError.js';

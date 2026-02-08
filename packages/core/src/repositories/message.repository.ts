@@ -13,7 +13,7 @@ import type {
   IMessageRepository,
   PaginationOptions,
   CreateMessageData,
-} from './interfaces/message.repository.interface';
+} from './interfaces/message.repository.interface.js';
 
 /**
  * Message Repository

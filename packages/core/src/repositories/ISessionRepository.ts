@@ -5,7 +5,7 @@
  * Implemented by infrastructure layer (e.g., DrizzleSessionRepository, RedisSessionRepository)
  */
 
-import type { Session } from '../domain/entities/Session';
+import type { Session } from '../domain/entities/Session.js';
 
 export interface ISessionRepository {
   /**

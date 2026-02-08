@@ -1,9 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getResendClient = getResendClient;
-exports.getFromEmail = getFromEmail;
-exports.clearEmailCache = clearEmailCache;
-const resend_1 = require("resend");
+import { Resend } from 'resend';
 let resendClient = null;
 let cachedCredentials = null;
 /**
@@ -54,24 +49,24 @@ async function getCredentials() {
 /**
  * Get Resend client instance
  */
-async function getResendClient() {
+export async function getResendClient() {
     if (!resendClient) {
         const { apiKey } = await getCredentials();
-        resendClient = new resend_1.Resend(apiKey);
+        resendClient = new Resend(apiKey);
     }
     return resendClient;
 }
 /**
  * Get the from email address configured for Resend
  */
-async function getFromEmail() {
+export async function getFromEmail() {
     const { fromEmail } = await getCredentials();
     return fromEmail;
 }
 /**
  * Clear cached credentials and client (useful for testing)
  */
-function clearEmailCache() {
+export function clearEmailCache() {
     resendClient = null;
     cachedCredentials = null;
 }

@@ -13,7 +13,7 @@
  *
  * Usage:
  * ```ts
- * const useCase = new UpdateSubscriptionUseCase(userRepository);
+ * const useCase = new UpdateSubscriptionUseCase(userRepository, stripeService);
  * const result = await useCase.execute({
  *   userId: 'user-123',
  *   action: 'change_plan',
@@ -22,16 +22,11 @@
  * ```
  */
 
-import {
-  getSubscription,
-  updateSubscription,
-  cancelSubscription,
-  scheduleSubscriptionCancellation,
-  unscheduleSubscriptionCancellation,
-  changeSubscriptionPrice,
-} from '@anplexa/services/stripe';
+import type {
+  IStripeService,
+  SubscriptionResult,
+} from '../../domain/services/IStripeService.js';
 import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
-import type Stripe from 'stripe';
 
 export type SubscriptionAction =
   | 'change_plan'
@@ -70,7 +65,10 @@ export class UpdateSubscriptionUseCaseError extends Error {
 }
 
 export class UpdateSubscriptionUseCase {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly stripeService: IStripeService,
+  ) {}
 
   /**
    * Execute the use case to update a subscription
@@ -94,9 +92,9 @@ export class UpdateSubscriptionUseCase {
     }
 
     // Get current subscription from Stripe
-    let subscription: Stripe.Subscription;
+    let subscription: SubscriptionResult;
     try {
-      subscription = await getSubscription(user.stripeSubscriptionId);
+      subscription = await this.stripeService.getSubscription(user.stripeSubscriptionId);
     } catch (error) {
       throw new UpdateSubscriptionUseCaseError(
         `Failed to retrieve subscription: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -136,8 +134,8 @@ export class UpdateSubscriptionUseCase {
    */
   private async performAction(
     request: UpdateSubscriptionRequest,
-    subscription: Stripe.Subscription
-  ): Promise<Stripe.Subscription> {
+    subscription: SubscriptionResult
+  ): Promise<SubscriptionResult> {
     switch (request.action) {
       case 'change_plan':
         if (!request.newPriceId) {
@@ -146,18 +144,18 @@ export class UpdateSubscriptionUseCase {
             'VALIDATION_ERROR'
           );
         }
-        return await changeSubscriptionPrice(subscription.id, request.newPriceId, {
+        return await this.stripeService.changeSubscriptionPrice(subscription.id, request.newPriceId, {
           prorationBehavior: request.prorationBehavior || 'create_prorations',
         });
 
       case 'cancel_immediately':
-        return await cancelSubscription(subscription.id, {
+        return await this.stripeService.cancelSubscription(subscription.id, {
           invoiceNow: true,
           prorate: true,
         });
 
       case 'cancel_at_period_end':
-        return await scheduleSubscriptionCancellation(subscription.id);
+        return await this.stripeService.scheduleSubscriptionCancellation(subscription.id);
 
       case 'reactivate':
         // Only reactivate if it's scheduled for cancellation
@@ -167,7 +165,7 @@ export class UpdateSubscriptionUseCase {
             'INVALID_ACTION'
           );
         }
-        return await unscheduleSubscriptionCancellation(subscription.id);
+        return await this.stripeService.unscheduleSubscriptionCancellation(subscription.id);
 
       default:
         throw new UpdateSubscriptionUseCaseError(
@@ -182,7 +180,7 @@ export class UpdateSubscriptionUseCase {
    */
   private async updateUserSubscriptionStatus(
     userId: string,
-    subscription: Stripe.Subscription
+    subscription: SubscriptionResult
   ): Promise<void> {
     const isActive = ['active', 'trialing'].includes(subscription.status);
     const isCanceled = ['canceled', 'unpaid', 'past_due'].includes(subscription.status);
@@ -202,7 +200,7 @@ export class UpdateSubscriptionUseCase {
     await this.userRepository.updateSubscriptionStatus(
       userId,
       status,
-      subscription.customer as string,
+      subscription.customer,
       subscription.id
     );
   }

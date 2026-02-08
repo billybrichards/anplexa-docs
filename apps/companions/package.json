@@ -8,15 +8,18 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist build .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@anplexa/core": "workspace:*",
+    "@anplexa/contracts": "workspace:*",
     "@anplexa/ui": "workspace:*",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "next": "^15.1.4",
+    "next": "^15.1.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.6.0"

@@ -1,4 +1,4 @@
-import type { PasswordResetToken, CreatePasswordResetTokenData } from '../domain/PasswordResetToken';
+import type { PasswordResetToken, CreatePasswordResetTokenData } from '../domain/PasswordResetToken.js';
 
 /**
  * Password Reset Token Repository Interface

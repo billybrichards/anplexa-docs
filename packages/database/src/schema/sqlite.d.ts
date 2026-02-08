@@ -19,7 +19,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         email: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "email";
@@ -38,7 +38,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         passwordHash: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "password_hash";
@@ -57,7 +57,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         displayName: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "display_name";
@@ -76,7 +76,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         chatName: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "chat_name";
@@ -95,7 +95,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         personalityMode: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "personality_mode";
@@ -114,7 +114,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         storagePreference: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "storage_preference";
@@ -133,7 +133,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -152,7 +152,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         updatedAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "updated_at";
@@ -171,7 +171,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         isAdmin: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "is_admin";
@@ -207,7 +207,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         manualSubscriptionOverride: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "manual_subscription_override";
@@ -260,7 +260,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         stripeSubscriptionId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "stripe_subscription_id";
@@ -279,7 +279,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         accountSource: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "account_source";
@@ -298,7 +298,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         lastCreditRefresh: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "last_credit_refresh";
@@ -317,7 +317,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         amplexaFunnel: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "amplexa_funnel";
@@ -336,7 +336,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         amplexaFunnelName: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "amplexa_funnel_name";
@@ -355,7 +355,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         amplexaResponses: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "amplexa_responses";
@@ -374,7 +374,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         amplexaPrimaryNeed: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "amplexa_primary_need";
@@ -393,7 +393,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         amplexaCommunicationStyle: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "amplexa_communication_style";
@@ -412,7 +412,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         amplexaPace: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "amplexa_pace";
@@ -431,7 +431,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         amplexaTags: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "amplexa_tags";
@@ -450,7 +450,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         amplexaTimestamp: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "amplexa_timestamp";
@@ -469,7 +469,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         sourceChannel: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "source_channel";
@@ -488,7 +488,7 @@ export declare const users: import("drizzle-orm/sqlite-core").SQLiteTableWithCol
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -514,7 +514,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         name: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "name";
@@ -533,7 +533,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         defaultGender: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "default_gender";
@@ -552,7 +552,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         customGenderText: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "custom_gender_text";
@@ -571,7 +571,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         defaultLength: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "default_length";
@@ -590,7 +590,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         defaultStyle: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "default_style";
@@ -609,7 +609,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         briefTokens: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "brief_tokens";
@@ -679,7 +679,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         moderateInstruction: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "moderate_instruction";
@@ -698,7 +698,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         detailedInstruction: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "detailed_instruction";
@@ -717,7 +717,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         casualInstruction: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "casual_instruction";
@@ -736,7 +736,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         thoughtfulInstruction: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "thoughtful_instruction";
@@ -755,7 +755,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         creativeInstruction: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "creative_instruction";
@@ -774,7 +774,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         systemPromptTemplate: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "system_prompt_template";
@@ -793,7 +793,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         generalModel: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "general_model";
@@ -812,7 +812,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         longFormModel: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "long_form_model";
@@ -831,7 +831,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         temperature: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "temperature";
@@ -884,7 +884,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         welcomeMessage: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "welcome_message";
@@ -903,7 +903,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         updatedAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "updated_at";
@@ -922,7 +922,7 @@ export declare const companionConfig: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -948,7 +948,7 @@ export declare const conversations: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -967,7 +967,7 @@ export declare const conversations: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         title: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "title";
@@ -986,7 +986,7 @@ export declare const conversations: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -1005,7 +1005,7 @@ export declare const conversations: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         updatedAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "updated_at";
@@ -1024,7 +1024,7 @@ export declare const conversations: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -1050,7 +1050,7 @@ export declare const messages: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         conversationId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "conversation_id";
@@ -1069,7 +1069,7 @@ export declare const messages: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         role: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "role";
@@ -1088,7 +1088,7 @@ export declare const messages: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         content: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "content";
@@ -1107,7 +1107,7 @@ export declare const messages: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -1126,7 +1126,7 @@ export declare const messages: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -1152,7 +1152,7 @@ export declare const conversationContext: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         conversationId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "conversation_id";
@@ -1171,7 +1171,7 @@ export declare const conversationContext: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         summary: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "summary";
@@ -1190,7 +1190,7 @@ export declare const conversationContext: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         keyFacts: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "key_facts";
@@ -1209,7 +1209,7 @@ export declare const conversationContext: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         updatedAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "updated_at";
@@ -1228,7 +1228,7 @@ export declare const conversationContext: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -1254,7 +1254,7 @@ export declare const sessions: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -1273,7 +1273,7 @@ export declare const sessions: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         refreshToken: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "refresh_token";
@@ -1292,7 +1292,7 @@ export declare const sessions: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         expiresAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "expires_at";
@@ -1311,7 +1311,7 @@ export declare const sessions: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -1330,7 +1330,7 @@ export declare const sessions: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -1356,7 +1356,7 @@ export declare const passwordResetTokens: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -1375,7 +1375,7 @@ export declare const passwordResetTokens: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         tokenHash: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "token_hash";
@@ -1394,7 +1394,7 @@ export declare const passwordResetTokens: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         expiresAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "expires_at";
@@ -1413,7 +1413,7 @@ export declare const passwordResetTokens: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         usedAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "used_at";
@@ -1432,7 +1432,7 @@ export declare const passwordResetTokens: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -1451,7 +1451,7 @@ export declare const passwordResetTokens: import("drizzle-orm/sqlite-core").SQLi
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -1477,7 +1477,7 @@ export declare const magicLinkTokens: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         email: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "email";
@@ -1496,7 +1496,7 @@ export declare const magicLinkTokens: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         tokenHash: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "token_hash";
@@ -1515,7 +1515,7 @@ export declare const magicLinkTokens: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         expiresAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "expires_at";
@@ -1534,7 +1534,7 @@ export declare const magicLinkTokens: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         usedAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "used_at";
@@ -1553,7 +1553,7 @@ export declare const magicLinkTokens: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -1572,7 +1572,7 @@ export declare const magicLinkTokens: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -1598,7 +1598,7 @@ export declare const exchangeTokens: import("drizzle-orm/sqlite-core").SQLiteTab
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -1617,7 +1617,7 @@ export declare const exchangeTokens: import("drizzle-orm/sqlite-core").SQLiteTab
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         email: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "email";
@@ -1636,7 +1636,7 @@ export declare const exchangeTokens: import("drizzle-orm/sqlite-core").SQLiteTab
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         codeHash: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "code_hash";
@@ -1655,7 +1655,7 @@ export declare const exchangeTokens: import("drizzle-orm/sqlite-core").SQLiteTab
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         expiresAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "expires_at";
@@ -1674,7 +1674,7 @@ export declare const exchangeTokens: import("drizzle-orm/sqlite-core").SQLiteTab
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         usedAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "used_at";
@@ -1693,7 +1693,7 @@ export declare const exchangeTokens: import("drizzle-orm/sqlite-core").SQLiteTab
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         source: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "source";
@@ -1712,7 +1712,7 @@ export declare const exchangeTokens: import("drizzle-orm/sqlite-core").SQLiteTab
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -1731,7 +1731,7 @@ export declare const exchangeTokens: import("drizzle-orm/sqlite-core").SQLiteTab
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -1757,7 +1757,7 @@ export declare const userPreferences: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -1776,7 +1776,7 @@ export declare const userPreferences: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         gender: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "gender";
@@ -1795,7 +1795,7 @@ export declare const userPreferences: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         customGender: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "custom_gender";
@@ -1814,7 +1814,7 @@ export declare const userPreferences: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         preferredLength: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "preferred_length";
@@ -1833,7 +1833,7 @@ export declare const userPreferences: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         preferredStyle: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "preferred_style";
@@ -1852,7 +1852,7 @@ export declare const userPreferences: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         themeHue: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "theme_hue";
@@ -1905,7 +1905,7 @@ export declare const userPreferences: import("drizzle-orm/sqlite-core").SQLiteTa
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -1931,7 +1931,7 @@ export declare const userFeedback: import("drizzle-orm/sqlite-core").SQLiteTable
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -1950,7 +1950,7 @@ export declare const userFeedback: import("drizzle-orm/sqlite-core").SQLiteTable
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         type: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "type";
@@ -1969,7 +1969,7 @@ export declare const userFeedback: import("drizzle-orm/sqlite-core").SQLiteTable
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         content: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "content";
@@ -1988,7 +1988,7 @@ export declare const userFeedback: import("drizzle-orm/sqlite-core").SQLiteTable
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -2007,7 +2007,7 @@ export declare const userFeedback: import("drizzle-orm/sqlite-core").SQLiteTable
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -2033,7 +2033,7 @@ export declare const apiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithC
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         name: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "name";
@@ -2052,7 +2052,7 @@ export declare const apiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithC
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         keyHash: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "key_hash";
@@ -2071,7 +2071,7 @@ export declare const apiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithC
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         keyPrefix: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "key_prefix";
@@ -2090,7 +2090,7 @@ export declare const apiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithC
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -2109,7 +2109,7 @@ export declare const apiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithC
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdBy: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_by";
@@ -2128,7 +2128,7 @@ export declare const apiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithC
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         isActive: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "is_active";
@@ -2164,7 +2164,7 @@ export declare const apiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithC
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -2183,7 +2183,7 @@ export declare const apiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithC
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -2209,7 +2209,7 @@ export declare const apiUsage: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         apiKeyId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "api_key_id";
@@ -2228,7 +2228,7 @@ export declare const apiUsage: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -2247,7 +2247,7 @@ export declare const apiUsage: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         endpoint: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "endpoint";
@@ -2266,7 +2266,7 @@ export declare const apiUsage: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         method: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "method";
@@ -2285,7 +2285,7 @@ export declare const apiUsage: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         tokensUsed: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "tokens_used";
@@ -2355,7 +2355,7 @@ export declare const apiUsage: import("drizzle-orm/sqlite-core").SQLiteTableWith
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -2381,7 +2381,7 @@ export declare const apiUsageDaily: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         apiKeyId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "api_key_id";
@@ -2400,7 +2400,7 @@ export declare const apiUsageDaily: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_id";
@@ -2419,7 +2419,7 @@ export declare const apiUsageDaily: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         date: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "date";
@@ -2438,7 +2438,7 @@ export declare const apiUsageDaily: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         totalRequests: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "total_requests";
@@ -2508,7 +2508,164 @@ export declare const apiUsageDaily: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
+        }>;
+    };
+    dialect: "sqlite";
+}>;
+export declare const funnelApiKeys: import("drizzle-orm/sqlite-core").SQLiteTableWithColumns<{
+    name: "funnel_api_keys";
+    schema: undefined;
+    columns: {
+        id: import("drizzle-orm/sqlite-core").SQLiteColumn<{
+            name: "id";
+            tableName: "funnel_api_keys";
+            dataType: "string";
+            columnType: "SQLiteText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: true;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: number;
+        }>;
+        name: import("drizzle-orm/sqlite-core").SQLiteColumn<{
+            name: "name";
+            tableName: "funnel_api_keys";
+            dataType: "string";
+            columnType: "SQLiteText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: number;
+        }>;
+        keyHash: import("drizzle-orm/sqlite-core").SQLiteColumn<{
+            name: "key_hash";
+            tableName: "funnel_api_keys";
+            dataType: "string";
+            columnType: "SQLiteText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: number;
+        }>;
+        keyPrefix: import("drizzle-orm/sqlite-core").SQLiteColumn<{
+            name: "key_prefix";
+            tableName: "funnel_api_keys";
+            dataType: "string";
+            columnType: "SQLiteText";
+            data: string;
+            driverParam: string;
+            notNull: true;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: number;
+        }>;
+        isActive: import("drizzle-orm/sqlite-core").SQLiteColumn<{
+            name: "is_active";
+            tableName: "funnel_api_keys";
+            dataType: "boolean";
+            columnType: "SQLiteBoolean";
+            data: boolean;
+            driverParam: number;
+            notNull: false;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {}>;
+        createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
+            name: "created_at";
+            tableName: "funnel_api_keys";
+            dataType: "string";
+            columnType: "SQLiteText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: number;
+        }>;
+        lastUsedAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
+            name: "last_used_at";
+            tableName: "funnel_api_keys";
+            dataType: "string";
+            columnType: "SQLiteText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: number;
+        }>;
+        notes: import("drizzle-orm/sqlite-core").SQLiteColumn<{
+            name: "notes";
+            tableName: "funnel_api_keys";
+            dataType: "string";
+            columnType: "SQLiteText";
+            data: string;
+            driverParam: string;
+            notNull: false;
+            hasDefault: false;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: [string, ...string[]];
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -2548,7 +2705,7 @@ export declare const systemPrompts: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         name: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "name";
@@ -2567,7 +2724,7 @@ export declare const systemPrompts: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         content: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "content";
@@ -2586,7 +2743,7 @@ export declare const systemPrompts: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         version: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "version";
@@ -2639,7 +2796,7 @@ export declare const systemPrompts: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -2658,7 +2815,7 @@ export declare const systemPrompts: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         notes: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "notes";
@@ -2677,7 +2834,7 @@ export declare const systemPrompts: import("drizzle-orm/sqlite-core").SQLiteTabl
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -2703,7 +2860,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         email: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "email";
@@ -2722,7 +2879,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         displayName: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "display_name";
@@ -2741,7 +2898,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         chatName: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "chat_name";
@@ -2760,7 +2917,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         sourceChannel: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "source_channel";
@@ -2779,7 +2936,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         sourceDetail: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "source_detail";
@@ -2798,7 +2955,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         funnelType: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "funnel_type";
@@ -2817,7 +2974,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         persona: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "persona";
@@ -2836,7 +2993,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         entrySource: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "entry_source";
@@ -2855,7 +3012,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         ipAddress: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "ip_address";
@@ -2874,7 +3031,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         userAgent: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "user_agent";
@@ -2893,7 +3050,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         utmSource: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "utm_source";
@@ -2912,7 +3069,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         utmMedium: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "utm_medium";
@@ -2931,7 +3088,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         utmCampaign: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "utm_campaign";
@@ -2950,7 +3107,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         rawPayload: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "raw_payload";
@@ -2969,7 +3126,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         isNewUser: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "is_new_user";
@@ -3005,7 +3162,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdUserId: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_user_id";
@@ -3024,7 +3181,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
         createdAt: import("drizzle-orm/sqlite-core").SQLiteColumn<{
             name: "created_at";
@@ -3043,7 +3200,7 @@ export declare const contactSubmissions: import("drizzle-orm/sqlite-core").SQLit
             identity: undefined;
             generated: undefined;
         }, {}, {
-            length: number | undefined;
+            length: number;
         }>;
     };
     dialect: "sqlite";
@@ -3058,6 +3215,7 @@ export type UserFeedback = typeof userFeedback.$inferSelect;
 export type ApiKey = typeof apiKeys.$inferSelect;
 export type ApiUsage = typeof apiUsage.$inferSelect;
 export type ApiUsageDaily = typeof apiUsageDaily.$inferSelect;
+export type FunnelApiKey = typeof funnelApiKeys.$inferSelect;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type SystemPrompt = typeof systemPrompts.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;

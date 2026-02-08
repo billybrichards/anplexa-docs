@@ -9,11 +9,11 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ResetPasswordUseCase } from '../../auth/ResetPasswordUseCase';
-import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface';
-import type { ISessionRepository } from '../../../repositories/interfaces/session.repository.interface';
-import { ValidationError } from '../../../domain/errors/ValidationError';
-import { AuthenticationError } from '../../../domain/errors/AuthenticationError';
+import { ResetPasswordUseCase } from '../../auth/ResetPasswordUseCase.js';
+import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface.js';
+import type { ISessionRepository } from '../../../repositories/interfaces/session.repository.interface.js';
+import { ValidationError } from '../../../domain/errors/ValidationError.js';
+import { AuthenticationError } from '../../../domain/errors/AuthenticationError.js';
 import type { User } from '@anplexa/database';
 
 // Mock PasswordService
@@ -57,7 +57,7 @@ describe('ResetPasswordUseCase', () => {
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
-      save: vi.fn(),
+      save: undefined as any, // Start with undefined to test update path
     };
 
     mockSessionRepository = {
@@ -122,12 +122,12 @@ describe('ResetPasswordUseCase', () => {
     });
 
     it('should use save method if available instead of update', async () => {
-      // Setup mocks
-      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      vi.mocked(mockUserRepository.save).mockResolvedValue({
+      // Setup mocks - add save method for this test
+      mockUserRepository.save = vi.fn().mockResolvedValue({
         ...mockUser,
         passwordHash: 'new-hashed-password',
       });
+      vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
       mockPasswordService.validatePasswordStrength.mockReturnValue({
         valid: true,
         errors: [],
@@ -229,6 +229,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
+      mockPasswordService.verifyPassword.mockResolvedValue(true);
 
       await expect(useCase.execute(validInput)).rejects.toThrow('Database error');
     });

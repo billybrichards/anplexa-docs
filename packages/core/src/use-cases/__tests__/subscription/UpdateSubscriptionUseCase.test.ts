@@ -10,39 +10,19 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface';
+import type { IUserRepository } from '../../../repositories/interfaces/user.repository.interface.js';
 import type { User } from '@anplexa/database';
-import type Stripe from 'stripe';
+import type { IStripeService, SubscriptionResult } from '../../../domain/services/IStripeService.js';
 
-// Create hoisted mocks to ensure they're applied before module imports
-const { getSubscription, updateSubscription, cancelSubscription, scheduleSubscriptionCancellation, unscheduleSubscriptionCancellation, changeSubscriptionPrice } = vi.hoisted(() => ({
-  getSubscription: vi.fn(),
-  updateSubscription: vi.fn(),
-  cancelSubscription: vi.fn(),
-  scheduleSubscriptionCancellation: vi.fn(),
-  unscheduleSubscriptionCancellation: vi.fn(),
-  changeSubscriptionPrice: vi.fn(),
-}));
-
-// Mock the Stripe service functions BEFORE importing the use case
-vi.mock('@anplexa/services/stripe', () => ({
-  getSubscription,
-  updateSubscription,
-  cancelSubscription,
-  scheduleSubscriptionCancellation,
-  unscheduleSubscriptionCancellation,
-  changeSubscriptionPrice,
-}));
-
-// Import after mocking
 import {
   UpdateSubscriptionUseCase,
   UpdateSubscriptionUseCaseError,
-} from '../../subscription/UpdateSubscriptionUseCase';
+} from '../../subscription/UpdateSubscriptionUseCase.js';
 
 describe('UpdateSubscriptionUseCase', () => {
   let useCase: UpdateSubscriptionUseCase;
   let mockUserRepository: IUserRepository;
+  let mockStripeService: IStripeService;
 
   const mockUser: User = {
     id: 'user-123',
@@ -63,33 +43,15 @@ describe('UpdateSubscriptionUseCase', () => {
     updatedAt: new Date().toISOString(),
   };
 
-  const mockSubscription: Stripe.Subscription = {
+  const mockSubscription: SubscriptionResult = {
     id: 'sub_123',
-    object: 'subscription',
-    customer: 'cus_123',
     status: 'active',
+    customer: 'cus_123',
     current_period_end: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
-    current_period_start: Math.floor(Date.now() / 1000),
     cancel_at_period_end: false,
     canceled_at: null,
-    items: {
-      object: 'list',
-      data: [
-        {
-          id: 'si_123',
-          object: 'subscription_item',
-          price: {
-            id: 'price_123',
-            object: 'price',
-            active: true,
-            currency: 'usd',
-            product: 'prod_123',
-            unit_amount: 999,
-          } as any,
-        } as any,
-      ],
-    } as any,
-  } as any;
+    metadata: null,
+  };
 
   beforeEach(() => {
     mockUserRepository = {
@@ -104,28 +66,37 @@ describe('UpdateSubscriptionUseCase', () => {
       updateSubscriptionStatus: vi.fn(),
     };
 
+    mockStripeService = {
+      createCheckoutSession: vi.fn(),
+      createCustomer: vi.fn(),
+      getCustomer: vi.fn(),
+      getSubscription: vi.fn(),
+      cancelSubscription: vi.fn(),
+      scheduleSubscriptionCancellation: vi.fn(),
+      unscheduleSubscriptionCancellation: vi.fn(),
+      changeSubscriptionPrice: vi.fn(),
+      constructWebhookEvent: vi.fn(),
+      handleCheckoutCompleted: vi.fn(),
+      handleSubscriptionCreated: vi.fn(),
+      handleSubscriptionUpdated: vi.fn(),
+      handleSubscriptionDeleted: vi.fn(),
+      handleInvoicePaid: vi.fn(),
+      handleInvoicePaymentFailed: vi.fn(),
+    };
+
     // Reset all mocks
     vi.clearAllMocks();
 
-    useCase = new UpdateSubscriptionUseCase(mockUserRepository);
+    useCase = new UpdateSubscriptionUseCase(mockUserRepository, mockStripeService);
   });
 
   describe('execute - change_plan', () => {
     it('should successfully change subscription plan', async () => {
       // Setup mocks
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      changeSubscriptionPrice.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.changeSubscriptionPrice).mockResolvedValue({
         ...mockSubscription,
-        items: {
-          object: 'list',
-          data: [
-            {
-              ...mockSubscription.items.data[0],
-              price: { ...mockSubscription.items.data[0].price, id: 'price_new' },
-            },
-          ],
-        },
       });
 
       // Execute
@@ -138,7 +109,7 @@ describe('UpdateSubscriptionUseCase', () => {
       // Verify
       expect(result.subscriptionId).toBe('sub_123');
       expect(result.status).toBe('active');
-      expect(changeSubscriptionPrice).toHaveBeenCalledWith(
+      expect(mockStripeService.changeSubscriptionPrice).toHaveBeenCalledWith(
         'sub_123',
         'price_new',
         { prorationBehavior: 'create_prorations' }
@@ -153,8 +124,8 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should support custom proration behavior', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      changeSubscriptionPrice.mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.changeSubscriptionPrice).mockResolvedValue(mockSubscription);
 
       await useCase.execute({
         userId: 'user-123',
@@ -163,7 +134,7 @@ describe('UpdateSubscriptionUseCase', () => {
         prorationBehavior: 'none',
       });
 
-      expect(changeSubscriptionPrice).toHaveBeenCalledWith(
+      expect(mockStripeService.changeSubscriptionPrice).toHaveBeenCalledWith(
         'sub_123',
         'price_new',
         { prorationBehavior: 'none' }
@@ -172,7 +143,7 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should throw error when newPriceId is missing for change_plan', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
 
       await expect(
         useCase.execute({
@@ -196,8 +167,8 @@ describe('UpdateSubscriptionUseCase', () => {
   describe('execute - cancel_immediately', () => {
     it('should immediately cancel subscription', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      cancelSubscription.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.cancelSubscription).mockResolvedValue({
         ...mockSubscription,
         status: 'canceled',
         canceled_at: Math.floor(Date.now() / 1000),
@@ -210,7 +181,7 @@ describe('UpdateSubscriptionUseCase', () => {
 
       expect(result.status).toBe('canceled');
       expect(result.canceledAt).toBeInstanceOf(Date);
-      expect(cancelSubscription).toHaveBeenCalledWith('sub_123', {
+      expect(mockStripeService.cancelSubscription).toHaveBeenCalledWith('sub_123', {
         invoiceNow: true,
         prorate: true,
       });
@@ -226,8 +197,8 @@ describe('UpdateSubscriptionUseCase', () => {
   describe('execute - cancel_at_period_end', () => {
     it('should schedule subscription cancellation at period end', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      scheduleSubscriptionCancellation.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.scheduleSubscriptionCancellation).mockResolvedValue({
         ...mockSubscription,
         cancel_at_period_end: true,
       });
@@ -238,7 +209,7 @@ describe('UpdateSubscriptionUseCase', () => {
       });
 
       expect(result.cancelAtPeriodEnd).toBe(true);
-      expect(scheduleSubscriptionCancellation).toHaveBeenCalledWith('sub_123');
+      expect(mockStripeService.scheduleSubscriptionCancellation).toHaveBeenCalledWith('sub_123');
       expect(mockUserRepository.updateSubscriptionStatus).toHaveBeenCalledWith(
         'user-123',
         'subscribed',
@@ -250,14 +221,14 @@ describe('UpdateSubscriptionUseCase', () => {
 
   describe('execute - reactivate', () => {
     it('should reactivate scheduled cancellation', async () => {
-      const scheduledSubscription = {
+      const scheduledSubscription: SubscriptionResult = {
         ...mockSubscription,
         cancel_at_period_end: true,
       };
 
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(scheduledSubscription);
-      unscheduleSubscriptionCancellation.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(scheduledSubscription);
+      vi.mocked(mockStripeService.unscheduleSubscriptionCancellation).mockResolvedValue({
         ...scheduledSubscription,
         cancel_at_period_end: false,
       });
@@ -268,14 +239,14 @@ describe('UpdateSubscriptionUseCase', () => {
       });
 
       expect(result.cancelAtPeriodEnd).toBe(false);
-      expect(unscheduleSubscriptionCancellation).toHaveBeenCalledWith(
+      expect(mockStripeService.unscheduleSubscriptionCancellation).toHaveBeenCalledWith(
         'sub_123'
       );
     });
 
     it('should throw error when trying to reactivate non-scheduled subscription', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
 
       await expect(
         useCase.execute({
@@ -388,11 +359,11 @@ describe('UpdateSubscriptionUseCase', () => {
   describe('subscription status mapping', () => {
     it('should map active status to subscribed', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue({
         ...mockSubscription,
         status: 'active',
       });
-      scheduleSubscriptionCancellation.mockResolvedValue({
+      vi.mocked(mockStripeService.scheduleSubscriptionCancellation).mockResolvedValue({
         ...mockSubscription,
         status: 'active',
         cancel_at_period_end: true,
@@ -413,8 +384,8 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should map trialing status to subscribed', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      scheduleSubscriptionCancellation.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.scheduleSubscriptionCancellation).mockResolvedValue({
         ...mockSubscription,
         status: 'trialing',
       });
@@ -434,8 +405,8 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should map past_due status correctly', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      scheduleSubscriptionCancellation.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.scheduleSubscriptionCancellation).mockResolvedValue({
         ...mockSubscription,
         status: 'past_due',
       });
@@ -455,8 +426,8 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should map canceled status correctly', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      cancelSubscription.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.cancelSubscription).mockResolvedValue({
         ...mockSubscription,
         status: 'canceled',
       });
@@ -476,8 +447,8 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should map unpaid status to canceled', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      cancelSubscription.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.cancelSubscription).mockResolvedValue({
         ...mockSubscription,
         status: 'unpaid',
       });
@@ -499,7 +470,7 @@ describe('UpdateSubscriptionUseCase', () => {
   describe('error handling', () => {
     it('should throw STRIPE_ERROR when getSubscription fails', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockRejectedValue(new Error('Stripe API error'));
+      vi.mocked(mockStripeService.getSubscription).mockRejectedValue(new Error('Stripe API error'));
 
       await expect(
         useCase.execute({
@@ -521,8 +492,8 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should throw STRIPE_ERROR when action fails', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      cancelSubscription.mockRejectedValue(new Error('Cancellation failed'));
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.cancelSubscription).mockRejectedValue(new Error('Cancellation failed'));
 
       await expect(
         useCase.execute({
@@ -544,8 +515,8 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should preserve UpdateSubscriptionUseCaseError in action handler', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      unscheduleSubscriptionCancellation.mockRejectedValue(
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.unscheduleSubscriptionCancellation).mockRejectedValue(
         new UpdateSubscriptionUseCaseError('Already active', 'INVALID_ACTION')
       );
 
@@ -576,8 +547,8 @@ describe('UpdateSubscriptionUseCase', () => {
       const periodEnd = Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
 
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      cancelSubscription.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.cancelSubscription).mockResolvedValue({
         ...mockSubscription,
         status: 'canceled',
         cancel_at_period_end: true,
@@ -601,8 +572,8 @@ describe('UpdateSubscriptionUseCase', () => {
 
     it('should handle null canceled_at', async () => {
       vi.mocked(mockUserRepository.getById).mockResolvedValue(mockUser);
-      getSubscription.mockResolvedValue(mockSubscription);
-      scheduleSubscriptionCancellation.mockResolvedValue({
+      vi.mocked(mockStripeService.getSubscription).mockResolvedValue(mockSubscription);
+      vi.mocked(mockStripeService.scheduleSubscriptionCancellation).mockResolvedValue({
         ...mockSubscription,
         cancel_at_period_end: true,
         canceled_at: null,

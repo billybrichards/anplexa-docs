@@ -5,7 +5,7 @@
  * Implemented by infrastructure layer (e.g., DrizzleMessageRepository)
  */
 
-import type { Message } from '../domain/entities/Message';
+import type { Message } from '../domain/entities/Message.js';
 
 export interface IMessageRepository {
   /**

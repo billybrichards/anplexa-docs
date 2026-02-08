@@ -1,20 +1,15 @@
 /**
  * Password Management Routes
  *
- * Handles password reset and recovery endpoints.
- * Uses @anplexa/core use cases where available.
- *
- * Note: Password reset token management is handled here temporarily
- * until a PasswordResetTokenRepository is implemented in @anplexa/core.
+ * Handles password reset and recovery endpoints using Clean Architecture.
+ * Uses @anplexa/core repositories and use cases.
  */
 
 import { Router } from 'express';
 import { z } from 'zod';
 import crypto from 'crypto';
-import { eq, and, isNull, gt } from 'drizzle-orm';
 import type { Container } from '../../container.js';
 import { ValidationError, AuthenticationError } from '@anplexa/core';
-import { passwordResetTokens } from '@anplexa/database';
 import { sendEmail } from '@anplexa/services';
 
 // Validation schemas
@@ -44,7 +39,7 @@ const postOnlyHandler = (endpoint: string) => (_req: any, res: any) => {
  */
 export function createPasswordRoutes(container: Container): Router {
   const router = Router();
-  const { db, userRepository, sessionRepository, passwordService, jwtService } = container.cradle;
+  const { userRepository, sessionRepository, passwordService } = container.cradle;
 
   // GET handlers for helpful error messages
   router.get('/forgot-password', postOnlyHandler('/api/auth/forgot-password'));
@@ -72,11 +67,11 @@ export function createPasswordRoutes(container: Container): Router {
       // Set expiry to 1 hour from now
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-      // Store token in database
-      await db.insert(passwordResetTokens).values({
-        id: jwtService.generateId(),
+      // Store token in database using repository
+      const { passwordResetTokenRepository } = container.cradle;
+      await passwordResetTokenRepository.create({
         userId: user.id,
-        tokenHash,
+        token: tokenHash,
         expiresAt,
       });
 
@@ -108,21 +103,14 @@ export function createPasswordRoutes(container: Container): Router {
     try {
       const body = resetPasswordSchema.parse(req.body);
 
-      // Find all non-expired, unused tokens
-      const now = new Date().toISOString();
-      const resetTokens = await db.select()
-        .from(passwordResetTokens)
-        .where(
-          and(
-            isNull(passwordResetTokens.usedAt),
-            gt(passwordResetTokens.expiresAt, now)
-          )
-        );
+      // Find all non-expired, unused tokens using repository
+      const { passwordResetTokenRepository } = container.cradle;
+      const resetTokens = await passwordResetTokenRepository.getAllValid();
 
       // Find matching token by verifying hash
       let validToken = null;
       for (const resetToken of resetTokens) {
-        const isMatch = await passwordService.verifyPassword(body.token, resetToken.tokenHash);
+        const isMatch = await passwordService.verifyPassword(body.token, resetToken.token);
         if (isMatch) {
           validToken = resetToken;
           break;
@@ -151,10 +139,8 @@ export function createPasswordRoutes(container: Container): Router {
 
       await userRepository.update(updatedUser.id, updatedUser);
 
-      // Mark token as used
-      await db.update(passwordResetTokens)
-        .set({ usedAt: new Date().toISOString() })
-        .where(eq(passwordResetTokens.id, validToken.id));
+      // Mark token as used using repository
+      await passwordResetTokenRepository.markAsUsed(validToken.id);
 
       // Invalidate all user sessions (force re-login)
       const sessions = await sessionRepository.getByUserId(user.id);

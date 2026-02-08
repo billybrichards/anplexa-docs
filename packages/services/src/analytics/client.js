@@ -1,52 +1,9 @@
-"use strict";
 /**
  * Unified Analytics Client Wrapper
  * Abstracts PostHog implementation to support both browser and Node.js environments
  * Provides type-safe event tracking across all Anplexa applications
  */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AnalyticsClient = void 0;
-exports.getAnalyticsClient = getAnalyticsClient;
-exports.initializeAnalytics = initializeAnalytics;
-exports.identify = identify;
-exports.track = track;
-exports.reset = reset;
-exports.pageView = pageView;
-exports.flush = flush;
-const events_1 = require("./events");
+import { isValidEventProperties } from './events';
 /**
  * Analytics Client - Unified wrapper for PostHog
  *
@@ -63,7 +20,7 @@ const events_1 = require("./events");
  * await analyticsClient.track('user_signed_up', { email: 'user@example.com', method: 'email' });
  * ```
  */
-class AnalyticsClient {
+export class AnalyticsClient {
     client = null;
     initialized = false;
     config;
@@ -178,7 +135,7 @@ class AnalyticsClient {
         if (!this.shouldTrack()) {
             return;
         }
-        if (properties && !(0, events_1.isValidEventProperties)(eventName, properties)) {
+        if (properties && !isValidEventProperties(eventName, properties)) {
             console.error('[Analytics] Invalid properties for event:', eventName, properties);
             return;
         }
@@ -261,7 +218,7 @@ class AnalyticsClient {
     async importPostHogBrowser() {
         try {
             if (typeof window !== 'undefined') {
-                const module = await Promise.resolve().then(() => __importStar(require('posthog-js')));
+                const module = await import('posthog-js');
                 return module.default;
             }
             return null;
@@ -277,7 +234,7 @@ class AnalyticsClient {
      */
     async importPostHogNode() {
         try {
-            const module = await Promise.resolve().then(() => __importStar(require('posthog-node')));
+            const module = await import('posthog-node');
             return module.PostHog;
         }
         catch {
@@ -303,7 +260,6 @@ class AnalyticsClient {
         return this.initialized;
     }
 }
-exports.AnalyticsClient = AnalyticsClient;
 /**
  * Global singleton instance
  * Use for convenient access throughout the application
@@ -312,7 +268,7 @@ let globalClient = null;
 /**
  * Get or create the global analytics client
  */
-function getAnalyticsClient(config) {
+export function getAnalyticsClient(config) {
     if (!globalClient) {
         globalClient = new AnalyticsClient(config);
     }
@@ -322,25 +278,25 @@ function getAnalyticsClient(config) {
  * Initialize global analytics client
  * Should be called once at application startup
  */
-async function initializeAnalytics(config) {
+export async function initializeAnalytics(config) {
     const client = getAnalyticsClient(config);
     await client.initialize();
 }
 /**
  * Shorthand functions for quick access
  */
-function identify(userId, properties) {
+export function identify(userId, properties) {
     getAnalyticsClient().identify(userId, properties);
 }
-function track(eventName, properties) {
+export function track(eventName, properties) {
     getAnalyticsClient().track(eventName, properties);
 }
-function reset() {
+export function reset() {
     getAnalyticsClient().reset();
 }
-function pageView(path, title) {
+export function pageView(path, title) {
     getAnalyticsClient().pageView(path, title);
 }
-async function flush() {
+export async function flush() {
     await getAnalyticsClient().flush();
 }

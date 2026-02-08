@@ -6,20 +6,20 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ResetPasswordUseCase } from '../ResetPasswordUseCase';
-import type { IUserRepository } from '../../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../../repositories/ISessionRepository';
-import { User } from '../../../domain/entities/User';
-import { Session } from '../../../domain/entities/Session';
-import { ValidationError } from '../../../domain/errors/ValidationError';
-import { AuthenticationError } from '../../../domain/errors/AuthenticationError';
-import { PasswordService } from '@anplexa/services';
+import { ResetPasswordUseCase } from '../ResetPasswordUseCase.js';
+import type { IUserRepository } from '../../../repositories/IUserRepository.js';
+import type { ISessionRepository } from '../../../repositories/ISessionRepository.js';
+import { User } from '../../../domain/entities/User.js';
+import { Session } from '../../../domain/entities/Session.js';
+import { ValidationError } from '../../../domain/errors/ValidationError.js';
+import { AuthenticationError } from '../../../domain/errors/AuthenticationError.js';
+import type { IPasswordService } from '../../../domain/services/IPasswordService.js';
 
 describe('ResetPasswordUseCase', () => {
   let useCase: ResetPasswordUseCase;
   let mockUserRepo: IUserRepository;
   let mockSessionRepo: ISessionRepository;
-  let mockPasswordService: PasswordService;
+  let mockPasswordService: IPasswordService;
 
   const mockUser = User.create({
     id: 'user-123',
@@ -53,22 +53,44 @@ describe('ResetPasswordUseCase', () => {
   ];
 
   beforeEach(() => {
-    // Setup mock repositories
+    // Setup mock repositories with method names matching the interfaces
     mockUserRepo = {
+      // Query methods (new naming convention)
+      getById: vi.fn(),
+      getByEmail: vi.fn(),
+      getByStripeCustomerId: vi.fn(),
+      getByStripeSubscriptionId: vi.fn(),
+      getAll: vi.fn(),
+      // Legacy aliases
       findById: vi.fn(),
       findByEmail: vi.fn(),
-      save: vi.fn(),
-      delete: vi.fn(),
+      findByStripeCustomerId: vi.fn(),
+      findByStripeSubscriptionId: vi.fn(),
       emailExists: vi.fn(),
+      // Command methods
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      save: vi.fn(),
+      // Stripe methods
+      updateStripeCustomerId: vi.fn(),
+      updateSubscriptionStatus: vi.fn(),
     };
 
     mockSessionRepo = {
+      // New methods
+      getByUserId: vi.fn(),
+      getByRefreshToken: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      deleteExpired: vi.fn(),
+      // Legacy aliases
       findById: vi.fn(),
       findActiveByUserId: vi.fn(),
+      findByRefreshToken: vi.fn(),
       save: vi.fn(),
       invalidate: vi.fn(),
       invalidateAll: vi.fn(),
-      findByRefreshToken: vi.fn(),
     };
 
     // Setup mock services
@@ -76,7 +98,9 @@ describe('ResetPasswordUseCase', () => {
       hashPassword: vi.fn(),
       verifyPassword: vi.fn(),
       validatePasswordStrength: vi.fn(),
-    } as any;
+      generateApiKey: vi.fn(),
+      verifyApiKey: vi.fn(),
+    } as IPasswordService;
 
     useCase = new ResetPasswordUseCase(
       mockUserRepo,
@@ -93,7 +117,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -116,7 +140,7 @@ describe('ResetPasswordUseCase', () => {
         'valid_reset_token',
         'hashed_token'
       );
-      expect(mockUserRepo.findById).toHaveBeenCalledWith('user-123');
+      expect(mockUserRepo.getById).toHaveBeenCalledWith('user-123');
       expect(mockPasswordService.hashPassword).toHaveBeenCalledWith(
         'NewSecurePassword123!'
       );
@@ -131,7 +155,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -158,7 +182,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -186,7 +210,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -212,7 +236,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -244,7 +268,7 @@ describe('ResetPasswordUseCase', () => {
         errors: [],
       });
 
-      // Act & Assert - Empty string triggers "is required"
+      // Act & Assert - Empty string triggers "cannot be empty"
       await expect(
         useCase.execute({
           token: '',
@@ -261,7 +285,7 @@ describe('ResetPasswordUseCase', () => {
           userId: 'user-123',
           newPassword: 'NewPassword123!',
         })
-      ).rejects.toThrow('Reset token is required');
+      ).rejects.toThrow('Reset token cannot be empty');
 
       expect(mockPasswordService.verifyPassword).not.toHaveBeenCalled();
     });
@@ -456,7 +480,7 @@ describe('ResetPasswordUseCase', () => {
         })
       ).rejects.toThrow('Invalid reset token');
 
-      expect(mockUserRepo.findById).not.toHaveBeenCalled();
+      expect(mockUserRepo.getById).not.toHaveBeenCalled();
       expect(mockUserRepo.save).not.toHaveBeenCalled();
     });
 
@@ -467,7 +491,7 @@ describe('ResetPasswordUseCase', () => {
         errors: [],
       });
       vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(true);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(null);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(null);
 
       // Act & Assert
       await expect(
@@ -510,7 +534,7 @@ describe('ResetPasswordUseCase', () => {
         })
       ).rejects.toThrow(AuthenticationError);
 
-      expect(mockUserRepo.findById).not.toHaveBeenCalled();
+      expect(mockUserRepo.getById).not.toHaveBeenCalled();
     });
   });
 
@@ -523,7 +547,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -550,7 +574,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -575,7 +599,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -607,7 +631,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(adminUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(adminUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -635,7 +659,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -663,7 +687,7 @@ describe('ResetPasswordUseCase', () => {
         valid: true,
         errors: [],
       });
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
         'new_hashed_password'
       );
@@ -681,6 +705,112 @@ describe('ResetPasswordUseCase', () => {
       // Assert
       expect(result.success).toBe(true);
       expect(mockSessionRepo.invalidateAll).toHaveBeenCalledWith('user-123');
+    });
+  });
+
+  describe('Token security', () => {
+    it('should reject expired reset tokens', async () => {
+      // Arrange - Simulate expired token by having verifyPassword return false
+      // (expired tokens would fail hash verification since they've been invalidated)
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(false);
+
+      // Act & Assert
+      await expect(
+        useCase.execute({
+          token: 'expired_token',
+          tokenHash: 'hashed_expired_token',
+          userId: 'user-123',
+          newPassword: 'NewSecurePassword123!',
+        })
+      ).rejects.toThrow(AuthenticationError);
+
+      await expect(
+        useCase.execute({
+          token: 'expired_token',
+          tokenHash: 'hashed_expired_token',
+          userId: 'user-123',
+          newPassword: 'NewSecurePassword123!',
+        })
+      ).rejects.toThrow('Invalid reset token');
+
+      // Password should not be updated
+      expect(mockUserRepo.save).not.toHaveBeenCalled();
+    });
+
+    it('should prevent token reuse after successful password reset', async () => {
+      // Arrange - First use should succeed
+      vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(true);
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
+        'new_hashed_password'
+      );
+      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
+
+      // First use - should succeed
+      const result = await useCase.execute({
+        token: 'one_time_token',
+        tokenHash: 'hashed_token',
+        userId: 'user-123',
+        newPassword: 'NewSecurePassword123!',
+      });
+      expect(result.success).toBe(true);
+
+      // Simulate token invalidation after first use
+      // (in real implementation, token would be deleted from DB)
+      vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(false);
+
+      // Second use - should fail (token has been invalidated)
+      await expect(
+        useCase.execute({
+          token: 'one_time_token',
+          tokenHash: 'hashed_token',
+          userId: 'user-123',
+          newPassword: 'AnotherNewPassword123!',
+        })
+      ).rejects.toThrow(AuthenticationError);
+
+      await expect(
+        useCase.execute({
+          token: 'one_time_token',
+          tokenHash: 'hashed_token',
+          userId: 'user-123',
+          newPassword: 'AnotherNewPassword123!',
+        })
+      ).rejects.toThrow('Invalid reset token');
+    });
+
+    it('should invalidate all sessions after password reset to prevent token theft', async () => {
+      // Arrange
+      vi.mocked(mockPasswordService.verifyPassword).mockResolvedValue(true);
+      vi.mocked(mockPasswordService.validatePasswordStrength).mockReturnValue({
+        valid: true,
+        errors: [],
+      });
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockPasswordService.hashPassword).mockResolvedValue(
+        'new_hashed_password'
+      );
+      vi.mocked(mockUserRepo.save).mockResolvedValue(mockUser);
+
+      // Act
+      await useCase.execute({
+        token: 'valid_token',
+        tokenHash: 'hashed_token',
+        userId: 'user-123',
+        newPassword: 'NewSecurePassword123!',
+      });
+
+      // Assert - All sessions must be invalidated to prevent stolen refresh tokens
+      expect(mockSessionRepo.invalidateAll).toHaveBeenCalledWith('user-123');
+      expect(mockSessionRepo.invalidateAll).toHaveBeenCalledTimes(1);
     });
   });
 });

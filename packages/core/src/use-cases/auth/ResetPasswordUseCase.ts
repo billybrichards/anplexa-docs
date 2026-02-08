@@ -12,9 +12,9 @@
 
 import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
-import { ValidationError } from '../../domain/errors/ValidationError';
-import { AuthenticationError } from '../../domain/errors/AuthenticationError';
-import { PasswordService } from '@anplexa/services';
+import { ValidationError } from '../../domain/errors/ValidationError.js';
+import { AuthenticationError } from '../../domain/errors/AuthenticationError.js';
+import type { IPasswordService } from '../../domain/services/IPasswordService.js';
 
 export interface ResetPasswordInput {
   token: string;
@@ -41,7 +41,7 @@ export class ResetPasswordUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly sessionRepository: ISessionRepository,
-    private readonly passwordService: PasswordService
+    private readonly passwordService: IPasswordService
   ) {}
 
   /**
@@ -111,7 +111,7 @@ export class ResetPasswordUseCase {
    */
   private async validateInput(input: ResetPasswordInput): Promise<void> {
     // Validate token
-    if (!input.token || typeof input.token !== 'string') {
+    if (typeof input.token !== 'string' || input.token === null || input.token === undefined) {
       throw new ValidationError('Reset token is required', 'token');
     }
 

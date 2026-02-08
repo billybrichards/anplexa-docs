@@ -8,9 +8,9 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
-import { messages, conversations, users } from '@anplexa/database';
-import { MessageRepository } from '../message.repository';
-import type { CreateMessageData } from '../interfaces/message.repository.interface';
+import { sqlite as schema } from '@anplexa/database';
+import { MessageRepository } from '../message.repository.js';
+import type { CreateMessageData } from '../interfaces/message.repository.interface.js';
 
 describe('MessageRepository', () => {
   let sqlite: Database.Database;
@@ -91,13 +91,13 @@ describe('MessageRepository', () => {
     testUserId = 'test-user-123';
     testConversationId = 'test-conversation-123';
 
-    await db.insert(users).values({
+    await db.insert(schema.users).values({
       id: testUserId,
       email: 'test@example.com',
       passwordHash: 'hashed',
     });
 
-    await db.insert(conversations).values({
+    await db.insert(schema.conversations).values({
       id: testConversationId,
       userId: testUserId,
       title: 'Test Conversation',
@@ -407,7 +407,7 @@ describe('MessageRepository', () => {
     it('should search within conversation only', async () => {
       // Create another conversation with different messages
       const otherConversationId = 'other-conversation-123';
-      await db.insert(conversations).values({
+      await db.insert(schema.conversations).values({
         id: otherConversationId,
         userId: testUserId,
         title: 'Other Conversation',

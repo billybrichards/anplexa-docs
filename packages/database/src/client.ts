@@ -6,6 +6,7 @@ import Database from 'better-sqlite3';
 import * as schemaPostgres from './schema/postgres.js';
 import * as schemaSqlite from './schema/sqlite.js';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let dbInstance: any = null;
 
 /**

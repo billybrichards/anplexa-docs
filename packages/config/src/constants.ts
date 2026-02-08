@@ -226,7 +226,7 @@ export const VALIDATION_PATTERNS = {
   // UUID v4
   uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
   // JWT format
-  jwt: /^[\w\-]+\.[\w\-]+\.[\w\-]+$/,
+  jwt: /^[\w-]+\.[\w-]+\.[\w-]+$/,
   // Stripe key format
   stripeKey: /^(sk_test_|sk_live_)[a-zA-Z0-9_]+$/,
   // URL

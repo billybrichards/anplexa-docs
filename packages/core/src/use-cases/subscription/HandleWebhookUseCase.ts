@@ -22,7 +22,7 @@
  *
  * Usage:
  * ```ts
- * const useCase = new HandleWebhookUseCase(userRepository);
+ * const useCase = new HandleWebhookUseCase(userRepository, stripeService);
  * const result = await useCase.execute({
  *   payload: rawBody,
  *   signature: req.headers['stripe-signature']
@@ -30,19 +30,11 @@
  * ```
  */
 
-import {
-  constructWebhookEvent,
-  handleCheckoutCompleted,
-  handleSubscriptionCreated,
-  handleSubscriptionUpdated,
-  handleSubscriptionDeleted,
-  handleInvoicePaid,
-  handleInvoicePaymentFailed,
-  isSubscriptionActive,
-  isSubscriptionCanceled,
-} from '@anplexa/services/stripe';
+import type {
+  IStripeService,
+  WebhookEvent,
+} from '../../domain/services/IStripeService.js';
 import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
-import type Stripe from 'stripe';
 
 export interface HandleWebhookRequest {
   payload: Buffer | string;
@@ -73,16 +65,19 @@ export class HandleWebhookUseCaseError extends Error {
 }
 
 export class HandleWebhookUseCase {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    private readonly userRepository: IUserRepository,
+    private readonly stripeService: IStripeService,
+  ) {}
 
   /**
    * Execute the use case to handle a webhook event
    */
   async execute(request: HandleWebhookRequest): Promise<HandleWebhookResponse> {
     // Verify and construct webhook event
-    let event: Stripe.Event;
+    let event: WebhookEvent;
     try {
-      event = constructWebhookEvent(request.payload, request.signature);
+      event = this.stripeService.constructWebhookEvent(request.payload, request.signature);
     } catch (error) {
       throw new HandleWebhookUseCaseError(
         `Webhook signature verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -118,31 +113,29 @@ export class HandleWebhookUseCase {
   /**
    * Route event to appropriate handler
    */
-  private async routeEvent(event: Stripe.Event): Promise<{
+  private async routeEvent(event: WebhookEvent): Promise<{
     processed: boolean;
     userId?: string;
     message: string;
   }> {
     switch (event.type) {
       case 'checkout.session.completed':
-        return await this.handleCheckoutSessionCompleted(
-          event.data.object as Stripe.Checkout.Session
-        );
+        return await this.handleCheckoutSessionCompleted(event.data.object);
 
       case 'customer.subscription.created':
-        return await this.handleSubscriptionCreated(event.data.object as Stripe.Subscription);
+        return await this.handleSubscriptionCreated(event.data.object);
 
       case 'customer.subscription.updated':
-        return await this.handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        return await this.handleSubscriptionUpdated(event.data.object);
 
       case 'customer.subscription.deleted':
-        return await this.handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        return await this.handleSubscriptionDeleted(event.data.object);
 
       case 'invoice.paid':
-        return await this.handleInvoicePaid(event.data.object as Stripe.Invoice);
+        return await this.handleInvoicePaid(event.data.object);
 
       case 'invoice.payment_failed':
-        return await this.handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+        return await this.handleInvoicePaymentFailed(event.data.object);
 
       default:
         console.log(`Unsupported webhook event type: ${event.type}`);
@@ -157,9 +150,9 @@ export class HandleWebhookUseCase {
    * Handle checkout.session.completed event
    */
   private async handleCheckoutSessionCompleted(
-    session: Stripe.Checkout.Session
+    session: any
   ): Promise<{ processed: boolean; userId?: string; message: string }> {
-    const sessionData = handleCheckoutCompleted(session);
+    const sessionData = this.stripeService.handleCheckoutCompleted(session);
 
     // Get user ID from metadata
     const userId = session.metadata?.userId || session.client_reference_id;
@@ -196,9 +189,9 @@ export class HandleWebhookUseCase {
    * Handle customer.subscription.created event
    */
   private async handleSubscriptionCreated(
-    subscription: Stripe.Subscription
+    subscription: any
   ): Promise<{ processed: boolean; userId?: string; message: string }> {
-    const subscriptionData = handleSubscriptionCreated(subscription);
+    const subscriptionData = this.stripeService.handleSubscriptionCreated(subscription);
 
     // Find user by Stripe customer ID
     const user = await this.userRepository.getByStripeCustomerId(subscriptionData.customerId);
@@ -252,9 +245,9 @@ export class HandleWebhookUseCase {
    * Handle customer.subscription.updated event
    */
   private async handleSubscriptionUpdated(
-    subscription: Stripe.Subscription
+    subscription: any
   ): Promise<{ processed: boolean; userId?: string; message: string }> {
-    const subscriptionData = handleSubscriptionUpdated(subscription);
+    const subscriptionData = this.stripeService.handleSubscriptionUpdated(subscription);
 
     // Find user by Stripe subscription ID
     const user = await this.userRepository.getByStripeSubscriptionId(
@@ -299,9 +292,9 @@ export class HandleWebhookUseCase {
    * Handle customer.subscription.deleted event
    */
   private async handleSubscriptionDeleted(
-    subscription: Stripe.Subscription
+    subscription: any
   ): Promise<{ processed: boolean; userId?: string; message: string }> {
-    const subscriptionData = handleSubscriptionDeleted(subscription);
+    const subscriptionData = this.stripeService.handleSubscriptionDeleted(subscription);
 
     // Find user by Stripe subscription ID
     const user = await this.userRepository.getByStripeSubscriptionId(
@@ -334,9 +327,9 @@ export class HandleWebhookUseCase {
    * Handle invoice.paid event
    */
   private async handleInvoicePaid(
-    invoice: Stripe.Invoice
+    invoice: any
   ): Promise<{ processed: boolean; userId?: string; message: string }> {
-    const invoiceData = handleInvoicePaid(invoice);
+    const invoiceData = this.stripeService.handleInvoicePaid(invoice);
 
     // Only process if this is a subscription invoice
     if (!invoiceData.subscriptionId) {
@@ -364,7 +357,7 @@ export class HandleWebhookUseCase {
     return {
       processed: true,
       userId: user.id,
-      message: `Invoice paid for user ${user.id} - amount: ${invoiceData.amountPaid / 100} ${invoiceData.currency}`,
+      message: `Invoice paid for user ${user.id} - amount: ${(invoiceData.amountPaid || 0) / 100} ${invoiceData.currency}`,
     };
   }
 
@@ -372,9 +365,9 @@ export class HandleWebhookUseCase {
    * Handle invoice.payment_failed event
    */
   private async handleInvoicePaymentFailed(
-    invoice: Stripe.Invoice
+    invoice: any
   ): Promise<{ processed: boolean; userId?: string; message: string }> {
-    const invoiceData = handleInvoicePaymentFailed(invoice);
+    const invoiceData = this.stripeService.handleInvoicePaymentFailed(invoice);
 
     // Only process if this is a subscription invoice
     if (!invoiceData.subscriptionId) {
@@ -405,7 +398,7 @@ export class HandleWebhookUseCase {
     return {
       processed: true,
       userId: user.id,
-      message: `Invoice payment failed for user ${user.id} - amount due: ${invoiceData.amountDue / 100} ${invoiceData.currency}`,
+      message: `Invoice payment failed for user ${user.id} - amount due: ${(invoiceData.amountDue || 0) / 100} ${invoiceData.currency}`,
     };
   }
 }

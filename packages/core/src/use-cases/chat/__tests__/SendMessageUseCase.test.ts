@@ -12,17 +12,17 @@ import {
   UnauthorizedConversationAccessError,
   EmptyMessageError,
   AIServiceError,
-} from '../SendMessageUseCase';
-import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface';
-import type { IMessageRepository } from '../../../repositories/interfaces/message.repository.interface';
-import type { OllamaGateway } from '@anplexa/services/ai';
+} from '../SendMessageUseCase.js';
+import type { IConversationRepository } from '../../../repositories/interfaces/conversation.repository.interface.js';
+import type { IMessageRepository } from '../../../repositories/interfaces/message.repository.interface.js';
+import type { IChatGateway } from '../../../domain/services/IChatGateway.js';
 import type { ConversationDTO, MessageDTO } from '@anplexa/contracts';
 
 describe('SendMessageUseCase', () => {
   let useCase: SendMessageUseCase;
   let mockConversationRepo: IConversationRepository;
   let mockMessageRepo: IMessageRepository;
-  let mockOllamaGateway: OllamaGateway;
+  let mockOllamaGateway: IChatGateway;
 
   const mockConversation: ConversationDTO = {
     id: 'conv-123',
@@ -70,11 +70,7 @@ describe('SendMessageUseCase', () => {
     mockOllamaGateway = {
       generate: vi.fn(),
       generateStream: vi.fn(),
-      testConnection: vi.fn(),
-      getModels: vi.fn(),
-      selectModel: vi.fn(),
-      getConfig: vi.fn(),
-    } as unknown as OllamaGateway;
+    } as IChatGateway;
 
     useCase = new SendMessageUseCase(
       mockConversationRepo,

@@ -10,8 +10,8 @@
  */
 
 import type { ConversationDTO, MessageDTO } from '@anplexa/contracts';
-import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface';
-import type { IMessageRepository, PaginationOptions } from '../../repositories/interfaces/message.repository.interface';
+import type { IConversationRepository } from '../../repositories/interfaces/conversation.repository.interface.js';
+import type { IMessageRepository, PaginationOptions } from '../../repositories/interfaces/message.repository.interface.js';
 
 /**
  * Input parameters for getting conversation history

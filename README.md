@@ -4,26 +4,73 @@ A unified monorepo consolidating the Anplexa ecosystem: Backend API, Companions 
 
 ## Architecture
 
-This monorepo uses **pnpm workspaces** and **Turborepo** for efficient builds and development:
+This monorepo follows **Clean Architecture** principles with clear separation between domain logic, use cases, and infrastructure. It uses **pnpm workspaces** and **Turborepo** for efficient builds and development.
+
+### Project Structure
 
 ```
-anplexa-monorepo/
+anplexa/
 ├── apps/
-│   ├── api/                 # Backend API service
-│   ├── companions/          # AI Companions application
-│   ├── funnel/              # Funnel application
-│   └── docs/                # Documentation site
+│   ├── api/                 # Backend API (Express + Drizzle ORM)
+│   ├── companions/          # AI Companions UI (Next.js 15)
+│   ├── funnel/              # Conversion Funnel (Next.js 15)
+│   └── docs/                # Documentation (Docusaurus)
 ├── packages/
-│   ├── ui/                  # Shared UI components
-│   ├── utils/               # Shared utilities
-│   ├── config/              # Shared configuration
-│   └── types/               # Shared TypeScript types
-├── scripts/                 # Monorepo scripts
-├── pnpm-workspace.yaml      # pnpm workspaces configuration
-├── package.json             # Root package configuration
-├── turbo.json              # Turborepo configuration
-└── README.md               # This file
+│   ├── core/                # Domain entities, use-cases, repository interfaces
+│   ├── database/            # Database schema and client (Drizzle)
+│   ├── services/            # External services (Stripe, AI, etc.)
+│   ├── contracts/           # API contracts and DTOs
+│   └── ui/                  # Shared React components (Shadcn)
+├── docs/
+│   └── history/             # Migration documentation
+├── pnpm-workspace.yaml      # Workspace configuration
+├── package.json             # Root dependencies
+├── turbo.json               # Build orchestration
+└── README.md
 ```
+
+### Clean Architecture Layers
+
+1. **Domain Layer** (`@anplexa/core/domain`):
+   - Pure business entities (User, Message, Conversation)
+   - Domain errors (ValidationError, AuthenticationError)
+   - Zero external dependencies
+
+2. **Use Case Layer** (`@anplexa/core/use-cases`):
+   - Application business rules (RegisterUser, LoginUser, SendMessage)
+   - Orchestrates domain entities
+   - Depends only on domain and repository interfaces
+
+3. **Interface Adapters** (`@anplexa/core/repositories`):
+   - Repository interfaces defining data contracts
+   - Repository implementations using Drizzle ORM
+   - Adapters for external services
+
+4. **Infrastructure** (`@anplexa/database`, `@anplexa/services`):
+   - Database schema and migrations
+   - External API clients (Stripe, Ollama)
+   - Framework-specific code
+
+### Apps Overview
+
+- **API** (`apps/api`): Express.js REST API with Clean Architecture
+  - All business logic in use-cases
+  - Zero direct database queries in routes
+  - Repository pattern for data access
+
+- **Companions** (`apps/companions`): AI companion chat interface
+  - Next.js 15 App Router
+  - Uses `@anplexa/core` domain entities
+  - Guest chat with localStorage persistence
+
+- **Funnel** (`apps/funnel`): Conversion funnel with quiz and checkout
+  - Next.js 15 App Router
+  - Stripe integration for subscriptions
+  - Custom hooks for session and tracking
+
+- **Docs** (`apps/docs`): Technical documentation
+  - Docusaurus v3
+  - API reference and guides
 
 ## Prerequisites
 

@@ -1,14 +1,4 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUncachableStripeClient = getUncachableStripeClient;
-exports.getStripeClient = getStripeClient;
-exports.getStripePublishableKey = getStripePublishableKey;
-exports.getStripeSecretKey = getStripeSecretKey;
-exports.clearStripeCache = clearStripeCache;
-const stripe_1 = __importDefault(require("stripe"));
+import Stripe from 'stripe';
 let cachedStripeClient = null;
 let cachedCredentials = null;
 /**
@@ -32,19 +22,19 @@ function getCredentials() {
 /**
  * Get a fresh Stripe client instance (not cached)
  */
-function getUncachableStripeClient() {
+export function getUncachableStripeClient() {
     const { secretKey } = getCredentials();
-    return new stripe_1.default(secretKey, {
+    return new Stripe(secretKey, {
         apiVersion: '2023-10-16',
     });
 }
 /**
  * Get cached Stripe client instance
  */
-function getStripeClient() {
+export function getStripeClient() {
     if (!cachedStripeClient) {
         const { secretKey } = getCredentials();
-        cachedStripeClient = new stripe_1.default(secretKey, {
+        cachedStripeClient = new Stripe(secretKey, {
             apiVersion: '2023-10-16',
         });
     }
@@ -53,21 +43,25 @@ function getStripeClient() {
 /**
  * Get Stripe publishable key
  */
-function getStripePublishableKey() {
+export function getStripePublishableKey() {
     const { publishableKey } = getCredentials();
     return publishableKey;
 }
 /**
  * Get Stripe secret key
  */
-function getStripeSecretKey() {
+export function getStripeSecretKey() {
     const { secretKey } = getCredentials();
     return secretKey;
 }
 /**
  * Clear cached credentials and client (useful for testing)
  */
-function clearStripeCache() {
+export function clearStripeCache() {
     cachedCredentials = null;
     cachedStripeClient = null;
 }
+/**
+ * Alias for clearStripeCache (for backwards compatibility)
+ */
+export const clearCache = clearStripeCache;

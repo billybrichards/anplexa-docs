@@ -8,7 +8,6 @@ import { Router, type Request, type Response } from 'express';
 import type { Container } from '../../container.js';
 import { requireAuth } from '../../middleware/adminAuth.js';
 import { layout, escapeHtml } from './templates/layout.js';
-import { eq, userFeedback } from '@anplexa/database';
 
 export function createUserManagementRoutes(container: Container): Router {
   const router = Router();
@@ -167,10 +166,9 @@ export function createUserManagementRoutes(container: Container): Router {
         await conversationRepository.delete(conv.id);
       }
 
-      // Note: userFeedback table is not covered by current repositories
-      // This needs to be documented for follow-up
-      const { db } = container.cradle;
-      await db.delete(userFeedback).where(eq(userFeedback.userId, id));
+      // Delete all feedback for this user
+      const { userFeedbackRepository } = container.cradle;
+      await userFeedbackRepository.deleteByUserId(id);
 
       // Delete the user
       await userRepository.delete(id);

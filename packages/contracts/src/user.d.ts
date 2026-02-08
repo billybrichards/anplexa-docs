@@ -103,33 +103,33 @@ export declare const UserPreferencesSchema: z.ZodObject<{
         length: z.ZodOptional<z.ZodEnum<["brief", "moderate", "detailed"]>>;
         style: z.ZodOptional<z.ZodEnum<["casual", "thoughtful", "creative"]>>;
     }, "strip", z.ZodTypeAny, {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
     }, {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
     }>>;
     customPreferences: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, "strip", z.ZodTypeAny, {
-    userId: string;
-    theme?: "system" | "light" | "dark" | undefined;
-    language?: string | undefined;
-    notifications?: boolean | undefined;
+    userId?: string;
+    theme?: "system" | "light" | "dark";
+    language?: string;
+    notifications?: boolean;
     chatPreferences?: {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
-    } | undefined;
-    customPreferences?: Record<string, unknown> | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
+    };
+    customPreferences?: Record<string, unknown>;
 }, {
-    userId: string;
-    theme?: "system" | "light" | "dark" | undefined;
-    language?: string | undefined;
-    notifications?: boolean | undefined;
+    userId?: string;
+    theme?: "system" | "light" | "dark";
+    language?: string;
+    notifications?: boolean;
     chatPreferences?: {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
-    } | undefined;
-    customPreferences?: Record<string, unknown> | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
+    };
+    customPreferences?: Record<string, unknown>;
 }>;
 export declare const SubscriptionInfoSchema: z.ZodObject<{
     userId: z.ZodString;
@@ -141,23 +141,23 @@ export declare const SubscriptionInfoSchema: z.ZodObject<{
     canceledAt: z.ZodOptional<z.ZodString>;
     cancelAtPeriodEnd: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    stripeCustomerId: string | null;
-    stripeSubscriptionId: string | null;
-    userId: string;
-    status: "not_subscribed" | "subscribed" | "canceled" | "past_due";
-    currentPeriodStart?: string | undefined;
-    currentPeriodEnd?: string | undefined;
-    canceledAt?: string | undefined;
-    cancelAtPeriodEnd?: boolean | undefined;
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string;
+    userId?: string;
+    status?: "not_subscribed" | "subscribed" | "canceled" | "past_due";
+    currentPeriodStart?: string;
+    currentPeriodEnd?: string;
+    canceledAt?: string;
+    cancelAtPeriodEnd?: boolean;
 }, {
-    stripeCustomerId: string | null;
-    stripeSubscriptionId: string | null;
-    userId: string;
-    status: "not_subscribed" | "subscribed" | "canceled" | "past_due";
-    currentPeriodStart?: string | undefined;
-    currentPeriodEnd?: string | undefined;
-    canceledAt?: string | undefined;
-    cancelAtPeriodEnd?: boolean | undefined;
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string;
+    userId?: string;
+    status?: "not_subscribed" | "subscribed" | "canceled" | "past_due";
+    currentPeriodStart?: string;
+    currentPeriodEnd?: string;
+    canceledAt?: string;
+    cancelAtPeriodEnd?: boolean;
 }>;
 export declare const CreditTransactionSchema: z.ZodObject<{
     id: z.ZodString;
@@ -167,19 +167,19 @@ export declare const CreditTransactionSchema: z.ZodObject<{
     reason: z.ZodOptional<z.ZodString>;
     timestamp: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    timestamp: string;
-    userId: string;
-    operation: "set" | "add" | "subtract" | "purchase";
-    amount: number;
-    reason?: string | undefined;
+    id?: string;
+    userId?: string;
+    timestamp?: string;
+    operation?: "set" | "add" | "subtract" | "purchase";
+    amount?: number;
+    reason?: string;
 }, {
-    id: string;
-    timestamp: string;
-    userId: string;
-    operation: "set" | "add" | "subtract" | "purchase";
-    amount: number;
-    reason?: string | undefined;
+    id?: string;
+    userId?: string;
+    timestamp?: string;
+    operation?: "set" | "add" | "subtract" | "purchase";
+    amount?: number;
+    reason?: string;
 }>;
 export declare const CreditsInfoSchema: z.ZodObject<{
     userId: z.ZodString;
@@ -193,54 +193,54 @@ export declare const CreditsInfoSchema: z.ZodObject<{
         reason: z.ZodOptional<z.ZodString>;
         timestamp: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        timestamp: string;
-        userId: string;
-        operation: "set" | "add" | "subtract" | "purchase";
-        amount: number;
-        reason?: string | undefined;
+        id?: string;
+        userId?: string;
+        timestamp?: string;
+        operation?: "set" | "add" | "subtract" | "purchase";
+        amount?: number;
+        reason?: string;
     }, {
-        id: string;
-        timestamp: string;
-        userId: string;
-        operation: "set" | "add" | "subtract" | "purchase";
-        amount: number;
-        reason?: string | undefined;
+        id?: string;
+        userId?: string;
+        timestamp?: string;
+        operation?: "set" | "add" | "subtract" | "purchase";
+        amount?: number;
+        reason?: string;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
-    userId: string;
-    balance: number;
-    lastUpdated: string;
+    userId?: string;
+    balance?: number;
+    lastUpdated?: string;
     history?: {
-        id: string;
-        timestamp: string;
-        userId: string;
-        operation: "set" | "add" | "subtract" | "purchase";
-        amount: number;
-        reason?: string | undefined;
-    }[] | undefined;
+        id?: string;
+        userId?: string;
+        timestamp?: string;
+        operation?: "set" | "add" | "subtract" | "purchase";
+        amount?: number;
+        reason?: string;
+    }[];
 }, {
-    userId: string;
-    balance: number;
-    lastUpdated: string;
+    userId?: string;
+    balance?: number;
+    lastUpdated?: string;
     history?: {
-        id: string;
-        timestamp: string;
-        userId: string;
-        operation: "set" | "add" | "subtract" | "purchase";
-        amount: number;
-        reason?: string | undefined;
-    }[] | undefined;
+        id?: string;
+        userId?: string;
+        timestamp?: string;
+        operation?: "set" | "add" | "subtract" | "purchase";
+        amount?: number;
+        reason?: string;
+    }[];
 }>;
 export declare const UpdateUserProfileRequestSchema: z.ZodObject<{
     displayName: z.ZodOptional<z.ZodString>;
     email: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    email?: string | undefined;
-    displayName?: string | undefined;
+    email?: string;
+    displayName?: string;
 }, {
-    email?: string | undefined;
-    displayName?: string | undefined;
+    email?: string;
+    displayName?: string;
 }>;
 export declare const UpdateUserPreferencesRequestSchema: z.ZodObject<{
     theme: z.ZodOptional<z.ZodEnum<["light", "dark", "system"]>>;
@@ -250,41 +250,41 @@ export declare const UpdateUserPreferencesRequestSchema: z.ZodObject<{
         length: z.ZodOptional<z.ZodEnum<["brief", "moderate", "detailed"]>>;
         style: z.ZodOptional<z.ZodEnum<["casual", "thoughtful", "creative"]>>;
     }, "strip", z.ZodTypeAny, {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
     }, {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
     }>>;
     customPreferences: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, "strip", z.ZodTypeAny, {
-    theme?: "system" | "light" | "dark" | undefined;
-    language?: string | undefined;
-    notifications?: boolean | undefined;
+    theme?: "system" | "light" | "dark";
+    language?: string;
+    notifications?: boolean;
     chatPreferences?: {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
-    } | undefined;
-    customPreferences?: Record<string, unknown> | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
+    };
+    customPreferences?: Record<string, unknown>;
 }, {
-    theme?: "system" | "light" | "dark" | undefined;
-    language?: string | undefined;
-    notifications?: boolean | undefined;
+    theme?: "system" | "light" | "dark";
+    language?: string;
+    notifications?: boolean;
     chatPreferences?: {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
-    } | undefined;
-    customPreferences?: Record<string, unknown> | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
+    };
+    customPreferences?: Record<string, unknown>;
 }>;
 export declare const PurchaseCreditsRequestSchema: z.ZodObject<{
     amount: z.ZodNumber;
     paymentMethodId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    amount: number;
-    paymentMethodId?: string | undefined;
+    amount?: number;
+    paymentMethodId?: string;
 }, {
-    amount: number;
-    paymentMethodId?: string | undefined;
+    amount?: number;
+    paymentMethodId?: string;
 }>;
 export declare const UserProfileSchema: z.ZodObject<{
     id: z.ZodString;
@@ -299,29 +299,29 @@ export declare const UserProfileSchema: z.ZodObject<{
     createdAt: z.ZodString;
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    email: string;
-    displayName: string | null;
-    chatName: string | null;
-    personalityMode: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse" | null;
-    createdAt: string;
-    updatedAt: string;
-    isAdmin: boolean;
-    subscriptionStatus: "not_subscribed" | "subscribed";
-    credits: number;
-    stripeCustomerId: string | null;
+    id?: string;
+    email?: string;
+    displayName?: string;
+    chatName?: string;
+    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
+    createdAt?: string;
+    updatedAt?: string;
+    isAdmin?: boolean;
+    subscriptionStatus?: "not_subscribed" | "subscribed";
+    credits?: number;
+    stripeCustomerId?: string;
 }, {
-    id: string;
-    email: string;
-    displayName: string | null;
-    chatName: string | null;
-    personalityMode: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse" | null;
-    createdAt: string;
-    updatedAt: string;
-    isAdmin: boolean;
-    subscriptionStatus: "not_subscribed" | "subscribed";
-    credits: number;
-    stripeCustomerId: string | null;
+    id?: string;
+    email?: string;
+    displayName?: string;
+    chatName?: string;
+    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
+    createdAt?: string;
+    updatedAt?: string;
+    isAdmin?: boolean;
+    subscriptionStatus?: "not_subscribed" | "subscribed";
+    credits?: number;
+    stripeCustomerId?: string;
 }>;
 export type ValidatedUserPreferences = z.infer<typeof UserPreferencesSchema>;
 export type ValidatedSubscriptionInfo = z.infer<typeof SubscriptionInfoSchema>;

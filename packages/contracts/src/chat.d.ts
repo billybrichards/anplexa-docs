@@ -100,11 +100,11 @@ export declare const ChatPreferencesSchema: z.ZodObject<{
     length: z.ZodOptional<z.ZodEnum<["brief", "moderate", "detailed"]>>;
     style: z.ZodOptional<z.ZodEnum<["casual", "thoughtful", "creative"]>>;
 }, "strict", z.ZodTypeAny, {
-    length?: "moderate" | "brief" | "detailed" | undefined;
-    style?: "thoughtful" | "casual" | "creative" | undefined;
+    length?: "moderate" | "brief" | "detailed";
+    style?: "thoughtful" | "casual" | "creative";
 }, {
-    length?: "moderate" | "brief" | "detailed" | undefined;
-    style?: "thoughtful" | "casual" | "creative" | undefined;
+    length?: "moderate" | "brief" | "detailed";
+    style?: "thoughtful" | "casual" | "creative";
 }>;
 export declare const ChatRequestSchema: z.ZodObject<{
     conversationId: z.ZodOptional<z.ZodString>;
@@ -113,35 +113,35 @@ export declare const ChatRequestSchema: z.ZodObject<{
         length: z.ZodOptional<z.ZodEnum<["brief", "moderate", "detailed"]>>;
         style: z.ZodOptional<z.ZodEnum<["casual", "thoughtful", "creative"]>>;
     }, "strict", z.ZodTypeAny, {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
     }, {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
     }>>;
     personalityMode: z.ZodOptional<z.ZodEnum<["nurturing", "playful", "dominant", "filthy_sexy", "intimate_companion", "intellectual_muse"]>>;
     storeLocally: z.ZodOptional<z.ZodBoolean>;
     newChat: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    message: string;
-    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse" | undefined;
-    conversationId?: string | undefined;
+    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
+    conversationId?: string;
     preferences?: {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
-    } | undefined;
-    storeLocally?: boolean | undefined;
-    newChat?: boolean | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
+    };
+    message?: string;
+    storeLocally?: boolean;
+    newChat?: boolean;
 }, {
-    message: string;
-    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse" | undefined;
-    conversationId?: string | undefined;
+    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
+    conversationId?: string;
     preferences?: {
-        length?: "moderate" | "brief" | "detailed" | undefined;
-        style?: "thoughtful" | "casual" | "creative" | undefined;
-    } | undefined;
-    storeLocally?: boolean | undefined;
-    newChat?: boolean | undefined;
+        length?: "moderate" | "brief" | "detailed";
+        style?: "thoughtful" | "casual" | "creative";
+    };
+    message?: string;
+    storeLocally?: boolean;
+    newChat?: boolean;
 }>;
 export declare const MessageDTOSchema: z.ZodObject<{
     id: z.ZodString;
@@ -150,17 +150,17 @@ export declare const MessageDTOSchema: z.ZodObject<{
     content: z.ZodString;
     createdAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    createdAt: string;
-    conversationId: string;
-    role: "user" | "assistant" | "system";
-    content: string;
+    id?: string;
+    createdAt?: string;
+    conversationId?: string;
+    role?: "user" | "assistant" | "system";
+    content?: string;
 }, {
-    id: string;
-    createdAt: string;
-    conversationId: string;
-    role: "user" | "assistant" | "system";
-    content: string;
+    id?: string;
+    createdAt?: string;
+    conversationId?: string;
+    role?: "user" | "assistant" | "system";
+    content?: string;
 }>;
 export declare const ConversationDTOSchema: z.ZodObject<{
     id: z.ZodString;
@@ -169,40 +169,40 @@ export declare const ConversationDTOSchema: z.ZodObject<{
     createdAt: z.ZodString;
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-    title: string | null;
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    userId?: string;
+    title?: string;
 }, {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    userId: string;
-    title: string | null;
+    id?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    userId?: string;
+    title?: string;
 }>;
 export declare const SSEStartEventSchema: z.ZodObject<{
     type: z.ZodLiteral<"start">;
     conversationId: z.ZodString;
     messageId: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    conversationId: string;
-    type: "start";
-    messageId: string;
+    conversationId?: string;
+    type?: "start";
+    messageId?: string;
 }, {
-    conversationId: string;
-    type: "start";
-    messageId: string;
+    conversationId?: string;
+    type?: "start";
+    messageId?: string;
 }>;
 export declare const SSETokenEventSchema: z.ZodObject<{
     type: z.ZodLiteral<"token">;
     content: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    content: string;
-    type: "token";
+    content?: string;
+    type?: "token";
 }, {
-    content: string;
-    type: "token";
+    content?: string;
+    type?: "token";
 }>;
 export declare const SSEDoneEventSchema: z.ZodObject<{
     type: z.ZodLiteral<"done">;
@@ -210,77 +210,77 @@ export declare const SSEDoneEventSchema: z.ZodObject<{
     messageId: z.ZodString;
     creditsRemaining: z.ZodOptional<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    conversationId: string;
-    type: "done";
-    messageId: string;
-    creditsRemaining?: number | undefined;
+    conversationId?: string;
+    type?: "done";
+    messageId?: string;
+    creditsRemaining?: number;
 }, {
-    conversationId: string;
-    type: "done";
-    messageId: string;
-    creditsRemaining?: number | undefined;
+    conversationId?: string;
+    type?: "done";
+    messageId?: string;
+    creditsRemaining?: number;
 }>;
 export declare const SSEErrorEventSchema: z.ZodObject<{
     type: z.ZodLiteral<"error">;
     error: z.ZodString;
     code: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    type: "error";
-    error: string;
-    code?: string | undefined;
+    type?: "error";
+    code?: string;
+    error?: string;
 }, {
-    type: "error";
-    error: string;
-    code?: string | undefined;
+    type?: "error";
+    code?: string;
+    error?: string;
 }>;
 export declare const SSEEventSchema: z.ZodUnion<[z.ZodObject<{
     type: z.ZodLiteral<"start">;
     conversationId: z.ZodString;
     messageId: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    conversationId: string;
-    type: "start";
-    messageId: string;
+    conversationId?: string;
+    type?: "start";
+    messageId?: string;
 }, {
-    conversationId: string;
-    type: "start";
-    messageId: string;
+    conversationId?: string;
+    type?: "start";
+    messageId?: string;
 }>, z.ZodObject<{
     type: z.ZodLiteral<"token">;
     content: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    content: string;
-    type: "token";
+    content?: string;
+    type?: "token";
 }, {
-    content: string;
-    type: "token";
+    content?: string;
+    type?: "token";
 }>, z.ZodObject<{
     type: z.ZodLiteral<"done">;
     conversationId: z.ZodString;
     messageId: z.ZodString;
     creditsRemaining: z.ZodOptional<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    conversationId: string;
-    type: "done";
-    messageId: string;
-    creditsRemaining?: number | undefined;
+    conversationId?: string;
+    type?: "done";
+    messageId?: string;
+    creditsRemaining?: number;
 }, {
-    conversationId: string;
-    type: "done";
-    messageId: string;
-    creditsRemaining?: number | undefined;
+    conversationId?: string;
+    type?: "done";
+    messageId?: string;
+    creditsRemaining?: number;
 }>, z.ZodObject<{
     type: z.ZodLiteral<"error">;
     error: z.ZodString;
     code: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    type: "error";
-    error: string;
-    code?: string | undefined;
+    type?: "error";
+    code?: string;
+    error?: string;
 }, {
-    type: "error";
-    error: string;
-    code?: string | undefined;
+    type?: "error";
+    code?: string;
+    error?: string;
 }>]>;
 export declare const AmplexaProfileSchema: z.ZodObject<{
     funnel: z.ZodOptional<z.ZodString>;
@@ -290,19 +290,19 @@ export declare const AmplexaProfileSchema: z.ZodObject<{
     pace: z.ZodOptional<z.ZodString>;
     tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strict", z.ZodTypeAny, {
-    funnel?: string | undefined;
-    funnelName?: string | undefined;
-    primaryNeed?: string | undefined;
-    communicationStyle?: string | undefined;
-    pace?: string | undefined;
-    tags?: string[] | undefined;
+    communicationStyle?: string;
+    funnel?: string;
+    funnelName?: string;
+    primaryNeed?: string;
+    pace?: string;
+    tags?: string[];
 }, {
-    funnel?: string | undefined;
-    funnelName?: string | undefined;
-    primaryNeed?: string | undefined;
-    communicationStyle?: string | undefined;
-    pace?: string | undefined;
-    tags?: string[] | undefined;
+    communicationStyle?: string;
+    funnel?: string;
+    funnelName?: string;
+    primaryNeed?: string;
+    pace?: string;
+    tags?: string[];
 }>;
 export type ValidatedChatRequest = z.infer<typeof ChatRequestSchema>;
 export type ValidatedChatPreferences = z.infer<typeof ChatPreferencesSchema>;

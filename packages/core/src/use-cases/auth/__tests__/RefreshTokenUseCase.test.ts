@@ -6,20 +6,20 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { RefreshTokenUseCase } from '../RefreshTokenUseCase';
-import type { IUserRepository } from '../../../repositories/IUserRepository';
-import type { ISessionRepository } from '../../../repositories/ISessionRepository';
-import { User } from '../../../domain/entities/User';
-import { Session } from '../../../domain/entities/Session';
-import { ValidationError } from '../../../domain/errors/ValidationError';
-import { AuthenticationError } from '../../../domain/errors/AuthenticationError';
-import { JWTService } from '@anplexa/services';
+import { RefreshTokenUseCase } from '../RefreshTokenUseCase.js';
+import type { IUserRepository } from '../../../repositories/IUserRepository.js';
+import type { ISessionRepository } from '../../../repositories/ISessionRepository.js';
+import { User } from '../../../domain/entities/User.js';
+import { Session } from '../../../domain/entities/Session.js';
+import { ValidationError } from '../../../domain/errors/ValidationError.js';
+import { AuthenticationError } from '../../../domain/errors/AuthenticationError.js';
+import type { IJWTService } from '../../../domain/services/IJWTService.js';
 
 describe('RefreshTokenUseCase', () => {
   let useCase: RefreshTokenUseCase;
   let mockUserRepo: IUserRepository;
   let mockSessionRepo: ISessionRepository;
-  let mockJwtService: JWTService;
+  let mockJwtService: IJWTService;
 
   const mockUser = User.create({
     id: 'user-123',
@@ -54,22 +54,44 @@ describe('RefreshTokenUseCase', () => {
   };
 
   beforeEach(() => {
-    // Setup mock repositories
+    // Setup mock repositories with method names matching the interfaces
     mockUserRepo = {
+      // Query methods (new naming convention)
+      getById: vi.fn(),
+      getByEmail: vi.fn(),
+      getByStripeCustomerId: vi.fn(),
+      getByStripeSubscriptionId: vi.fn(),
+      getAll: vi.fn(),
+      // Legacy aliases
       findById: vi.fn(),
       findByEmail: vi.fn(),
-      save: vi.fn(),
-      delete: vi.fn(),
+      findByStripeCustomerId: vi.fn(),
+      findByStripeSubscriptionId: vi.fn(),
       emailExists: vi.fn(),
+      // Command methods
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      save: vi.fn(),
+      // Stripe methods
+      updateStripeCustomerId: vi.fn(),
+      updateSubscriptionStatus: vi.fn(),
     };
 
     mockSessionRepo = {
+      // New methods
+      getByUserId: vi.fn(),
+      getByRefreshToken: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      deleteExpired: vi.fn(),
+      // Legacy aliases
       findById: vi.fn(),
       findActiveByUserId: vi.fn(),
+      findByRefreshToken: vi.fn(),
       save: vi.fn(),
       invalidate: vi.fn(),
       invalidateAll: vi.fn(),
-      findByRefreshToken: vi.fn(),
     };
 
     // Setup mock services
@@ -79,7 +101,9 @@ describe('RefreshTokenUseCase', () => {
       verifyAccessToken: vi.fn(),
       verifyRefreshToken: vi.fn(),
       getRefreshExpiryDate: vi.fn(),
-    } as any;
+      getAccessExpiryDate: vi.fn(),
+      decode: vi.fn(),
+    } as IJWTService;
 
     useCase = new RefreshTokenUseCase(
       mockSessionRepo,
@@ -92,8 +116,8 @@ describe('RefreshTokenUseCase', () => {
     it('should successfully refresh tokens with valid refresh token', async () => {
       // Arrange
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(mockSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2025-01-01')
@@ -108,10 +132,10 @@ describe('RefreshTokenUseCase', () => {
       // Assert
       expect(result.tokens).toEqual(mockTokens);
       expect(mockJwtService.verifyRefreshToken).toHaveBeenCalledWith('old_refresh_token');
-      expect(mockSessionRepo.findByRefreshToken).toHaveBeenCalledWith(
+      expect(mockSessionRepo.getByRefreshToken).toHaveBeenCalledWith(
         'old_refresh_token'
       );
-      expect(mockUserRepo.findById).toHaveBeenCalledWith('user-123');
+      expect(mockUserRepo.getById).toHaveBeenCalledWith('user-123');
       expect(mockJwtService.generateTokenPair).toHaveBeenCalledWith(
         'user-123',
         'test@example.com',
@@ -122,8 +146,8 @@ describe('RefreshTokenUseCase', () => {
     it('should update session with new refresh token', async () => {
       // Arrange
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(mockSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2025-01-01')
@@ -150,8 +174,8 @@ describe('RefreshTokenUseCase', () => {
       const adminPayload = { ...mockTokenPayload, isAdmin: true };
 
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(adminPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(mockSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(adminUser);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(adminUser);
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2025-01-01')
@@ -174,8 +198,8 @@ describe('RefreshTokenUseCase', () => {
     it('should preserve session ID and userId', async () => {
       // Arrange
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(mockSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2025-01-01')
@@ -265,13 +289,13 @@ describe('RefreshTokenUseCase', () => {
         })
       ).rejects.toThrow('Invalid or expired refresh token');
 
-      expect(mockSessionRepo.findByRefreshToken).not.toHaveBeenCalled();
+      expect(mockSessionRepo.getByRefreshToken).not.toHaveBeenCalled();
     });
 
     it('should throw AuthenticationError when session not found', async () => {
       // Arrange
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(null);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(null);
 
       // Act & Assert
       await expect(
@@ -286,7 +310,7 @@ describe('RefreshTokenUseCase', () => {
         })
       ).rejects.toThrow('Session not found');
 
-      expect(mockUserRepo.findById).not.toHaveBeenCalled();
+      expect(mockUserRepo.getById).not.toHaveBeenCalled();
     });
 
     it('should throw AuthenticationError and invalidate session when expired', async () => {
@@ -296,7 +320,7 @@ describe('RefreshTokenUseCase', () => {
         expiresAt: new Date('2020-01-01'), // Expired
       });
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(expiredSession);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(expiredSession);
 
       // Act & Assert
       await expect(
@@ -311,8 +335,8 @@ describe('RefreshTokenUseCase', () => {
         })
       ).rejects.toThrow('Session expired');
 
-      expect(mockSessionRepo.invalidate).toHaveBeenCalledWith('session-123');
-      expect(mockUserRepo.findById).not.toHaveBeenCalled();
+      expect(mockSessionRepo.delete).toHaveBeenCalledWith('session-123');
+      expect(mockUserRepo.getById).not.toHaveBeenCalled();
     });
 
     it('should throw AuthenticationError and invalidate session when inactive', async () => {
@@ -322,7 +346,7 @@ describe('RefreshTokenUseCase', () => {
         isActive: false,
       });
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(inactiveSession);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(inactiveSession);
 
       // Act & Assert
       await expect(
@@ -337,8 +361,8 @@ describe('RefreshTokenUseCase', () => {
         })
       ).rejects.toThrow('Session expired');
 
-      expect(mockSessionRepo.invalidate).toHaveBeenCalledWith('session-123');
-      expect(mockUserRepo.findById).not.toHaveBeenCalled();
+      expect(mockSessionRepo.delete).toHaveBeenCalledWith('session-123');
+      expect(mockUserRepo.getById).not.toHaveBeenCalled();
     });
 
     it('should throw AuthenticationError and invalidate session when user not found', async () => {
@@ -348,8 +372,8 @@ describe('RefreshTokenUseCase', () => {
         expiresAt: new Date('2099-12-31'), // Ensure not expired
       });
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(validSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(null);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(validSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(null);
 
       // Act & Assert
       await expect(
@@ -364,7 +388,7 @@ describe('RefreshTokenUseCase', () => {
         })
       ).rejects.toThrow('User not found');
 
-      expect(mockSessionRepo.invalidate).toHaveBeenCalledWith('session-123');
+      expect(mockSessionRepo.delete).toHaveBeenCalledWith('session-123');
       expect(mockJwtService.generateTokenPair).not.toHaveBeenCalled();
     });
   });
@@ -379,7 +403,7 @@ describe('RefreshTokenUseCase', () => {
       });
 
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(
         sessionExpiringNow
       );
 
@@ -390,15 +414,15 @@ describe('RefreshTokenUseCase', () => {
         })
       ).rejects.toThrow(AuthenticationError);
 
-      expect(mockSessionRepo.invalidate).toHaveBeenCalled();
+      expect(mockSessionRepo.delete).toHaveBeenCalled();
     });
 
     it('should handle very long refresh token', async () => {
       // Arrange
       const longToken = 'a'.repeat(1000);
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(mockSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2025-01-01')
@@ -417,8 +441,8 @@ describe('RefreshTokenUseCase', () => {
     it('should handle multiple token refresh requests sequentially', async () => {
       // Arrange
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(mockSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockJwtService.generateTokenPair)
         .mockReturnValueOnce({
           accessToken: 'access_1',
@@ -452,8 +476,8 @@ describe('RefreshTokenUseCase', () => {
       // Arrange
       const specialToken = 'abc.def-ghi_jkl=mno';
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(mockSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
         new Date('2025-01-01')
@@ -473,8 +497,8 @@ describe('RefreshTokenUseCase', () => {
       // Arrange
       const futureDate = new Date('2030-01-01');
       vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
-      vi.mocked(mockSessionRepo.findByRefreshToken).mockResolvedValue(mockSession);
-      vi.mocked(mockUserRepo.findById).mockResolvedValue(mockUser);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
       vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
       vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(futureDate);
       vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
@@ -487,6 +511,101 @@ describe('RefreshTokenUseCase', () => {
       // Assert
       const savedSession = vi.mocked(mockSessionRepo.save).mock.calls[0][0];
       expect(savedSession.expiresAt).toEqual(futureDate);
+    });
+  });
+
+  describe('Token rotation security', () => {
+    it('should rotate refresh token on each use for security', async () => {
+      // Arrange
+      vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue({
+        accessToken: 'new_access_token',
+        refreshToken: 'new_rotated_refresh_token',
+      });
+      vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
+        new Date('2025-01-01')
+      );
+      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+
+      // Act
+      const result = await useCase.execute({
+        refreshToken: 'old_refresh_token',
+      });
+
+      // Assert - New refresh token should be different from the old one
+      expect(result.tokens.refreshToken).toBe('new_rotated_refresh_token');
+      expect(result.tokens.refreshToken).not.toBe('old_refresh_token');
+
+      // Session should be updated with the new rotated token
+      const savedSession = vi.mocked(mockSessionRepo.save).mock.calls[0][0];
+      expect(savedSession.refreshToken).toBe('new_rotated_refresh_token');
+    });
+
+    it('should reject old refresh token after rotation', async () => {
+      // Arrange - First refresh succeeds
+      vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(mockUser);
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue({
+        accessToken: 'new_access_token',
+        refreshToken: 'rotated_token',
+      });
+      vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
+        new Date('2025-01-01')
+      );
+      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+
+      // First refresh - succeeds
+      await useCase.execute({
+        refreshToken: 'old_refresh_token',
+      });
+
+      // Simulate the old token no longer being found in storage (it was rotated)
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(null);
+
+      // Act & Assert - Using the old token again should fail
+      await expect(
+        useCase.execute({
+          refreshToken: 'old_refresh_token',
+        })
+      ).rejects.toThrow(AuthenticationError);
+
+      await expect(
+        useCase.execute({
+          refreshToken: 'old_refresh_token',
+        })
+      ).rejects.toThrow('Session not found');
+    });
+
+    it('should generate new access token with fresh claims after rotation', async () => {
+      // Arrange
+      const updatedUser = User.create({
+        ...mockUser,
+        isAdmin: true, // User was promoted to admin since last token
+      });
+
+      vi.mocked(mockJwtService.verifyRefreshToken).mockReturnValue(mockTokenPayload);
+      vi.mocked(mockSessionRepo.getByRefreshToken).mockResolvedValue(mockSession);
+      vi.mocked(mockUserRepo.getById).mockResolvedValue(updatedUser);
+      vi.mocked(mockJwtService.generateTokenPair).mockReturnValue(mockTokens);
+      vi.mocked(mockJwtService.getRefreshExpiryDate).mockReturnValue(
+        new Date('2025-01-01')
+      );
+      vi.mocked(mockSessionRepo.save).mockResolvedValue(mockSession);
+
+      // Act
+      await useCase.execute({
+        refreshToken: 'old_refresh_token',
+      });
+
+      // Assert - New token should use current user state (isAdmin: true)
+      expect(mockJwtService.generateTokenPair).toHaveBeenCalledWith(
+        'user-123',
+        'test@example.com',
+        true // isAdmin should be true from updated user
+      );
     });
   });
 });

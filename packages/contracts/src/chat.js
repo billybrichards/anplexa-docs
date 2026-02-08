@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Chat API Contracts
  *
@@ -6,23 +5,21 @@
  * These types define the API contract between frontend and backend.
  * Includes streaming response types and Zod validation schemas.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AmplexaProfileSchema = exports.SSEEventSchema = exports.SSEErrorEventSchema = exports.SSEDoneEventSchema = exports.SSETokenEventSchema = exports.SSEStartEventSchema = exports.ConversationDTOSchema = exports.MessageDTOSchema = exports.ChatRequestSchema = exports.ChatPreferencesSchema = void 0;
-const zod_1 = require("zod");
+import { z } from 'zod';
 // ============================================================================
 // Zod Validation Schemas
 // ============================================================================
-exports.ChatPreferencesSchema = zod_1.z
+export const ChatPreferencesSchema = z
     .object({
-    length: zod_1.z.enum(['brief', 'moderate', 'detailed']).optional(),
-    style: zod_1.z.enum(['casual', 'thoughtful', 'creative']).optional(),
+    length: z.enum(['brief', 'moderate', 'detailed']).optional(),
+    style: z.enum(['casual', 'thoughtful', 'creative']).optional(),
 })
     .strict();
-exports.ChatRequestSchema = zod_1.z.object({
-    conversationId: zod_1.z.string().uuid().optional(),
-    message: zod_1.z.string().min(1, 'Message cannot be empty').max(10000),
-    preferences: exports.ChatPreferencesSchema.optional(),
-    personalityMode: zod_1.z
+export const ChatRequestSchema = z.object({
+    conversationId: z.string().uuid().optional(),
+    message: z.string().min(1, 'Message cannot be empty').max(10000),
+    preferences: ChatPreferencesSchema.optional(),
+    personalityMode: z
         .enum([
         'nurturing',
         'playful',
@@ -32,56 +29,56 @@ exports.ChatRequestSchema = zod_1.z.object({
         'intellectual_muse',
     ])
         .optional(),
-    storeLocally: zod_1.z.boolean().optional(),
-    newChat: zod_1.z.boolean().optional(),
+    storeLocally: z.boolean().optional(),
+    newChat: z.boolean().optional(),
 });
-exports.MessageDTOSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
-    conversationId: zod_1.z.string().uuid(),
-    role: zod_1.z.enum(['user', 'assistant', 'system']),
-    content: zod_1.z.string(),
-    createdAt: zod_1.z.string().datetime(),
+export const MessageDTOSchema = z.object({
+    id: z.string().uuid(),
+    conversationId: z.string().uuid(),
+    role: z.enum(['user', 'assistant', 'system']),
+    content: z.string(),
+    createdAt: z.string().datetime(),
 });
-exports.ConversationDTOSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid(),
-    userId: zod_1.z.string().uuid(),
-    title: zod_1.z.string().nullable(),
-    createdAt: zod_1.z.string().datetime(),
-    updatedAt: zod_1.z.string().datetime(),
+export const ConversationDTOSchema = z.object({
+    id: z.string().uuid(),
+    userId: z.string().uuid(),
+    title: z.string().nullable(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
 });
-exports.SSEStartEventSchema = zod_1.z.object({
-    type: zod_1.z.literal('start'),
-    conversationId: zod_1.z.string().uuid(),
-    messageId: zod_1.z.string().uuid(),
+export const SSEStartEventSchema = z.object({
+    type: z.literal('start'),
+    conversationId: z.string().uuid(),
+    messageId: z.string().uuid(),
 });
-exports.SSETokenEventSchema = zod_1.z.object({
-    type: zod_1.z.literal('token'),
-    content: zod_1.z.string(),
+export const SSETokenEventSchema = z.object({
+    type: z.literal('token'),
+    content: z.string(),
 });
-exports.SSEDoneEventSchema = zod_1.z.object({
-    type: zod_1.z.literal('done'),
-    conversationId: zod_1.z.string().uuid(),
-    messageId: zod_1.z.string().uuid(),
-    creditsRemaining: zod_1.z.number().nonnegative().optional(),
+export const SSEDoneEventSchema = z.object({
+    type: z.literal('done'),
+    conversationId: z.string().uuid(),
+    messageId: z.string().uuid(),
+    creditsRemaining: z.number().nonnegative().optional(),
 });
-exports.SSEErrorEventSchema = zod_1.z.object({
-    type: zod_1.z.literal('error'),
-    error: zod_1.z.string(),
-    code: zod_1.z.string().optional(),
+export const SSEErrorEventSchema = z.object({
+    type: z.literal('error'),
+    error: z.string(),
+    code: z.string().optional(),
 });
-exports.SSEEventSchema = zod_1.z.union([
-    exports.SSEStartEventSchema,
-    exports.SSETokenEventSchema,
-    exports.SSEDoneEventSchema,
-    exports.SSEErrorEventSchema,
+export const SSEEventSchema = z.union([
+    SSEStartEventSchema,
+    SSETokenEventSchema,
+    SSEDoneEventSchema,
+    SSEErrorEventSchema,
 ]);
-exports.AmplexaProfileSchema = zod_1.z
+export const AmplexaProfileSchema = z
     .object({
-    funnel: zod_1.z.string().optional(),
-    funnelName: zod_1.z.string().optional(),
-    primaryNeed: zod_1.z.string().optional(),
-    communicationStyle: zod_1.z.string().optional(),
-    pace: zod_1.z.string().optional(),
-    tags: zod_1.z.array(zod_1.z.string()).optional(),
+    funnel: z.string().optional(),
+    funnelName: z.string().optional(),
+    primaryNeed: z.string().optional(),
+    communicationStyle: z.string().optional(),
+    pace: z.string().optional(),
+    tags: z.array(z.string()).optional(),
 })
     .strict();

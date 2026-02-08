@@ -67,13 +67,13 @@ export declare const CreateCheckoutRequestSchema: z.ZodObject<{
     successUrl: z.ZodOptional<z.ZodString>;
     cancelUrl: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    priceId: string;
-    successUrl?: string | undefined;
-    cancelUrl?: string | undefined;
+    priceId?: string;
+    successUrl?: string;
+    cancelUrl?: string;
 }, {
-    priceId: string;
-    successUrl?: string | undefined;
-    cancelUrl?: string | undefined;
+    priceId?: string;
+    successUrl?: string;
+    cancelUrl?: string;
 }>;
 export declare const PriceDTOSchema: z.ZodObject<{
     id: z.ZodString;
@@ -82,17 +82,17 @@ export declare const PriceDTOSchema: z.ZodObject<{
     interval: z.ZodEnum<["month", "year", "week", "day"]>;
     intervalCount: z.ZodNumber;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    unitAmount: number;
-    currency: string;
-    interval: "month" | "year" | "week" | "day";
-    intervalCount: number;
+    id?: string;
+    unitAmount?: number;
+    currency?: string;
+    interval?: "month" | "year" | "week" | "day";
+    intervalCount?: number;
 }, {
-    id: string;
-    unitAmount: number;
-    currency: string;
-    interval: "month" | "year" | "week" | "day";
-    intervalCount: number;
+    id?: string;
+    unitAmount?: number;
+    currency?: string;
+    interval?: "month" | "year" | "week" | "day";
+    intervalCount?: number;
 }>;
 export declare const ProductDTOSchema: z.ZodObject<{
     id: z.ZodString;
@@ -105,39 +105,39 @@ export declare const ProductDTOSchema: z.ZodObject<{
         interval: z.ZodEnum<["month", "year", "week", "day"]>;
         intervalCount: z.ZodNumber;
     }, "strip", z.ZodTypeAny, {
-        id: string;
-        unitAmount: number;
-        currency: string;
-        interval: "month" | "year" | "week" | "day";
-        intervalCount: number;
+        id?: string;
+        unitAmount?: number;
+        currency?: string;
+        interval?: "month" | "year" | "week" | "day";
+        intervalCount?: number;
     }, {
-        id: string;
-        unitAmount: number;
-        currency: string;
-        interval: "month" | "year" | "week" | "day";
-        intervalCount: number;
+        id?: string;
+        unitAmount?: number;
+        currency?: string;
+        interval?: "month" | "year" | "week" | "day";
+        intervalCount?: number;
     }>, "many">;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    name: string;
-    description: string | null;
-    prices: {
-        id: string;
-        unitAmount: number;
-        currency: string;
-        interval: "month" | "year" | "week" | "day";
-        intervalCount: number;
+    id?: string;
+    name?: string;
+    description?: string;
+    prices?: {
+        id?: string;
+        unitAmount?: number;
+        currency?: string;
+        interval?: "month" | "year" | "week" | "day";
+        intervalCount?: number;
     }[];
 }, {
-    id: string;
-    name: string;
-    description: string | null;
-    prices: {
-        id: string;
-        unitAmount: number;
-        currency: string;
-        interval: "month" | "year" | "week" | "day";
-        intervalCount: number;
+    id?: string;
+    name?: string;
+    description?: string;
+    prices?: {
+        id?: string;
+        unitAmount?: number;
+        currency?: string;
+        interval?: "month" | "year" | "week" | "day";
+        intervalCount?: number;
     }[];
 }>;
 export declare const SubscriptionWebhookPayloadSchema: z.ZodObject<{
@@ -146,28 +146,28 @@ export declare const SubscriptionWebhookPayloadSchema: z.ZodObject<{
     stripeCustomerId: z.ZodOptional<z.ZodString>;
     stripeSubscriptionId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    subscriptionStatus: "not_subscribed" | "subscribed";
-    userId: string;
-    stripeCustomerId?: string | undefined;
-    stripeSubscriptionId?: string | undefined;
+    subscriptionStatus?: "not_subscribed" | "subscribed";
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string;
+    userId?: string;
 }, {
-    subscriptionStatus: "not_subscribed" | "subscribed";
-    userId: string;
-    stripeCustomerId?: string | undefined;
-    stripeSubscriptionId?: string | undefined;
+    subscriptionStatus?: "not_subscribed" | "subscribed";
+    stripeCustomerId?: string;
+    stripeSubscriptionId?: string;
+    userId?: string;
 }>;
 export declare const CreditsWebhookPayloadSchema: z.ZodObject<{
     userId: z.ZodString;
     credits: z.ZodNumber;
     operation: z.ZodEnum<["set", "add", "subtract"]>;
 }, "strip", z.ZodTypeAny, {
-    credits: number;
-    userId: string;
-    operation: "set" | "add" | "subtract";
+    credits?: number;
+    userId?: string;
+    operation?: "set" | "add" | "subtract";
 }, {
-    credits: number;
-    userId: string;
-    operation: "set" | "add" | "subtract";
+    credits?: number;
+    userId?: string;
+    operation?: "set" | "add" | "subtract";
 }>;
 export type ValidatedCreateCheckoutRequest = z.infer<typeof CreateCheckoutRequestSchema>;
 export type ValidatedSubscriptionWebhookPayload = z.infer<typeof SubscriptionWebhookPayloadSchema>;

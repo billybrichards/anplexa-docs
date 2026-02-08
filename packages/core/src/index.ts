@@ -49,6 +49,12 @@ export {
   NotFoundError,
 } from './domain/errors/index.js';
 
+// Domain service interfaces
+export type { IPasswordService, GeneratedApiKey, PasswordStrengthResult } from './domain/services/IPasswordService.js';
+export type { IJWTService, TokenPayload, TokenPair } from './domain/services/IJWTService.js';
+export type { IStripeService, CheckoutSessionOptions, CheckoutSessionResult, CustomerResult, SubscriptionResult, WebhookEvent } from './domain/services/IStripeService.js';
+export type { IChatGateway, ChatMessage, GenerateOptions } from './domain/services/IChatGateway.js';
+
 // ============================================================================
 // Repository Layer Exports
 // ============================================================================
@@ -67,6 +73,8 @@ export {
   FunnelApiKeyRepository,
   ApiUsageRepository,
   UserFeedbackRepository,
+  BirthChartRepository,
+  CompanionPersonaRepository,
 } from './repositories/index.js';
 
 // ============================================================================

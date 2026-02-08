@@ -7,7 +7,7 @@
 
 import { randomUUID } from 'crypto';
 import type { Database } from '@anplexa/database';
-import { postgres as schema, eq, lt } from '@anplexa/database';
+import { postgres as schema, eq, lt, and, isNull, gt } from '@anplexa/database';
 import { PasswordResetToken } from '../domain/entities/PasswordResetToken.js';
 import type {
   IPasswordResetTokenRepository,
@@ -112,6 +112,34 @@ export class PasswordResetTokenRepository implements IPasswordResetTokenReposito
     } catch (error) {
       throw new Error(
         `Failed to mark password reset token as used: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }
+
+  /**
+   * Gets all valid (non-expired, unused) password reset tokens
+   *
+   * @returns Promise resolving to array of valid tokens
+   * @throws Error if database query fails
+   */
+  async getAllValid(): Promise<PasswordResetToken[]> {
+    try {
+      const now = new Date().toISOString();
+
+      const results = await this.db
+        .select()
+        .from(schema.passwordResetTokens)
+        .where(
+          and(
+            isNull(schema.passwordResetTokens.usedAt),
+            gt(schema.passwordResetTokens.expiresAt, now)
+          )
+        );
+
+      return results.map(this.mapToPasswordResetToken);
+    } catch (error) {
+      throw new Error(
+        `Failed to get valid password reset tokens: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }

@@ -56,16 +56,25 @@ export interface AuthTokens {
     accessToken: string;
     refreshToken: string;
 }
-export interface RegisterResponse extends AuthTokens {
+export interface RegisterResponse {
     message: string;
     user: UserDTO;
+    tokens: AuthTokens;
+    accessToken: string;
+    refreshToken: string;
 }
-export interface LoginResponse extends AuthTokens {
+export interface LoginResponse {
     message: string;
     user: UserDTO;
+    tokens: AuthTokens;
+    accessToken: string;
+    refreshToken: string;
 }
-export interface RefreshTokenResponse extends AuthTokens {
+export interface RefreshTokenResponse {
     message: string;
+    tokens: AuthTokens;
+    accessToken: string;
+    refreshToken: string;
 }
 export interface SubscriptionStatusResponse {
     subscriptionStatus: 'subscribed' | 'not_subscribed';
@@ -105,83 +114,83 @@ export declare const RegisterRequestSchema: z.ZodObject<{
     password: z.ZodString;
     displayName: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    email: string;
-    password: string;
-    displayName?: string | undefined;
+    email?: string;
+    displayName?: string;
+    password?: string;
 }, {
-    email: string;
-    password: string;
-    displayName?: string | undefined;
+    email?: string;
+    displayName?: string;
+    password?: string;
 }>;
 export declare const LoginRequestSchema: z.ZodObject<{
     email: z.ZodString;
     password: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    email: string;
-    password: string;
+    email?: string;
+    password?: string;
 }, {
-    email: string;
-    password: string;
+    email?: string;
+    password?: string;
 }>;
 export declare const RefreshTokenRequestSchema: z.ZodObject<{
     refreshToken: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    refreshToken: string;
+    refreshToken?: string;
 }, {
-    refreshToken: string;
+    refreshToken?: string;
 }>;
 export declare const ForgotPasswordRequestSchema: z.ZodObject<{
     email: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    email: string;
+    email?: string;
 }, {
-    email: string;
+    email?: string;
 }>;
 export declare const ResetPasswordRequestSchema: z.ZodObject<{
     token: z.ZodString;
     newPassword: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    token: string;
-    newPassword: string;
+    token?: string;
+    newPassword?: string;
 }, {
-    token: string;
-    newPassword: string;
+    token?: string;
+    newPassword?: string;
 }>;
 export declare const MagicLinkRequestSchema: z.ZodObject<{
     email: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    email: string;
+    email?: string;
 }, {
-    email: string;
+    email?: string;
 }>;
 export declare const MagicLinkVerifyRequestSchema: z.ZodObject<{
     token: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    token: string;
+    token?: string;
 }, {
-    token: string;
+    token?: string;
 }>;
 export declare const ExchangeTokenRequestSchema: z.ZodObject<{
     code: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    code: string;
+    code?: string;
 }, {
-    code: string;
+    code?: string;
 }>;
 export declare const PersonalityModeSchema: z.ZodEnum<["nurturing", "playful", "dominant", "filthy_sexy", "intimate_companion", "intellectual_muse"]>;
 export declare const UpdatePersonalityRequestSchema: z.ZodObject<{
     personalityMode: z.ZodEnum<["nurturing", "playful", "dominant", "filthy_sexy", "intimate_companion", "intellectual_muse"]>;
 }, "strip", z.ZodTypeAny, {
-    personalityMode: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
+    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
 }, {
-    personalityMode: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
+    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
 }>;
 export declare const UpdateChatNameRequestSchema: z.ZodObject<{
     chatName: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    chatName: string;
+    chatName?: string;
 }, {
-    chatName: string;
+    chatName?: string;
 }>;
 export declare const UserDTOSchema: z.ZodObject<{
     id: z.ZodString;
@@ -195,27 +204,27 @@ export declare const UserDTOSchema: z.ZodObject<{
     stripeCustomerId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     createdAt: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    id: string;
-    email: string;
-    displayName: string | null;
-    isAdmin: boolean;
-    chatName?: string | null | undefined;
-    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse" | null | undefined;
-    createdAt?: string | undefined;
-    subscriptionStatus?: "not_subscribed" | "subscribed" | undefined;
-    credits?: number | undefined;
-    stripeCustomerId?: string | null | undefined;
+    id?: string;
+    email?: string;
+    displayName?: string;
+    chatName?: string;
+    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
+    createdAt?: string;
+    isAdmin?: boolean;
+    subscriptionStatus?: "not_subscribed" | "subscribed";
+    credits?: number;
+    stripeCustomerId?: string;
 }, {
-    id: string;
-    email: string;
-    displayName: string | null;
-    isAdmin: boolean;
-    chatName?: string | null | undefined;
-    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse" | null | undefined;
-    createdAt?: string | undefined;
-    subscriptionStatus?: "not_subscribed" | "subscribed" | undefined;
-    credits?: number | undefined;
-    stripeCustomerId?: string | null | undefined;
+    id?: string;
+    email?: string;
+    displayName?: string;
+    chatName?: string;
+    personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
+    createdAt?: string;
+    isAdmin?: boolean;
+    subscriptionStatus?: "not_subscribed" | "subscribed";
+    credits?: number;
+    stripeCustomerId?: string;
 }>;
 export type ValidatedRegisterRequest = z.infer<typeof RegisterRequestSchema>;
 export type ValidatedLoginRequest = z.infer<typeof LoginRequestSchema>;

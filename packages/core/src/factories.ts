@@ -39,6 +39,14 @@ import type { IUserRepository } from './repositories/interfaces/user.repository.
 import type { IConversationRepository } from './repositories/interfaces/conversation.repository.interface.js';
 import type { IMessageRepository } from './repositories/interfaces/message.repository.interface.js';
 import type { ISessionRepository } from './repositories/interfaces/session.repository.interface.js';
+import type { IBirthChartRepository } from './repositories/interfaces/birth-chart.repository.interface.js';
+import type { ICompanionPersonaRepository } from './repositories/interfaces/companion-persona.repository.interface.js';
+import type { IAstrologyCalculationService } from './domain/services/IAstrologyCalculationService.js';
+import type { SystemPromptConfig } from './domain/services/SystemPromptBuilder.js';
+import type { IPasswordService } from './domain/services/IPasswordService.js';
+import type { IJWTService } from './domain/services/IJWTService.js';
+import type { IStripeService } from './domain/services/IStripeService.js';
+import type { IChatGateway } from './domain/services/IChatGateway.js';
 
 import { LoginUser, RegisterUser, RefreshToken } from './use-cases/auth/index.js';
 import {
@@ -46,6 +54,7 @@ import {
   GetConversationHistoryUseCase,
 } from './use-cases/chat/index.js';
 import { CreateCheckoutUseCase } from './use-cases/subscription/index.js';
+import { CalculateBirthChartUseCase } from './use-cases/astrology/CalculateBirthChartUseCase.js';
 
 /**
  * DI Container for managing repository and service instances
@@ -56,7 +65,16 @@ export interface DIContainer {
   conversationRepository: IConversationRepository;
   messageRepository: IMessageRepository;
   sessionRepository: ISessionRepository;
-  ollamaGateway?: import('@anplexa/services/ai').OllamaGateway;
+  birthChartRepository?: IBirthChartRepository;
+  companionPersonaRepository?: ICompanionPersonaRepository;
+  passwordService: IPasswordService;
+  jwtService: IJWTService;
+  stripeService?: IStripeService;
+  astrologyService?: IAstrologyCalculationService;
+  chatGateway?: IChatGateway;
+  ollamaGateway?: IChatGateway;
+  /** Optional configuration for system prompt building */
+  systemPromptConfig?: SystemPromptConfig;
 }
 
 // ============================================================================
@@ -99,30 +117,37 @@ export interface DIContainer {
  *
  * @param userRepository - Repository for user data access
  * @param sessionRepository - Repository for session data access
+ * @param passwordService - Password hashing and verification service
+ * @param jwtService - JWT token generation and verification service
  * @returns LoginUser instance ready for use
  *
  * @example
  * ```ts
- * const loginUser = createLoginUserUseCase(userRepo, sessionRepo);
+ * const loginUser = createLoginUserUseCase(userRepo, sessionRepo, passwordService, jwtService);
  * const result = await loginUser.execute({ email: 'user@example.com', password: 'pass' });
  * ```
  */
 export function createLoginUserUseCase(
   userRepository: IUserRepository,
-  sessionRepository: ISessionRepository
+  sessionRepository: ISessionRepository,
+  passwordService: IPasswordService,
+  jwtService: IJWTService
 ): LoginUser {
-  return new LoginUser(userRepository, sessionRepository);
+  return new LoginUser(userRepository, sessionRepository, passwordService, jwtService);
 }
 
 /**
  * Create RegisterUser use case instance
  *
  * @param userRepository - Repository for user data access
+ * @param sessionRepository - Repository for session data access
+ * @param passwordService - Password hashing and verification service
+ * @param jwtService - JWT token generation and verification service
  * @returns RegisterUser instance ready for use
  *
  * @example
  * ```ts
- * const registerUser = createRegisterUserUseCase(userRepo);
+ * const registerUser = createRegisterUserUseCase(userRepo, sessionRepo, passwordService, jwtService);
  * const result = await registerUser.execute({
  *   email: 'newuser@example.com',
  *   password: 'password123'
@@ -130,9 +155,12 @@ export function createLoginUserUseCase(
  * ```
  */
 export function createRegisterUserUseCase(
-  userRepository: IUserRepository
+  userRepository: IUserRepository,
+  sessionRepository: ISessionRepository,
+  passwordService: IPasswordService,
+  jwtService: IJWTService
 ): RegisterUser {
-  return new RegisterUser(userRepository);
+  return new RegisterUser(userRepository, sessionRepository, passwordService, jwtService);
 }
 
 /**
@@ -140,19 +168,21 @@ export function createRegisterUserUseCase(
  *
  * @param sessionRepository - Repository for session data access
  * @param userRepository - Repository for user data access
+ * @param jwtService - JWT token generation and verification service
  * @returns RefreshToken instance ready for use
  *
  * @example
  * ```ts
- * const refreshToken = createRefreshTokenUseCase(sessionRepo, userRepo);
+ * const refreshToken = createRefreshTokenUseCase(sessionRepo, userRepo, jwtService);
  * const result = await refreshToken.execute({ refreshToken: 'token...' });
  * ```
  */
 export function createRefreshTokenUseCase(
   sessionRepository: ISessionRepository,
-  userRepository: IUserRepository
+  userRepository: IUserRepository,
+  jwtService: IJWTService
 ): RefreshToken {
-  return new RefreshToken(sessionRepository, userRepository);
+  return new RefreshToken(sessionRepository, userRepository, jwtService);
 }
 
 // ============================================================================
@@ -164,12 +194,24 @@ export function createRefreshTokenUseCase(
  *
  * @param conversationRepository - Repository for conversation data access
  * @param messageRepository - Repository for message data access
- * @param ollamaGateway - AI service gateway for generating responses
+ * @param chatGateway - AI service gateway for generating responses
+ * @param companionPersonaRepository - Optional repository for companion persona data access
+ * @param systemPromptConfig - Optional configuration for system prompt building
  * @returns SendMessageUseCase instance ready for use
  *
  * @example
  * ```ts
- * const sendMessage = createSendMessageUseCase(convRepo, msgRepo, ollamaGateway);
+ * // Basic usage (without persona)
+ * const sendMessage = createSendMessageUseCase(convRepo, msgRepo, chatGateway);
+ *
+ * // With persona support
+ * const sendMessage = createSendMessageUseCase(
+ *   convRepo,
+ *   msgRepo,
+ *   chatGateway,
+ *   personaRepo
+ * );
+ *
  * const result = await sendMessage.execute({
  *   conversationId: 'conv-123',
  *   userId: 'user-123',
@@ -180,12 +222,16 @@ export function createRefreshTokenUseCase(
 export function createSendMessageUseCase(
   conversationRepository: IConversationRepository,
   messageRepository: IMessageRepository,
-  ollamaGateway: import('@anplexa/services/ai').OllamaGateway
+  chatGateway: IChatGateway,
+  companionPersonaRepository?: ICompanionPersonaRepository,
+  systemPromptConfig?: SystemPromptConfig
 ): SendMessageUseCase {
   return new SendMessageUseCase(
     conversationRepository,
     messageRepository,
-    ollamaGateway
+    chatGateway,
+    companionPersonaRepository,
+    systemPromptConfig
   );
 }
 
@@ -221,11 +267,12 @@ export function createGetConversationHistoryUseCase(
  * Create CreateCheckoutUseCase instance
  *
  * @param userRepository - Repository for user data access
+ * @param stripeService - Stripe payment service
  * @returns CreateCheckoutUseCase instance ready for use
  *
  * @example
  * ```ts
- * const createCheckout = createCreateCheckoutUseCase(userRepo);
+ * const createCheckout = createCreateCheckoutUseCase(userRepo, stripeService);
  * const result = await createCheckout.execute({
  *   userId: 'user-123',
  *   priceId: 'price_xxx'
@@ -233,9 +280,43 @@ export function createGetConversationHistoryUseCase(
  * ```
  */
 export function createCreateCheckoutUseCase(
-  userRepository: IUserRepository
+  userRepository: IUserRepository,
+  stripeService: IStripeService
 ): CreateCheckoutUseCase {
-  return new CreateCheckoutUseCase(userRepository);
+  return new CreateCheckoutUseCase(userRepository, stripeService);
+}
+
+// ============================================================================
+// Astrology Use Case Factories
+// ============================================================================
+
+/**
+ * Create CalculateBirthChartUseCase instance
+ *
+ * @param birthChartRepository - Repository for birth chart data access
+ * @param astrologyService - Service for astrological calculations
+ * @returns CalculateBirthChartUseCase instance ready for use
+ *
+ * @example
+ * ```ts
+ * const calculateBirthChart = createCalculateBirthChartUseCase(birthChartRepo, astrologyService);
+ * const result = await calculateBirthChart.execute({
+ *   userId: 'user-123',
+ *   birthDate: '1990-01-15',
+ *   birthTime: '14:30',
+ *   timeZone: 'America/New_York',
+ *   latitude: 40.7128,
+ *   longitude: -74.0060,
+ *   placeName: 'New York',
+ *   country: 'USA'
+ * });
+ * ```
+ */
+export function createCalculateBirthChartUseCase(
+  birthChartRepository: IBirthChartRepository,
+  astrologyService: IAstrologyCalculationService
+): CalculateBirthChartUseCase {
+  return new CalculateBirthChartUseCase(birthChartRepository, astrologyService);
 }
 
 // ============================================================================
@@ -272,35 +353,60 @@ export function createAllUseCases(container: DIContainer) {
     refreshToken: RefreshToken;
     sendMessage?: SendMessageUseCase;
     getConversationHistory: GetConversationHistoryUseCase;
-    createCheckout: CreateCheckoutUseCase;
+    createCheckout?: CreateCheckoutUseCase;
+    calculateBirthChart?: CalculateBirthChartUseCase;
   } = {
     // Auth use cases
     loginUser: createLoginUserUseCase(
       container.userRepository,
-      container.sessionRepository
+      container.sessionRepository,
+      container.passwordService,
+      container.jwtService
     ),
-    registerUser: createRegisterUserUseCase(container.userRepository),
+    registerUser: createRegisterUserUseCase(
+      container.userRepository,
+      container.sessionRepository,
+      container.passwordService,
+      container.jwtService
+    ),
     refreshToken: createRefreshTokenUseCase(
       container.sessionRepository,
-      container.userRepository
+      container.userRepository,
+      container.jwtService
     ),
 
-    // Chat use cases (sendMessage requires ollamaGateway)
+    // Chat use cases (sendMessage requires chatGateway)
     getConversationHistory: createGetConversationHistoryUseCase(
       container.conversationRepository,
       container.messageRepository
     ),
-
-    // Subscription use cases
-    createCheckout: createCreateCheckoutUseCase(container.userRepository),
   };
 
-  // Add sendMessage use case if ollamaGateway is provided
-  if (container.ollamaGateway) {
+  // Add sendMessage use case if chatGateway is provided
+  // Persona repository is optional - if not provided, default system prompt is used
+  if (container.chatGateway) {
     useCases.sendMessage = createSendMessageUseCase(
       container.conversationRepository,
       container.messageRepository,
-      container.ollamaGateway
+      container.chatGateway,
+      container.companionPersonaRepository,
+      container.systemPromptConfig
+    );
+  }
+
+  // Add createCheckout use case if stripeService is provided
+  if (container.stripeService) {
+    useCases.createCheckout = createCreateCheckoutUseCase(
+      container.userRepository,
+      container.stripeService
+    );
+  }
+
+  // Add calculateBirthChart use case if dependencies are provided
+  if (container.birthChartRepository && container.astrologyService) {
+    useCases.calculateBirthChart = createCalculateBirthChartUseCase(
+      container.birthChartRepository,
+      container.astrologyService
     );
   }
 

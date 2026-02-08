@@ -11,11 +11,12 @@
 
 import type { IUserRepository } from '../../repositories/interfaces/user.repository.interface.js';
 import type { ISessionRepository } from '../../repositories/interfaces/session.repository.interface.js';
-import { User } from '../../domain/entities/User';
-import { Session } from '../../domain/entities/Session';
-import { ValidationError } from '../../domain/errors/ValidationError';
-import { JWTService, PasswordService } from '@anplexa/services';
-import type { TokenPair } from '@anplexa/services';
+import { User } from '../../domain/entities/User.js';
+import { Session } from '../../domain/entities/Session.js';
+import { ValidationError } from '../../domain/errors/ValidationError.js';
+import type { IJWTService } from '../../domain/services/IJWTService.js';
+import type { TokenPair } from '../../domain/services/IJWTService.js';
+import type { IPasswordService } from '../../domain/services/IPasswordService.js';
 
 export interface RegisterUserInput {
   email: string;
@@ -45,8 +46,8 @@ export class RegisterUserUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly sessionRepository: ISessionRepository,
-    private readonly jwtService: JWTService,
-    private readonly passwordService: PasswordService
+    private readonly jwtService: IJWTService,
+    private readonly passwordService: IPasswordService
   ) {}
 
   /**
@@ -88,13 +89,27 @@ export class RegisterUserUseCase {
       savedUser.isAdmin
     );
 
-    // 7. Create session
-    const expiresAt = this.jwtService.getRefreshExpiryDate();
-    await this.sessionRepository.create({
-      userId: savedUser.id,
-      refreshToken: tokens.refreshToken,
-      expiresAt: expiresAt.toISOString(),
-    });
+    // 7. Create session with rollback on failure
+    // If session creation fails after user was created, we need to rollback
+    // the user creation to maintain data consistency
+    try {
+      const expiresAt = this.jwtService.getRefreshExpiryDate();
+      await this.sessionRepository.create({
+        userId: savedUser.id,
+        refreshToken: tokens.refreshToken,
+        expiresAt: expiresAt.toISOString(),
+      });
+    } catch (sessionError) {
+      // Rollback: delete the created user since session creation failed
+      try {
+        await this.userRepository.delete(savedUser.id);
+      } catch (rollbackError) {
+        // Log rollback failure but throw the original session error
+        // In production, this would be logged to monitoring
+        console.error('Failed to rollback user creation:', rollbackError);
+      }
+      throw sessionError;
+    }
 
     // 8. Return user data and tokens
     return {

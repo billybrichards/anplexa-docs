@@ -12,21 +12,11 @@
     "noUnusedParameters": false,
     "strict": false,
     "noImplicitAny": false,
-    "strictNullChecks": false,
-    "baseUrl": ".",
-    "paths": {
-      "@anplexa/contracts": ["../contracts/dist"],
-      "@anplexa/contracts/*": ["../contracts/dist/*"],
-      "@anplexa/database": ["../database/dist"],
-      "@anplexa/database/*": ["../database/dist/*"],
-      "@anplexa/services": ["../services/dist"],
-      "@anplexa/services/*": ["../services/dist/*"]
-    }
+    "strictNullChecks": false
   },
   "references": [
     { "path": "../contracts" },
-    { "path": "../database" },
-    { "path": "../services" }
+    { "path": "../database" }
   ],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

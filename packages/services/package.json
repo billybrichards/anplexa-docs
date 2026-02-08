@@ -20,27 +20,31 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build",
     "dev": "tsc --watch",
     "lint": "eslint src/",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist build .next *.tsbuildinfo"
   },
   "dependencies": {
     "@anplexa/contracts": "workspace:*",
+    "@anplexa/core": "workspace:*",
+    "@anthropic-ai/sdk": "^0.32.0",
+    "bcryptjs": "^2.4.3",
+    "celestine": "^0.2.1",
+    "jsonwebtoken": "^9.0.0",
     "posthog-js": "^1.158.0",
     "posthog-node": "^4.2.0",
-    "stripe": "^14.16.0",
     "resend": "^3.0.0",
-    "jsonwebtoken": "^9.0.0",
-    "bcryptjs": "^2.4.3",
+    "stripe": "^14.16.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.10.0",
     "@types/stripe": "^8.0.0",
-    "@types/jsonwebtoken": "^9.0.7",
-    "@types/bcryptjs": "^2.4.6",
     "@types/uuid": "^9.0.0",
     "typescript": "^5.7.2",
     "vitest": "^1.2.0"

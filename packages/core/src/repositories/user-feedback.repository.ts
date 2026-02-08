@@ -6,7 +6,7 @@
  */
 
 import type { Database } from '@anplexa/database';
-import { userFeedback, type UserFeedback, eq, count } from '@anplexa/database';
+import { userFeedback, type UserFeedback, eq } from '@anplexa/database';
 import type {
   IUserFeedbackRepository,
   CreateUserFeedbackData,

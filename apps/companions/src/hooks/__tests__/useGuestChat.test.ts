@@ -14,6 +14,33 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useGuestChat, Message, Conversation } from '../useGuestChat';
 
 /**
+ * Mock localStorage implementation for testing
+ */
+const createLocalStorageMock = () => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value;
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: vi.fn((index: number) => Object.keys(store)[index] || null),
+  };
+};
+
+// Store original localStorage and window
+const originalLocalStorage = globalThis.localStorage;
+const originalWindow = globalThis.window;
+
+/**
  * Helper to create a test message
  */
 function createTestMessage(overrides?: Partial<Message>): Message {
@@ -42,14 +69,34 @@ function createTestConversation(overrides?: Partial<Conversation>): Conversation
 }
 
 describe('useGuestChat Hook', () => {
+  let localStorageMock: ReturnType<typeof createLocalStorageMock>;
+
   beforeEach(() => {
-    // Clear localStorage before each test
-    localStorage.clear();
+    // Create a fresh localStorage mock for each test
+    localStorageMock = createLocalStorageMock();
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: localStorageMock,
+      writable: true,
+      configurable: true,
+    });
     vi.clearAllMocks();
   });
 
   afterEach(() => {
-    localStorage.clear();
+    // Restore original localStorage
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: originalLocalStorage,
+      writable: true,
+      configurable: true,
+    });
+    // Restore window if it was modified
+    if (globalThis.window !== originalWindow) {
+      Object.defineProperty(globalThis, 'window', {
+        value: originalWindow,
+        writable: true,
+        configurable: true,
+      });
+    }
   });
 
   describe('Guest Detection', () => {
@@ -317,21 +364,51 @@ describe('useGuestChat Hook', () => {
     });
 
     it('should manually load guest messages', async () => {
+      // Test that loadGuestMessages can be called manually to reload messages
+      // (useful for resyncing state after external localStorage changes)
       const messages = [createTestMessage({ id: 'msg-1' })];
       localStorage.setItem(
         'anplexa_guest_messages',
         JSON.stringify(messages)
       );
 
-      const { result } = renderHook(() => useGuestChat({ userId: 'user-1' }));
+      // Use a guest user (no userId) since authenticated users have
+      // guest data cleared by design when they have messages
+      const { result } = renderHook(() => useGuestChat({}));
 
-      // For authenticated user, manually load guest messages if needed
+      // Wait for initial load from useEffect
+      await waitFor(() => {
+        expect(result.current.guestMessages).toHaveLength(1);
+      });
+
+      // Clear messages manually
       act(() => {
-        result.current.loadGuestMessages();
+        result.current.clearGuestMessages();
       });
 
       await waitFor(() => {
-        expect(result.current.guestMessages).toHaveLength(1);
+        expect(result.current.guestMessages).toHaveLength(0);
+      });
+
+      // Re-add to localStorage (simulating external change)
+      const newMessages = [
+        createTestMessage({ id: 'msg-2' }),
+        createTestMessage({ id: 'msg-3' }),
+      ];
+      localStorage.setItem(
+        'anplexa_guest_messages',
+        JSON.stringify(newMessages)
+      );
+      localStorage.setItem('anplexa_guest_message_count', '2');
+
+      // Manually reload guest messages
+      await act(async () => {
+        await result.current.loadGuestMessages();
+      });
+
+      await waitFor(() => {
+        expect(result.current.guestMessages).toHaveLength(2);
+        expect(result.current.guestMessageCount).toBe(2);
       });
     });
   });
@@ -466,17 +543,29 @@ describe('useGuestChat Hook', () => {
 
   describe('Error Handling', () => {
     it('should handle localStorage quota exceeded gracefully', async () => {
-      const { result } = renderHook(() => useGuestChat({}));
-
-      // Mock localStorage to throw quota exceeded error
-      const originalSetItem = Storage.prototype.setItem;
-      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-        throw new Error('QuotaExceededError');
-      });
-
       const consoleErrorSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {});
+
+      // Create a mock that throws on setItem
+      const errorThrowingMock = {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(() => {
+          throw new Error('QuotaExceededError');
+        }),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+        length: 0,
+        key: vi.fn(() => null),
+      };
+
+      Object.defineProperty(globalThis, 'localStorage', {
+        value: errorThrowingMock,
+        writable: true,
+        configurable: true,
+      });
+
+      const { result } = renderHook(() => useGuestChat({}));
 
       act(() => {
         result.current.addGuestMessage(createTestMessage());
@@ -488,14 +577,38 @@ describe('useGuestChat Hook', () => {
       });
       expect(consoleErrorSpy).toHaveBeenCalled();
 
-      Storage.prototype.setItem = originalSetItem;
       consoleErrorSpy.mockRestore();
     });
 
     it('should handle missing window object gracefully', async () => {
-      const originalWindow = global.window;
-      // @ts-ignore
-      global.window = undefined;
+      // Instead of removing window entirely (which breaks React),
+      // test that localStorage operations are guarded by checking typeof window
+      // by making localStorage throw and verifying the hook still functions
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      // Create a mock that throws on all operations to simulate inaccessible storage
+      const inaccessibleStorageMock = {
+        getItem: vi.fn(() => {
+          throw new Error('localStorage is not available');
+        }),
+        setItem: vi.fn(() => {
+          throw new Error('localStorage is not available');
+        }),
+        removeItem: vi.fn(() => {
+          throw new Error('localStorage is not available');
+        }),
+        clear: vi.fn(),
+        length: 0,
+        key: vi.fn(() => null),
+      };
+
+      Object.defineProperty(globalThis, 'localStorage', {
+        value: inaccessibleStorageMock,
+        writable: true,
+        configurable: true,
+      });
 
       const { result } = renderHook(() => useGuestChat({}));
 
@@ -504,7 +617,7 @@ describe('useGuestChat Hook', () => {
         expect(result.current.isGuest).toBe(true);
       });
 
-      global.window = originalWindow;
+      consoleErrorSpy.mockRestore();
     });
   });
 

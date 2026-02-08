@@ -1,0 +1,16 @@
+# Railway nixpacks configuration for @anplexa/api
+# This file is used when Railway deploys from monorepo root
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "pnpm"]
+
+[phases.install]
+cmds = ["cd ../.. && pnpm install --frozen-lockfile"]
+
+[phases.build]
+# Build only the API and its dependencies (not docs which may have different Node requirements)
+cmds = ["pnpm build --filter=@anplexa/api..."]
+
+[start]
+# Run the API from the apps/api directory
+cmd = "cd apps/api && node dist/index.js"

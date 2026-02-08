@@ -106,7 +106,7 @@ describe('UserRepository', () => {
       expect(user.displayName).toBe(testUser.displayName);
       expect(user.chatName).toBe(testUser.chatName);
       expect(user.credits).toBe(testUser.credits);
-      expect(user.isAdmin).toBe(false);
+      expect(user.isAdmin).toBe(0);
     });
 
     it('should create a user with minimal required fields', async () => {
@@ -124,7 +124,7 @@ describe('UserRepository', () => {
       expect(user.personalityMode).toBe('nurturing');
       expect(user.storagePreference).toBe('cloud');
       expect(user.credits).toBe(0);
-      expect(user.isAdmin).toBe(false);
+      expect(user.isAdmin).toBe(0);
     });
 
     it('should throw error when creating user with duplicate email', async () => {
@@ -148,7 +148,7 @@ describe('UserRepository', () => {
 
       const user = await repository.create(adminUser);
 
-      expect(user.isAdmin).toBe(true);
+      expect(user.isAdmin).toBe(1);
     });
 
     it('should create user with custom subscription status', async () => {
@@ -366,7 +366,7 @@ describe('UserRepository', () => {
         isAdmin: true,
       });
 
-      expect(updatedUser.isAdmin).toBe(true);
+      expect(updatedUser.isAdmin).toBe(1);
     });
 
     it('should update personality mode', async () => {

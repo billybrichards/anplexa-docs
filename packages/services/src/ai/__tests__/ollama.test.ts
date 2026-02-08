@@ -7,7 +7,7 @@ import {
   createOllamaGateway,
   getOllamaGateway,
   MODEL_PRESETS,
-} from '../ollama';
+} from '../ollama.js';
 
 describe('OllamaGateway', () => {
   let gateway: OllamaGateway;

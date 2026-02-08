@@ -1,4 +1,3 @@
-"use strict";
 /**
  * Ollama AI Service
  * Integrates with local Ollama instances for LLM inference
@@ -10,18 +9,13 @@
  * - Dark Planet (Llama 3.1 8B): General chat, fallback
  * - Dark Champion (MOE 18.4B): Creative, unrestricted
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.OllamaGateway = exports.MODEL_PRESETS = void 0;
-exports.getModelPreset = getModelPreset;
-exports.createOllamaGateway = createOllamaGateway;
-exports.getOllamaGateway = getOllamaGateway;
 /**
  * Model presets with optimized sampling parameters
  * Class 2: Larger models (Dolphin-Mixtral) - lighter repetition control
  * Class 3: Standard models (Violet-Lotus, Dark Planet) - balanced settings
  * Class 4: Creative models (MythoMax) - more aggressive repetition control
  */
-exports.MODEL_PRESETS = {
+export const MODEL_PRESETS = {
     'violet-lotus:latest': {
         temperature: 0.85,
         top_k: 40,
@@ -111,8 +105,8 @@ const DEFAULT_OPTIONS = {
 /**
  * Get optimized preset for a model, with optional overrides
  */
-function getModelPreset(model, overrides) {
-    const preset = exports.MODEL_PRESETS[model] || DEFAULT_OPTIONS;
+export function getModelPreset(model, overrides) {
+    const preset = MODEL_PRESETS[model] || DEFAULT_OPTIONS;
     return { ...preset, ...overrides };
 }
 /**
@@ -138,7 +132,7 @@ function getModelPreset(model, overrides) {
  *   console.log(chunk);
  * }
  */
-class OllamaGateway {
+export class OllamaGateway {
     config;
     constructor(config) {
         if (!config.baseUrl) {
@@ -369,11 +363,10 @@ class OllamaGateway {
         return { ...this.config };
     }
 }
-exports.OllamaGateway = OllamaGateway;
 /**
  * Create an Ollama Gateway instance with environment variables
  */
-function createOllamaGateway() {
+export function createOllamaGateway() {
     return new OllamaGateway({
         baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
         apiKey: process.env.OLLAMA_API_KEY || '',
@@ -386,7 +379,7 @@ let ollamaGatewayInstance = null;
 /**
  * Get or create the singleton Ollama Gateway instance
  */
-function getOllamaGateway() {
+export function getOllamaGateway() {
     if (!ollamaGatewayInstance) {
         ollamaGatewayInstance = createOllamaGateway();
     }

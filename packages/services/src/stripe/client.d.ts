@@ -19,4 +19,8 @@ export declare function getStripeSecretKey(): string;
  * Clear cached credentials and client (useful for testing)
  */
 export declare function clearStripeCache(): void;
+/**
+ * Alias for clearStripeCache (for backwards compatibility)
+ */
+export declare const clearCache: typeof clearStripeCache;
 //# sourceMappingURL=client.d.ts.map
