@@ -31,6 +31,13 @@ export interface CreateMessageData {
  */
 export interface IMessageRepository {
   /**
+   * Get a message by ID
+   * @param id - The message ID to fetch
+   * @returns Promise resolving to the message or null if not found
+   */
+  getById(id: string): Promise<MessageDTO | null>;
+
+  /**
    * Get messages by conversation ID
    * @param conversationId - The conversation ID to fetch messages for
    * @param options - Optional pagination parameters

@@ -18,12 +18,27 @@ const feedbackSchema = z.object({
 
 export function createFeedbackRoutes(container: Container): Router {
   const router = Router();
-  const { userFeedbackRepository } = container.cradle;
+  const { userFeedbackRepository, messageRepository, conversationRepository } = container.cradle;
   const { authMiddleware } = createAuthMiddleware(container);
 
   router.post('/feedback', authMiddleware, async (req, res, next) => {
     try {
       const body = feedbackSchema.parse(req.body);
+
+      // Verify the message belongs to a conversation owned by the authenticated user
+      const message = await messageRepository.getById(body.messageId);
+      if (!message) {
+        return res.status(404).json({ error: 'Message not found' });
+      }
+
+      const conversation = await conversationRepository.getById(message.conversationId);
+      if (!conversation) {
+        return res.status(404).json({ error: 'Conversation not found' });
+      }
+
+      if (conversation.userId !== req.user!.sub) {
+        return res.status(403).json({ error: 'Unauthorized: Cannot provide feedback on messages from other users' });
+      }
 
       const { randomUUID } = await import('crypto');
       const feedback = await userFeedbackRepository.create({

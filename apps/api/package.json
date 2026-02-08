@@ -13,6 +13,7 @@
     "clean": "rm -rf dist build .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@anplexa/config": "workspace:*",
     "@anplexa/contracts": "workspace:*",
     "@anplexa/core": "workspace:*",
     "@anplexa/database": "workspace:*",

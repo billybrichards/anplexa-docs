@@ -23,10 +23,10 @@ export default {
       "classic",
       {
         "docs": {
-          "sidebarPath": "/home/billyrichards/bbrdev1/anplexa/apps/docs/sidebars.js"
+          "sidebarPath": "/home/runner/work/anplexa-docs/anplexa-docs/apps/docs/sidebars.js"
         },
         "theme": {
-          "customCss": "/home/billyrichards/bbrdev1/anplexa/apps/docs/src/css/custom.css"
+          "customCss": "/home/runner/work/anplexa-docs/anplexa-docs/apps/docs/src/css/custom.css"
         }
       }
     ]

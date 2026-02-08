@@ -25,6 +25,32 @@ export class MessageRepository implements IMessageRepository {
   constructor(private readonly db: Database) {}
 
   /**
+   * Get a message by ID
+   * Returns null if message is not found
+   */
+  async getById(id: string): Promise<MessageDTO | null> {
+    try {
+      const results = await this.db
+        .select()
+        .from(messages)
+        .where(eq(messages.id, id))
+        .limit(1);
+
+      if (results.length === 0) {
+        return null;
+      }
+
+      return this.toDTO(results[0]);
+    } catch (error) {
+      throw new Error(
+        `Failed to get message ${id}: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
+    }
+  }
+
+  /**
    * Get messages by conversation ID with optional pagination
    * Returns messages ordered by creation date (oldest first)
    */

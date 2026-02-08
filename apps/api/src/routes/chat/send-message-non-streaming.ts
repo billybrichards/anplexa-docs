@@ -10,6 +10,7 @@ import { z } from 'zod';
 import type { Container } from '../../container.js';
 import { createAuthMiddleware } from '../../middleware/auth.js';
 import { ChatRequestSchema } from '@anplexa/contracts';
+import { env } from '@anplexa/config';
 
 export function createNonStreamingRoutes(container: Container): Router {
   const router = Router();
@@ -21,7 +22,21 @@ export function createNonStreamingRoutes(container: Container): Router {
       const body = ChatRequestSchema.parse(req.body);
 
       const { randomUUID } = await import('crypto');
-      const userId = req.user?.sub || `guest-${randomUUID()}`;
+      
+      // For guest users, require a stable guestId from the client (stored in localStorage)
+      let userId: string;
+      if (req.user?.sub) {
+        userId = req.user.sub;
+      } else {
+        // Get guestId from header or generate new one for first-time guests
+        const guestId = req.headers['x-guest-id'] as string;
+        if (!guestId) {
+          return res.status(400).json({ 
+            error: 'Guest users must provide a stable guest ID via X-Guest-Id header' 
+          });
+        }
+        userId = `guest-${guestId}`;
+      }
 
       // Create conversation if needed
       let conversationId = body.conversationId;
@@ -42,6 +57,7 @@ export function createNonStreamingRoutes(container: Container): Router {
         conversationId,
         userId,
         content: body.message,
+        model: env.OLLAMA_GENERAL_MODEL,
       });
 
       res.json({
