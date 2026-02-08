@@ -1,3 +1,4 @@
+/* eslint-env node */
 // Drizzle database client setup
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzle as drizzleSqlite } from 'drizzle-orm/better-sqlite3';
