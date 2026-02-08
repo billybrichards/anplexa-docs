@@ -115,12 +115,12 @@ export declare const RegisterRequestSchema: z.ZodObject<{
     displayName: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     email?: string;
-    displayName?: string;
     password?: string;
+    displayName?: string;
 }, {
     email?: string;
-    displayName?: string;
     password?: string;
+    displayName?: string;
 }>;
 export declare const LoginRequestSchema: z.ZodObject<{
     email: z.ZodString;
@@ -204,27 +204,27 @@ export declare const UserDTOSchema: z.ZodObject<{
     stripeCustomerId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     createdAt: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    id?: string;
     email?: string;
     displayName?: string;
-    chatName?: string;
     personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
-    createdAt?: string;
+    chatName?: string;
+    id?: string;
     isAdmin?: boolean;
-    subscriptionStatus?: "not_subscribed" | "subscribed";
+    subscriptionStatus?: "subscribed" | "not_subscribed";
     credits?: number;
     stripeCustomerId?: string;
+    createdAt?: string;
 }, {
-    id?: string;
     email?: string;
     displayName?: string;
-    chatName?: string;
     personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
-    createdAt?: string;
+    chatName?: string;
+    id?: string;
     isAdmin?: boolean;
-    subscriptionStatus?: "not_subscribed" | "subscribed";
+    subscriptionStatus?: "subscribed" | "not_subscribed";
     credits?: number;
     stripeCustomerId?: string;
+    createdAt?: string;
 }>;
 export type ValidatedRegisterRequest = z.infer<typeof RegisterRequestSchema>;
 export type ValidatedLoginRequest = z.infer<typeof LoginRequestSchema>;

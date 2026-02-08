@@ -82,7 +82,7 @@ export interface ChatConfigResponse {
 export interface SSEStartEvent {
   type: 'start';
   conversationId: string;
-  messageId: string;
+  messageId?: string; // Optional - assistant message may not be persisted yet
 }
 
 export interface SSETokenEvent {
@@ -182,7 +182,7 @@ export const ConversationDTOSchema = z.object({
 export const SSEStartEventSchema = z.object({
   type: z.literal('start'),
   conversationId: z.string().uuid(),
-  messageId: z.string().uuid(),
+  messageId: z.string().uuid().optional(),
 });
 
 export const SSETokenEventSchema = z.object({

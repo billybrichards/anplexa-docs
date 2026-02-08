@@ -103,31 +103,31 @@ export declare const UserPreferencesSchema: z.ZodObject<{
         length: z.ZodOptional<z.ZodEnum<["brief", "moderate", "detailed"]>>;
         style: z.ZodOptional<z.ZodEnum<["casual", "thoughtful", "creative"]>>;
     }, "strip", z.ZodTypeAny, {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     }, {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     }>>;
     customPreferences: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, "strip", z.ZodTypeAny, {
     userId?: string;
-    theme?: "system" | "light" | "dark";
+    theme?: "light" | "dark" | "system";
     language?: string;
     notifications?: boolean;
     chatPreferences?: {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     };
     customPreferences?: Record<string, unknown>;
 }, {
     userId?: string;
-    theme?: "system" | "light" | "dark";
+    theme?: "light" | "dark" | "system";
     language?: string;
     notifications?: boolean;
     chatPreferences?: {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     };
     customPreferences?: Record<string, unknown>;
 }>;
@@ -141,19 +141,19 @@ export declare const SubscriptionInfoSchema: z.ZodObject<{
     canceledAt: z.ZodOptional<z.ZodString>;
     cancelAtPeriodEnd: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
+    status?: "subscribed" | "not_subscribed" | "canceled" | "past_due";
     stripeCustomerId?: string;
-    stripeSubscriptionId?: string;
     userId?: string;
-    status?: "not_subscribed" | "subscribed" | "canceled" | "past_due";
+    stripeSubscriptionId?: string;
     currentPeriodStart?: string;
     currentPeriodEnd?: string;
     canceledAt?: string;
     cancelAtPeriodEnd?: boolean;
 }, {
+    status?: "subscribed" | "not_subscribed" | "canceled" | "past_due";
     stripeCustomerId?: string;
-    stripeSubscriptionId?: string;
     userId?: string;
-    status?: "not_subscribed" | "subscribed" | "canceled" | "past_due";
+    stripeSubscriptionId?: string;
     currentPeriodStart?: string;
     currentPeriodEnd?: string;
     canceledAt?: string;
@@ -169,17 +169,17 @@ export declare const CreditTransactionSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     id?: string;
     userId?: string;
-    timestamp?: string;
-    operation?: "set" | "add" | "subtract" | "purchase";
     amount?: number;
+    operation?: "set" | "add" | "subtract" | "purchase";
     reason?: string;
+    timestamp?: string;
 }, {
     id?: string;
     userId?: string;
-    timestamp?: string;
-    operation?: "set" | "add" | "subtract" | "purchase";
     amount?: number;
+    operation?: "set" | "add" | "subtract" | "purchase";
     reason?: string;
+    timestamp?: string;
 }>;
 export declare const CreditsInfoSchema: z.ZodObject<{
     userId: z.ZodString;
@@ -195,17 +195,17 @@ export declare const CreditsInfoSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         id?: string;
         userId?: string;
-        timestamp?: string;
-        operation?: "set" | "add" | "subtract" | "purchase";
         amount?: number;
+        operation?: "set" | "add" | "subtract" | "purchase";
         reason?: string;
+        timestamp?: string;
     }, {
         id?: string;
         userId?: string;
-        timestamp?: string;
-        operation?: "set" | "add" | "subtract" | "purchase";
         amount?: number;
+        operation?: "set" | "add" | "subtract" | "purchase";
         reason?: string;
+        timestamp?: string;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
     userId?: string;
@@ -214,10 +214,10 @@ export declare const CreditsInfoSchema: z.ZodObject<{
     history?: {
         id?: string;
         userId?: string;
-        timestamp?: string;
-        operation?: "set" | "add" | "subtract" | "purchase";
         amount?: number;
+        operation?: "set" | "add" | "subtract" | "purchase";
         reason?: string;
+        timestamp?: string;
     }[];
 }, {
     userId?: string;
@@ -226,10 +226,10 @@ export declare const CreditsInfoSchema: z.ZodObject<{
     history?: {
         id?: string;
         userId?: string;
-        timestamp?: string;
-        operation?: "set" | "add" | "subtract" | "purchase";
         amount?: number;
+        operation?: "set" | "add" | "subtract" | "purchase";
         reason?: string;
+        timestamp?: string;
     }[];
 }>;
 export declare const UpdateUserProfileRequestSchema: z.ZodObject<{
@@ -250,29 +250,29 @@ export declare const UpdateUserPreferencesRequestSchema: z.ZodObject<{
         length: z.ZodOptional<z.ZodEnum<["brief", "moderate", "detailed"]>>;
         style: z.ZodOptional<z.ZodEnum<["casual", "thoughtful", "creative"]>>;
     }, "strip", z.ZodTypeAny, {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     }, {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     }>>;
     customPreferences: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, "strip", z.ZodTypeAny, {
-    theme?: "system" | "light" | "dark";
+    theme?: "light" | "dark" | "system";
     language?: string;
     notifications?: boolean;
     chatPreferences?: {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     };
     customPreferences?: Record<string, unknown>;
 }, {
-    theme?: "system" | "light" | "dark";
+    theme?: "light" | "dark" | "system";
     language?: string;
     notifications?: boolean;
     chatPreferences?: {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     };
     customPreferences?: Record<string, unknown>;
 }>;
@@ -299,29 +299,29 @@ export declare const UserProfileSchema: z.ZodObject<{
     createdAt: z.ZodString;
     updatedAt: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    id?: string;
     email?: string;
     displayName?: string;
-    chatName?: string;
     personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
-    createdAt?: string;
-    updatedAt?: string;
+    chatName?: string;
+    id?: string;
     isAdmin?: boolean;
-    subscriptionStatus?: "not_subscribed" | "subscribed";
+    subscriptionStatus?: "subscribed" | "not_subscribed";
     credits?: number;
     stripeCustomerId?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }, {
-    id?: string;
     email?: string;
     displayName?: string;
-    chatName?: string;
     personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
-    createdAt?: string;
-    updatedAt?: string;
+    chatName?: string;
+    id?: string;
     isAdmin?: boolean;
-    subscriptionStatus?: "not_subscribed" | "subscribed";
+    subscriptionStatus?: "subscribed" | "not_subscribed";
     credits?: number;
     stripeCustomerId?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }>;
 export type ValidatedUserPreferences = z.infer<typeof UserPreferencesSchema>;
 export type ValidatedSubscriptionInfo = z.infer<typeof SubscriptionInfoSchema>;

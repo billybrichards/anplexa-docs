@@ -120,12 +120,11 @@ export function createStreamingRoutes(container: Container): Router {
       req.on('close', onDisconnect);
       req.on('error', onDisconnect);
 
-      // Send start event - we'll update messageId after persisting the message
-      sendSSE(res, { type: 'start', conversationId, messageId: 'pending' });
+      // Send start event (messageId will be sent in done event after persistence)
+      sendSSE(res, { type: 'start', conversationId });
 
       // Stream AI response
       let fullResponse = '';
-      let assistantMessage;
       try {
         const model = env.OLLAMA_GENERAL_MODEL;
         for await (const chunk of ollamaGateway.generateStream({ model, messages: chatMessages })) {
@@ -145,7 +144,7 @@ export function createStreamingRoutes(container: Container): Router {
         }
 
         // Save assistant message after streaming completes
-        assistantMessage = await messageRepository.create({
+        const assistantMessage = await messageRepository.create({
           conversationId,
           role: 'assistant',
           content: fullResponse.trim(),

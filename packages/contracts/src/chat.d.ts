@@ -60,7 +60,7 @@ export interface ChatConfigResponse {
 export interface SSEStartEvent {
     type: 'start';
     conversationId: string;
-    messageId: string;
+    messageId?: string;
 }
 export interface SSETokenEvent {
     type: 'token';
@@ -100,11 +100,11 @@ export declare const ChatPreferencesSchema: z.ZodObject<{
     length: z.ZodOptional<z.ZodEnum<["brief", "moderate", "detailed"]>>;
     style: z.ZodOptional<z.ZodEnum<["casual", "thoughtful", "creative"]>>;
 }, "strict", z.ZodTypeAny, {
-    length?: "moderate" | "brief" | "detailed";
-    style?: "thoughtful" | "casual" | "creative";
+    length?: "brief" | "moderate" | "detailed";
+    style?: "casual" | "thoughtful" | "creative";
 }, {
-    length?: "moderate" | "brief" | "detailed";
-    style?: "thoughtful" | "casual" | "creative";
+    length?: "brief" | "moderate" | "detailed";
+    style?: "casual" | "thoughtful" | "creative";
 }>;
 export declare const ChatRequestSchema: z.ZodObject<{
     conversationId: z.ZodOptional<z.ZodString>;
@@ -113,33 +113,33 @@ export declare const ChatRequestSchema: z.ZodObject<{
         length: z.ZodOptional<z.ZodEnum<["brief", "moderate", "detailed"]>>;
         style: z.ZodOptional<z.ZodEnum<["casual", "thoughtful", "creative"]>>;
     }, "strict", z.ZodTypeAny, {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     }, {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     }>>;
     personalityMode: z.ZodOptional<z.ZodEnum<["nurturing", "playful", "dominant", "filthy_sexy", "intimate_companion", "intellectual_muse"]>>;
     storeLocally: z.ZodOptional<z.ZodBoolean>;
     newChat: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
+    message?: string;
     personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
     conversationId?: string;
     preferences?: {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     };
-    message?: string;
     storeLocally?: boolean;
     newChat?: boolean;
 }, {
+    message?: string;
     personalityMode?: "nurturing" | "playful" | "dominant" | "filthy_sexy" | "intimate_companion" | "intellectual_muse";
     conversationId?: string;
     preferences?: {
-        length?: "moderate" | "brief" | "detailed";
-        style?: "thoughtful" | "casual" | "creative";
+        length?: "brief" | "moderate" | "detailed";
+        style?: "casual" | "thoughtful" | "creative";
     };
-    message?: string;
     storeLocally?: boolean;
     newChat?: boolean;
 }>;
@@ -171,38 +171,38 @@ export declare const ConversationDTOSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     id?: string;
     createdAt?: string;
-    updatedAt?: string;
     userId?: string;
     title?: string;
+    updatedAt?: string;
 }, {
     id?: string;
     createdAt?: string;
-    updatedAt?: string;
     userId?: string;
     title?: string;
+    updatedAt?: string;
 }>;
 export declare const SSEStartEventSchema: z.ZodObject<{
     type: z.ZodLiteral<"start">;
     conversationId: z.ZodString;
-    messageId: z.ZodString;
+    messageId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    conversationId?: string;
     type?: "start";
+    conversationId?: string;
     messageId?: string;
 }, {
-    conversationId?: string;
     type?: "start";
+    conversationId?: string;
     messageId?: string;
 }>;
 export declare const SSETokenEventSchema: z.ZodObject<{
     type: z.ZodLiteral<"token">;
     content: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    content?: string;
     type?: "token";
+    content?: string;
 }, {
-    content?: string;
     type?: "token";
+    content?: string;
 }>;
 export declare const SSEDoneEventSchema: z.ZodObject<{
     type: z.ZodLiteral<"done">;
@@ -210,13 +210,13 @@ export declare const SSEDoneEventSchema: z.ZodObject<{
     messageId: z.ZodString;
     creditsRemaining: z.ZodOptional<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    conversationId?: string;
     type?: "done";
+    conversationId?: string;
     messageId?: string;
     creditsRemaining?: number;
 }, {
-    conversationId?: string;
     type?: "done";
+    conversationId?: string;
     messageId?: string;
     creditsRemaining?: number;
 }>;
@@ -225,48 +225,48 @@ export declare const SSEErrorEventSchema: z.ZodObject<{
     error: z.ZodString;
     code: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    type?: "error";
     code?: string;
+    type?: "error";
     error?: string;
 }, {
-    type?: "error";
     code?: string;
+    type?: "error";
     error?: string;
 }>;
 export declare const SSEEventSchema: z.ZodUnion<[z.ZodObject<{
     type: z.ZodLiteral<"start">;
     conversationId: z.ZodString;
-    messageId: z.ZodString;
+    messageId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    conversationId?: string;
     type?: "start";
+    conversationId?: string;
     messageId?: string;
 }, {
-    conversationId?: string;
     type?: "start";
+    conversationId?: string;
     messageId?: string;
 }>, z.ZodObject<{
     type: z.ZodLiteral<"token">;
     content: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    content?: string;
     type?: "token";
+    content?: string;
 }, {
-    content?: string;
     type?: "token";
+    content?: string;
 }>, z.ZodObject<{
     type: z.ZodLiteral<"done">;
     conversationId: z.ZodString;
     messageId: z.ZodString;
     creditsRemaining: z.ZodOptional<z.ZodNumber>;
 }, "strip", z.ZodTypeAny, {
-    conversationId?: string;
     type?: "done";
+    conversationId?: string;
     messageId?: string;
     creditsRemaining?: number;
 }, {
-    conversationId?: string;
     type?: "done";
+    conversationId?: string;
     messageId?: string;
     creditsRemaining?: number;
 }>, z.ZodObject<{
@@ -274,12 +274,12 @@ export declare const SSEEventSchema: z.ZodUnion<[z.ZodObject<{
     error: z.ZodString;
     code: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    type?: "error";
     code?: string;
+    type?: "error";
     error?: string;
 }, {
-    type?: "error";
     code?: string;
+    type?: "error";
     error?: string;
 }>]>;
 export declare const AmplexaProfileSchema: z.ZodObject<{
@@ -290,17 +290,17 @@ export declare const AmplexaProfileSchema: z.ZodObject<{
     pace: z.ZodOptional<z.ZodString>;
     tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
 }, "strict", z.ZodTypeAny, {
-    communicationStyle?: string;
     funnel?: string;
     funnelName?: string;
     primaryNeed?: string;
+    communicationStyle?: string;
     pace?: string;
     tags?: string[];
 }, {
-    communicationStyle?: string;
     funnel?: string;
     funnelName?: string;
     primaryNeed?: string;
+    communicationStyle?: string;
     pace?: string;
     tags?: string[];
 }>;

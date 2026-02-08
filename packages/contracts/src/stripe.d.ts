@@ -146,27 +146,27 @@ export declare const SubscriptionWebhookPayloadSchema: z.ZodObject<{
     stripeCustomerId: z.ZodOptional<z.ZodString>;
     stripeSubscriptionId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    subscriptionStatus?: "not_subscribed" | "subscribed";
+    userId?: string;
+    subscriptionStatus?: "subscribed" | "not_subscribed";
     stripeCustomerId?: string;
     stripeSubscriptionId?: string;
-    userId?: string;
 }, {
-    subscriptionStatus?: "not_subscribed" | "subscribed";
+    userId?: string;
+    subscriptionStatus?: "subscribed" | "not_subscribed";
     stripeCustomerId?: string;
     stripeSubscriptionId?: string;
-    userId?: string;
 }>;
 export declare const CreditsWebhookPayloadSchema: z.ZodObject<{
     userId: z.ZodString;
     credits: z.ZodNumber;
     operation: z.ZodEnum<["set", "add", "subtract"]>;
 }, "strip", z.ZodTypeAny, {
-    credits?: number;
     userId?: string;
+    credits?: number;
     operation?: "set" | "add" | "subtract";
 }, {
-    credits?: number;
     userId?: string;
+    credits?: number;
     operation?: "set" | "add" | "subtract";
 }>;
 export type ValidatedCreateCheckoutRequest = z.infer<typeof CreateCheckoutRequestSchema>;

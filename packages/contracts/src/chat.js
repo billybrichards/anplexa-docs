@@ -49,7 +49,7 @@ export const ConversationDTOSchema = z.object({
 export const SSEStartEventSchema = z.object({
     type: z.literal('start'),
     conversationId: z.string().uuid(),
-    messageId: z.string().uuid(),
+    messageId: z.string().uuid().optional(),
 });
 export const SSETokenEventSchema = z.object({
     type: z.literal('token'),
