@@ -5,7 +5,7 @@
 nixPkgs = ["nodejs_20", "pnpm"]
 
 [phases.install]
-cmds = ["pnpm install --frozen-lockfile"]
+cmds = ["cd ../.. && pnpm install --frozen-lockfile"]
 
 [phases.build]
 # Build only companions and its dependencies (not docs which may have different Node requirements)
