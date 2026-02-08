@@ -7,13 +7,15 @@
  */
 
 import { Router } from 'express';
+import type { Response } from 'express';
 import { z } from 'zod';
 import type { Container } from '../../container.js';
 import { createAuthMiddleware } from '../../middleware/auth.js';
 import { ChatRequestSchema } from '@anplexa/contracts';
 import type { SSEStartEvent, SSETokenEvent, SSEDoneEvent, SSEErrorEvent } from '@anplexa/contracts';
+import { env } from '@anplexa/config';
 
-function sendSSE(res: any, data: SSEStartEvent | SSETokenEvent | SSEDoneEvent | SSEErrorEvent): void {
+function sendSSE(res: Response, data: SSEStartEvent | SSETokenEvent | SSEDoneEvent | SSEErrorEvent): void {
   res.write(`data: ${JSON.stringify(data)}\n\n`);
 }
 
@@ -32,7 +34,22 @@ export function createStreamingRoutes(container: Container): Router {
       const body = ChatRequestSchema.parse(req.body);
 
       const { randomUUID } = await import('crypto');
-      const userId = req.user?.sub || `guest-${randomUUID()}`;
+      
+      // For guest users, require a stable guestId from the client (stored in localStorage)
+      // The client should send this in a header or as part of the request
+      let userId: string;
+      if (req.user?.sub) {
+        userId = req.user.sub;
+      } else {
+        // Get guestId from header or generate new one for first-time guests
+        const guestId = req.headers['x-guest-id'] as string;
+        if (!guestId) {
+          return res.status(400).json({ 
+            error: 'Guest users must provide a stable guest ID via X-Guest-Id header' 
+          });
+        }
+        userId = `guest-${guestId}`;
+      }
 
       // Create or resolve conversation
       let conversationId = body.conversationId;
@@ -95,22 +112,39 @@ export function createStreamingRoutes(container: Container): Router {
       res.setHeader('Connection', 'keep-alive');
       res.setHeader('X-Accel-Buffering', 'no');
 
-      const messageId = randomUUID();
+      // Track client disconnect
+      let isClientConnected = true;
+      const onDisconnect = () => {
+        isClientConnected = false;
+      };
+      req.on('close', onDisconnect);
+      req.on('error', onDisconnect);
 
-      // Send start event
-      sendSSE(res, { type: 'start', conversationId, messageId });
+      // Send start event (messageId will be sent in done event after persistence)
+      sendSSE(res, { type: 'start', conversationId });
 
       // Stream AI response
       let fullResponse = '';
       try {
-        const model = 'darkplanet-general:latest';
+        const model = env.OLLAMA_GENERAL_MODEL;
         for await (const chunk of ollamaGateway.generateStream({ model, messages: chatMessages })) {
+          // Check if client is still connected
+          if (!isClientConnected) {
+            // Client disconnected, stop generation and don't persist
+            return;
+          }
+          
           fullResponse += chunk;
           sendSSE(res, { type: 'token', content: chunk });
         }
 
+        // Only save assistant message if client is still connected
+        if (!isClientConnected) {
+          return;
+        }
+
         // Save assistant message after streaming completes
-        await messageRepository.create({
+        const assistantMessage = await messageRepository.create({
           conversationId,
           role: 'assistant',
           content: fullResponse.trim(),
@@ -121,13 +155,20 @@ export function createStreamingRoutes(container: Container): Router {
           updatedAt: new Date().toISOString(),
         });
 
-        // Send done event
-        sendSSE(res, { type: 'done', conversationId, messageId });
+        // Send done event with the actual persisted message ID
+        sendSSE(res, { type: 'done', conversationId, messageId: assistantMessage.id });
         res.end();
       } catch (streamError) {
+        if (!isClientConnected) {
+          return;
+        }
         const errorMessage = streamError instanceof Error ? streamError.message : 'Streaming failed';
         sendSSE(res, { type: 'error', error: errorMessage });
         res.end();
+      } finally {
+        // Clean up event listeners
+        req.off('close', onDisconnect);
+        req.off('error', onDisconnect);
       }
     } catch (error) {
       // If headers haven't been sent yet, return JSON error

@@ -35,6 +35,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@anplexa/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@anplexa/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

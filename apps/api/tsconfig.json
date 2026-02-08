@@ -13,6 +13,7 @@
   "include": ["src/**/*", "src/**/*.json"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"],
   "references": [
+    { "path": "../../packages/config" },
     { "path": "../../packages/contracts" },
     { "path": "../../packages/database" },
     { "path": "../../packages/core" },
