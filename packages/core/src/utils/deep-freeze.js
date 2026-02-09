@@ -8,6 +8,11 @@
  * @returns {Object} The frozen object
  */
 export function deepFreeze(obj) {
+  // Return early for null, undefined, or primitive values
+  if (obj === null || typeof obj !== 'object' && typeof obj !== 'function') {
+    return obj;
+  }
+  
   // Freeze the object itself
   Object.freeze(obj);
   

@@ -5,6 +5,6 @@
  * This is used by value objects to ensure their properties cannot be modified.
  * 
  * @param obj - The object to freeze
- * @returns The frozen object
+ * @returns The frozen object as a readonly type
  */
-export declare function deepFreeze<T>(obj: T): T;
+export declare function deepFreeze<T>(obj: T): Readonly<T>;
