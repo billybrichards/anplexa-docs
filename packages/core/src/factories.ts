@@ -47,6 +47,11 @@ import type { IPasswordService } from './domain/services/IPasswordService.js';
 import type { IJWTService } from './domain/services/IJWTService.js';
 import type { IStripeService } from './domain/services/IStripeService.js';
 import type { IChatGateway } from './domain/services/IChatGateway.js';
+import type { ITraitAnalysisService } from './domain/services/ITraitAnalysisService.js';
+import type { ITraitExtractionService } from './domain/services/ITraitExtractionService.js';
+import type { ICompatibilityCalculationService } from './domain/services/ICompatibilityCalculationService.js';
+import { TraitExtractionService } from './domain/services/astrology/TraitExtractionService.js';
+import { CompatibilityCalculationService } from './domain/services/astrology/CompatibilityCalculationService.js';
 
 import { LoginUser, RegisterUser, RefreshToken } from './use-cases/auth/index.js';
 import {
@@ -55,6 +60,8 @@ import {
 } from './use-cases/chat/index.js';
 import { CreateCheckoutUseCase } from './use-cases/subscription/index.js';
 import { CalculateBirthChartUseCase } from './use-cases/astrology/CalculateBirthChartUseCase.js';
+import { AnalyzeChartPersonalityUseCase } from './use-cases/astrology/AnalyzeChartPersonalityUseCase.js';
+import { CalculateCompatibilityUseCase } from './use-cases/astrology/CalculateCompatibilityUseCase.js';
 
 /**
  * DI Container for managing repository and service instances
@@ -73,6 +80,8 @@ export interface DIContainer {
   astrologyService?: IAstrologyCalculationService;
   chatGateway?: IChatGateway;
   ollamaGateway?: IChatGateway;
+  /** Optional AI service for trait analysis */
+  traitAnalysisService?: ITraitAnalysisService;
   /** Optional configuration for system prompt building */
   systemPromptConfig?: SystemPromptConfig;
 }
@@ -319,6 +328,64 @@ export function createCalculateBirthChartUseCase(
   return new CalculateBirthChartUseCase(birthChartRepository, astrologyService);
 }
 
+/**
+ * Create AnalyzeChartPersonalityUseCase instance
+ *
+ * @param birthChartRepository - Repository for birth chart data access
+ * @param traitAnalysisService - AI service for enriching trait descriptions
+ * @returns AnalyzeChartPersonalityUseCase instance ready for use
+ *
+ * @example
+ * ```ts
+ * const traitExtractionService = new TraitExtractionService();
+ * const analyzeChartPersonality = createAnalyzeChartPersonalityUseCase(
+ *   birthChartRepo,
+ *   traitExtractionService,
+ *   traitAnalysisService
+ * );
+ * const result = await analyzeChartPersonality.execute({
+ *   userId: 'user-123',
+ *   tone: 'professional'
+ * });
+ * ```
+ */
+export function createAnalyzeChartPersonalityUseCase(
+  traitExtractionService: ITraitExtractionService,
+  traitAnalysisService: ITraitAnalysisService
+): AnalyzeChartPersonalityUseCase {
+  return new AnalyzeChartPersonalityUseCase(traitExtractionService, traitAnalysisService);
+}
+
+/**
+ * Create CalculateCompatibilityUseCase instance
+ *
+ * @param birthChartRepository - Repository for birth chart data access
+ * @param companionPersonaRepository - Repository for companion persona data access
+ * @param traitAnalysisService - AI service for generating compatibility narratives
+ * @returns CalculateCompatibilityUseCase instance ready for use
+ *
+ * @example
+ * ```ts
+ * const compatibilityService = new CompatibilityCalculationService();
+ * const calculateCompatibility = createCalculateCompatibilityUseCase(
+ *   birthChartRepo,
+ *   companionPersonaRepo,
+ *   compatibilityService,
+ *   traitAnalysisService
+ * );
+ * const result = await calculateCompatibility.execute({
+ *   userId: 'user-123',
+ *   companionPersonaId: 'companion-456'
+ * });
+ * ```
+ */
+export function createCalculateCompatibilityUseCase(
+  compatibilityCalculationService: ICompatibilityCalculationService,
+  traitAnalysisService: ITraitAnalysisService
+): CalculateCompatibilityUseCase {
+  return new CalculateCompatibilityUseCase(compatibilityCalculationService, traitAnalysisService);
+}
+
 // ============================================================================
 // Container Factory
 // ============================================================================
@@ -355,6 +422,8 @@ export function createAllUseCases(container: DIContainer) {
     getConversationHistory: GetConversationHistoryUseCase;
     createCheckout?: CreateCheckoutUseCase;
     calculateBirthChart?: CalculateBirthChartUseCase;
+    analyzeChartPersonality?: AnalyzeChartPersonalityUseCase;
+    calculateCompatibility?: CalculateCompatibilityUseCase;
   } = {
     // Auth use cases
     loginUser: createLoginUserUseCase(
@@ -407,6 +476,24 @@ export function createAllUseCases(container: DIContainer) {
     useCases.calculateBirthChart = createCalculateBirthChartUseCase(
       container.birthChartRepository,
       container.astrologyService
+    );
+  }
+
+  // Add analyzeChartPersonality use case if dependencies are provided
+  if (container.birthChartRepository && container.traitAnalysisService) {
+    const traitExtractionService = new TraitExtractionService();
+    useCases.analyzeChartPersonality = createAnalyzeChartPersonalityUseCase(
+      traitExtractionService,
+      container.traitAnalysisService
+    );
+  }
+
+  // Add calculateCompatibility use case if dependencies are provided
+  if (container.traitAnalysisService) {
+    const compatibilityCalculationService = new CompatibilityCalculationService();
+    useCases.calculateCompatibility = createCalculateCompatibilityUseCase(
+      compatibilityCalculationService,
+      container.traitAnalysisService
     );
   }
 

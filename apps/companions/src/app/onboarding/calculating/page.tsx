@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Starfield } from '@/components/Starfield';
 import { CosmicCard, CosmicCardBody } from '@/components/CosmicCard';
 import { SectionLabel } from '@/components/SectionHeader';
+import { StorageService, STORAGE_KEYS } from '@/lib/storage/StorageService';
 
 const CALCULATION_STEPS = [
   'Calculating planetary positions...',
@@ -21,7 +22,7 @@ export default function CalculatingPage() {
 
   useEffect(() => {
     // Check if birth data exists
-    const birthData = sessionStorage.getItem('birthData');
+    const birthData = StorageService.getSessionItem(STORAGE_KEYS.BIRTH_DATA);
     if (!birthData) {
       router.push('/onboarding/birth-data');
       return;
@@ -69,7 +70,7 @@ export default function CalculatingPage() {
 
       <div className="relative z-10 max-w-2xl w-full space-y-12 animate-fade-up">
         <div className="text-center space-y-6">
-          <SectionLabel className="animate-fade-in">Step 2 of 3</SectionLabel>
+          <SectionLabel className="animate-fade-in">Step 2 of 5</SectionLabel>
 
           <h1 className="font-serif text-4xl md:text-5xl font-normal leading-tight">
             Calculating Your{' '}
@@ -169,7 +170,7 @@ export default function CalculatingPage() {
 
         <div className="text-center animate-fade-up" style={{ animationDelay: '0.3s' }}>
           <p className="text-sm text-text-muted">
-            This usually takes 10-15 seconds • Step 2 of 3
+            This usually takes 10-15 seconds • Step 2 of 5
           </p>
         </div>
       </div>

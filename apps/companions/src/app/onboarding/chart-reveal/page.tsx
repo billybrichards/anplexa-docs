@@ -6,6 +6,7 @@ import { Starfield } from '@/components/Starfield';
 import { CosmicButton } from '@/components/CosmicButton';
 import { CosmicCard, CosmicCardHeader, CosmicCardBody, CosmicCardFooter } from '@/components/CosmicCard';
 import { SectionLabel } from '@/components/SectionHeader';
+import { StorageService, STORAGE_KEYS, type BirthDataStorage } from '@/lib/storage/StorageService';
 
 // Mock chart data (will be replaced with real API call)
 const MOCK_CHART_DATA = {
@@ -34,17 +35,40 @@ export default function ChartReveal() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if birth data exists
-    const birthData = sessionStorage.getItem('birthData');
-    if (!birthData) {
-      router.push('/onboarding/birth-data');
-      return;
+    async function fetchChart() {
+      // Check if birth data exists
+      const birthData = StorageService.getSessionItem<BirthDataStorage>(STORAGE_KEYS.BIRTH_DATA);
+      if (!birthData) {
+        router.push('/onboarding/birth-data');
+        return;
+      }
+
+      try {
+
+        // Call API to calculate chart
+        const response = await fetch('/api/astrology/calculate-chart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            date: birthData.date,
+            time: birthData.timeKnown ? birthData.time : null,
+            location: `${birthData.city}, ${birthData.country}`, // Convert city/country to location string
+          }),
+        });
+
+        if (response.ok) {
+          const calculatedChart = await response.json();
+          setChartData(calculatedChart);
+        }
+      } catch (error) {
+        console.error('Error fetching chart:', error);
+        // Fall back to mock data on error
+      } finally {
+        setIsLoading(false);
+      }
     }
 
-    // Simulate fetching calculated chart
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    fetchChart();
   }, [router]);
 
   if (isLoading) {
@@ -65,7 +89,7 @@ export default function ChartReveal() {
 
       <div className="relative z-10 max-w-4xl mx-auto space-y-8 animate-fade-up">
         <div className="text-center space-y-4">
-          <SectionLabel className="animate-fade-in">Step 2.5 of 3</SectionLabel>
+          <SectionLabel className="animate-fade-in">Step 3 of 5</SectionLabel>
 
           <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal leading-tight">
             Your Cosmic Blueprint
@@ -241,14 +265,14 @@ export default function ChartReveal() {
             <div>
               <h3 className="font-serif text-2xl text-cream mb-2">Ready for the Next Step?</h3>
               <p className="text-text-muted">
-                Now let's create your personalized AI companion based on this cosmic blueprint
+                Now let's explore your personality traits visualized on an interactive celestial globe
               </p>
             </div>
 
             <div className="bg-cosmic-purple/50 border border-gold/10 rounded-lg p-4">
               <p className="text-xs text-text-muted leading-relaxed">
-                Our AI will analyze your complete chart—including aspects, house placements, and
-                elemental balance—to design a companion that truly understands you.
+                Your chart data will be transformed into an interactive 3D personality map,
+                showing your strongest traits positioned across the celestial sphere.
               </p>
             </div>
           </CosmicCardBody>
@@ -265,10 +289,10 @@ export default function ChartReveal() {
               <CosmicButton
                 variant="primary"
                 size="lg"
-                onClick={() => router.push('/onboarding/companion-creation')}
+                onClick={() => router.push('/onboarding/trait-globe')}
                 className="flex-1"
               >
-                Create My Companion
+                Explore Your Personality
                 <span className="ml-2">→</span>
               </CosmicButton>
             </div>
@@ -277,7 +301,7 @@ export default function ChartReveal() {
 
         <div className="text-center animate-fade-up" style={{ animationDelay: '0.5s' }}>
           <p className="text-sm text-text-muted">
-            Step 2.5 of 3 • Next: AI Companion Creation
+            Step 3 of 5 • Next: Explore Your Personality
           </p>
         </div>
       </div>

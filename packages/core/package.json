@@ -94,6 +94,18 @@
       "types": "./dist/domain/value-objects/companion/EmotionalApproach.d.ts",
       "default": "./dist/domain/value-objects/companion/EmotionalApproach.js"
     },
+    "./domain/value-objects/astrology/TraitProfile": {
+      "types": "./dist/domain/value-objects/astrology/TraitProfile.d.ts",
+      "default": "./dist/domain/value-objects/astrology/TraitProfile.js"
+    },
+    "./domain/value-objects/astrology/TraitVisualization": {
+      "types": "./dist/domain/value-objects/astrology/TraitVisualization.d.ts",
+      "default": "./dist/domain/value-objects/astrology/TraitVisualization.js"
+    },
+    "./domain/value-objects/astrology/CompatibilityResult": {
+      "types": "./dist/domain/value-objects/astrology/CompatibilityResult.d.ts",
+      "default": "./dist/domain/value-objects/astrology/CompatibilityResult.js"
+    },
     "./domain/services/ILLMService": {
       "types": "./dist/domain/services/ILLMService.d.ts",
       "default": "./dist/domain/services/ILLMService.js"

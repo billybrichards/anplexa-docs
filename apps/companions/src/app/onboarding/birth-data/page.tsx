@@ -7,6 +7,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { CosmicCard, CosmicCardBody, CosmicCardFooter } from '@/components/CosmicCard';
 import { CosmicInput } from '@/components/CosmicInput';
 import { SectionLabel } from '@/components/SectionHeader';
+import { StorageService, STORAGE_KEYS } from '@/lib/storage/StorageService';
 
 interface BirthData {
   date: string;
@@ -79,8 +80,8 @@ export default function BirthDataForm() {
 
     // Simulate API call to calculate chart
     setTimeout(() => {
-      // Store birth data in sessionStorage for next step
-      sessionStorage.setItem('birthData', JSON.stringify(formData));
+      // Store birth data using StorageService for next step
+      StorageService.setSessionItem(STORAGE_KEYS.BIRTH_DATA, formData);
       router.push('/onboarding/calculating');
     }, 500);
   };
@@ -91,7 +92,7 @@ export default function BirthDataForm() {
 
       <div className="relative z-10 max-w-2xl w-full space-y-8 animate-fade-up">
         <div className="text-center space-y-4">
-          <SectionLabel className="animate-fade-in">Step 1 of 3</SectionLabel>
+          <SectionLabel className="animate-fade-in">Step 1 of 5</SectionLabel>
 
           <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal leading-tight">
             Your Birth Information
