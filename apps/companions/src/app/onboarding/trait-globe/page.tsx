@@ -15,9 +15,9 @@ import { TraitSidebar } from '@/components/onboarding/TraitSidebar';
 import { CompatibilityOverlay } from '@/components/onboarding/CompatibilityOverlay';
 import { analytics } from '@/lib/analytics';
 import { StorageService, STORAGE_KEYS, type BirthDataStorage } from '@/lib/storage/StorageService';
-import type { TraitProfile } from '@anplexa/core/domain/value-objects/astrology/TraitProfile';
+import { TraitProfile } from '@anplexa/core/domain/value-objects/astrology/TraitProfile';
 import type { TraitVisualization } from '@anplexa/core/domain/value-objects/astrology/TraitVisualization';
-import type { CompatibilityResult } from '@anplexa/core/domain/value-objects/astrology/CompatibilityResult';
+import { CompatibilityResult } from '@anplexa/core/domain/value-objects/astrology/CompatibilityResult';
 
 type Phase = 'analyzing' | 'exploring' | 'compatibility';
 
