@@ -77,10 +77,7 @@ export function AstrologicalTraitGlobe({
         <div className="relative w-64 h-64 mx-auto">
           {/* Animated rings to simulate a celestial sphere */}
           <div className="absolute inset-0 rounded-full border-2 border-gold/20 animate-spin-slow" />
-          <div
-            className="absolute inset-4 rounded-full border border-gold/30"
-            style={{ animationDuration: '15s' }}
-          />
+          <div className="absolute inset-4 rounded-full border border-gold/30 animate-spin-slow" />
           <div className="absolute inset-8 rounded-full border border-gold/40" />
 
           {/* Center orb */}

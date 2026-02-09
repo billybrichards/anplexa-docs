@@ -14,7 +14,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export function CategoryLegend() {
-  const categories = Object.entries(TRAIT_COLORS);
+  const categories = Object.entries(TRAIT_COLORS) as [string, number][];
 
   return (
     <div className="absolute top-6 right-6 bg-cosmic-purple/90 border border-gold/20 rounded-lg p-4 shadow-lg">
