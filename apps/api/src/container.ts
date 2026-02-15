@@ -28,6 +28,7 @@ import {
   JWTService,
   PasswordService,
   OllamaGateway,
+  OllamaLLMService,
   SimplifiedAstrologyService,
   MockTraitAnalysisService,
   LettaGateway,
@@ -36,6 +37,7 @@ import {
   WorkflowBuilder,
   NativeMediaService,
 } from '@anplexa/services';
+import type { ILLMService } from '@anplexa/core/domain/services/ILLMService';
 import type { ITraitAnalysisService } from '@anplexa/core/domain/services/ITraitAnalysisService';
 
 /**
@@ -81,6 +83,7 @@ export interface AppContainer {
   comfyUIGateway: ComfyUIGateway;
   workflowBuilder: WorkflowBuilder;
   nativeMediaService: NativeMediaService;
+  llmService: ILLMService;
   emailScheduler: EmailScheduler;
 
   // Use Cases
@@ -154,6 +157,10 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
 
     traitAnalysisService: asFunction(() => new MockTraitAnalysisService()).singleton(),
 
+    llmService: asFunction(({ ollamaGateway }) => {
+      return new OllamaLLMService(ollamaGateway);
+    }).singleton(),
+
     // Letta
     lettaGateway: asFunction(() => new LettaGateway({
       baseUrl: process.env.LETTA_API_URL || 'http://localhost:8283',
@@ -195,6 +202,7 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       astrologyService,
       ollamaGateway,
       traitAnalysisService,
+      llmService,
     }) => {
       return createAllUseCases({
         userRepository,
@@ -208,6 +216,7 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
         astrologyService,
         ollamaGateway,
         traitAnalysisService,
+        llmService,
       });
     }).singleton(),
   });

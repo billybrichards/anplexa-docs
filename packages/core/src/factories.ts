@@ -62,6 +62,8 @@ import { CreateCheckoutUseCase } from './use-cases/subscription/index.js';
 import { CalculateBirthChartUseCase } from './use-cases/astrology/CalculateBirthChartUseCase.js';
 import { AnalyzeChartPersonalityUseCase } from './use-cases/astrology/AnalyzeChartPersonalityUseCase.js';
 import { CalculateCompatibilityUseCase } from './use-cases/astrology/CalculateCompatibilityUseCase.js';
+import { GenerateCompanionPersonaUseCase } from './use-cases/companion/GenerateCompanionPersonaUseCase.js';
+import type { ILLMService } from './domain/services/ILLMService.js';
 
 /**
  * DI Container for managing repository and service instances
@@ -82,6 +84,8 @@ export interface DIContainer {
   ollamaGateway?: IChatGateway;
   /** Optional AI service for trait analysis */
   traitAnalysisService?: ITraitAnalysisService;
+  /** Optional LLM service for companion persona generation */
+  llmService?: ILLMService;
   /** Optional configuration for system prompt building */
   systemPromptConfig?: SystemPromptConfig;
 }
@@ -424,6 +428,7 @@ export function createAllUseCases(container: DIContainer) {
     calculateBirthChart?: CalculateBirthChartUseCase;
     analyzeChartPersonality?: AnalyzeChartPersonalityUseCase;
     calculateCompatibility?: CalculateCompatibilityUseCase;
+    generateCompanionPersona?: GenerateCompanionPersonaUseCase;
   } = {
     // Auth use cases
     loginUser: createLoginUserUseCase(
@@ -494,6 +499,15 @@ export function createAllUseCases(container: DIContainer) {
     useCases.calculateCompatibility = createCalculateCompatibilityUseCase(
       compatibilityCalculationService,
       container.traitAnalysisService
+    );
+  }
+
+  // Add generateCompanionPersona use case if dependencies are provided
+  if (container.birthChartRepository && container.companionPersonaRepository && container.llmService) {
+    useCases.generateCompanionPersona = new GenerateCompanionPersonaUseCase(
+      container.birthChartRepository,
+      container.companionPersonaRepository,
+      container.llmService,
     );
   }
 

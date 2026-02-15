@@ -27,6 +27,20 @@ function createMockContainer() {
         companionContext: '',
       }),
     },
+    generateCompanionPersona: {
+      execute: vi.fn().mockResolvedValue({
+        persona: {
+          id: 'persona-1',
+          name: 'Luna',
+          companionName: 'Luna',
+        },
+        preview: {
+          name: 'Luna',
+          tagline: 'Your cosmic companion',
+          personalityTraits: ['empathetic', 'witty'],
+        },
+      }),
+    },
   };
 
   const mockNativeMediaService = {
@@ -219,6 +233,43 @@ describe('API Routes E2E', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.status).toBe('completed');
+    });
+  });
+
+  // ── Companion ────────────────────────────────────────────────────────────
+
+  describe('POST /api/companion/generate', () => {
+    it('should generate a companion persona', async () => {
+      const res = await request(app)
+        .post('/api/companion/generate')
+        .send({ userId: 'user-1' });
+
+      expect(res.status).toBe(201);
+      expect(res.body.preview.name).toBe('Luna');
+    });
+
+    it('should accept preferences', async () => {
+      const res = await request(app)
+        .post('/api/companion/generate')
+        .send({
+          userId: 'user-1',
+          preferences: {
+            nameGender: 'feminine',
+            personalityEmphasis: ['nurturing', 'playful'],
+          },
+        });
+
+      expect(res.status).toBe(201);
+    });
+
+    it('should return 400 for invalid preferences', async () => {
+      const res = await request(app)
+        .post('/api/companion/generate')
+        .send({
+          preferences: { nameGender: 'invalid' },
+        });
+
+      expect(res.status).toBe(400);
     });
   });
 
