@@ -4,6 +4,8 @@
 
 export { LettaGateway } from './LettaGateway.js';
 export { MediaToolService } from './MediaToolService.js';
+export { ProfileGeneratorAgent } from './ProfileGeneratorAgent.js';
+export type { ProfileGenerationInput, ProfileGenerationResult } from './ProfileGeneratorAgent.js';
 export type { MediaToolConfig } from './MediaToolService.js';
 export type {
   LettaGatewayConfig,
