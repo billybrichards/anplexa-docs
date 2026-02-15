@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Starfield } from '@/components/Starfield';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -598,6 +598,15 @@ function TraitGlobeContent() {
 
 export default function TraitGlobePage() {
   return (
-    <TraitGlobeContent />
+    <Suspense fallback={
+      <div className="relative min-h-screen bg-deep-space text-cream overflow-hidden flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-pulse text-gold text-2xl mb-4">✨</div>
+          <p className="text-text-muted">Loading your personality map...</p>
+        </div>
+      </div>
+    }>
+      <TraitGlobeContent />
+    </Suspense>
   );
 }

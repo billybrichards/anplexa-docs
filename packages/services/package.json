@@ -17,6 +17,10 @@
     "./ai": {
       "types": "./dist/ai/index.d.ts",
       "default": "./dist/ai/index.js"
+    },
+    "./astrology/city-coordinates": {
+      "types": "./dist/astrology/city-coordinates.d.ts",
+      "default": "./dist/astrology/city-coordinates.js"
     }
   },
   "scripts": {
