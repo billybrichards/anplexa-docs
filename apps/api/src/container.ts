@@ -29,7 +29,9 @@ import {
   PasswordService,
   OllamaGateway,
   SimplifiedAstrologyService,
+  MockTraitAnalysisService,
 } from '@anplexa/services';
+import type { ITraitAnalysisService } from '@anplexa/core/domain/services/ITraitAnalysisService';
 
 /**
  * Email Scheduler service interface
@@ -68,6 +70,7 @@ export interface AppContainer {
   passwordService: PasswordService;
   ollamaGateway: OllamaGateway;
   astrologyService: SimplifiedAstrologyService;
+  traitAnalysisService: ITraitAnalysisService;
   emailScheduler: EmailScheduler;
 
   // Use Cases
@@ -139,6 +142,8 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
 
     astrologyService: asClass(SimplifiedAstrologyService).singleton(),
 
+    traitAnalysisService: asFunction(() => new MockTraitAnalysisService()).singleton(),
+
     // Use Cases - wire up all use cases using the factory
     useCases: asFunction(({
       userRepository,
@@ -151,6 +156,7 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       jwtService,
       astrologyService,
       ollamaGateway,
+      traitAnalysisService,
     }) => {
       return createAllUseCases({
         userRepository,
@@ -163,6 +169,7 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
         jwtService,
         astrologyService,
         ollamaGateway,
+        traitAnalysisService,
       });
     }).singleton(),
   });

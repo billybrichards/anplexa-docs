@@ -109,6 +109,10 @@
     "./domain/services/ILLMService": {
       "types": "./dist/domain/services/ILLMService.d.ts",
       "default": "./dist/domain/services/ILLMService.js"
+    },
+    "./domain/services/ITraitAnalysisService": {
+      "types": "./dist/domain/services/ITraitAnalysisService.d.ts",
+      "default": "./dist/domain/services/ITraitAnalysisService.js"
     }
   },
   "scripts": {

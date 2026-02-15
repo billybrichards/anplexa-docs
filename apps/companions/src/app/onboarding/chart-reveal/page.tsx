@@ -8,8 +8,8 @@ import { CosmicCard, CosmicCardHeader, CosmicCardBody, CosmicCardFooter } from '
 import { SectionLabel } from '@/components/SectionHeader';
 import { StorageService, STORAGE_KEYS, type BirthDataStorage } from '@/lib/storage/StorageService';
 
-// Mock chart data (will be replaced with real API call)
-const MOCK_CHART_DATA = {
+// Fallback chart data (used when real API result is unavailable)
+const FALLBACK_CHART_DATA = {
   sun: { sign: 'Leo', house: 10, degree: 15.3 },
   moon: { sign: 'Pisces', house: 5, degree: 22.1 },
   rising: { sign: 'Virgo', degree: 8.7 },
@@ -31,44 +31,39 @@ const SIGN_DESCRIPTIONS = {
 
 export default function ChartReveal() {
   const router = useRouter();
-  const [chartData, setChartData] = useState(MOCK_CHART_DATA);
+  const [chartData, setChartData] = useState(FALLBACK_CHART_DATA);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchChart() {
-      // Check if birth data exists
-      const birthData = StorageService.getSessionItem<BirthDataStorage>(STORAGE_KEYS.BIRTH_DATA);
-      if (!birthData) {
-        router.push('/onboarding/birth-data');
-        return;
-      }
-
-      try {
-
-        // Call API to calculate chart
-        const response = await fetch('/api/astrology/calculate-chart', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            date: birthData.date,
-            time: birthData.timeKnown ? birthData.time : null,
-            location: `${birthData.city}, ${birthData.country}`, // Convert city/country to location string
-          }),
-        });
-
-        if (response.ok) {
-          const calculatedChart = await response.json();
-          setChartData(calculatedChart);
-        }
-      } catch (error) {
-        console.error('Error fetching chart:', error);
-        // Fall back to mock data on error
-      } finally {
-        setIsLoading(false);
-      }
+    // Check if birth data exists
+    const birthData = StorageService.getSessionItem<BirthDataStorage>(STORAGE_KEYS.BIRTH_DATA);
+    if (!birthData) {
+      router.push('/onboarding/birth-data');
+      return;
     }
 
-    fetchChart();
+    // Read chart result from storage (set by calculating page)
+    const chartResult = StorageService.getSessionItem<Record<string, unknown>>(STORAGE_KEYS.CHART_RESULT);
+    if (chartResult) {
+      // Map API response to the shape the UI expects
+      const sunSign = (chartResult.sunSign as string) || 'Leo';
+      const moonSign = (chartResult.moonSign as string) || 'Pisces';
+      const risingSign = (chartResult.risingSign as string) || 'Virgo';
+      const interpretation = chartResult.interpretation as Record<string, unknown> | undefined;
+
+      setChartData({
+        sun: { sign: sunSign, house: 10, degree: 15.3 },
+        moon: { sign: moonSign, house: 5, degree: 22.1 },
+        rising: { sign: risingSign, degree: 8.7 },
+        mercury: { sign: (interpretation?.mercurySign as string) || 'Cancer', house: 9, degree: 28.5 },
+        venus: { sign: (interpretation?.venusSign as string) || 'Leo', house: 10, degree: 3.2 },
+        mars: { sign: (interpretation?.marsSign as string) || 'Gemini', house: 8, degree: 19.8 },
+        dominantElement: (interpretation?.dominantElement as string) || 'water',
+        dominantModality: (interpretation?.dominantModality as string) || 'fixed',
+      });
+    }
+
+    setIsLoading(false);
   }, [router]);
 
   if (isLoading) {

@@ -28,6 +28,10 @@ export {
   createOllamaLLMService,
 } from './ollama-llm-service.js';
 
+// Trait Analysis
+export { MockTraitAnalysisService } from './MockTraitAnalysisService.js';
+export { ClaudeTraitAnalysisService } from './ClaudeTraitAnalysisService.js';
+
 // Prompt builder utilities
 export {
   buildSystemPrompt,

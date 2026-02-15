@@ -16,6 +16,7 @@ import { createAdminRoutes } from './routes/admin/index.js';
 import { createCrmRoutes } from './routes/crm/index.js';
 import { createBirthChartRoutes } from './routes/birth-chart/index.js';
 import { createGeocodeRoutes } from './routes/geocode/index.js';
+import { createAstrologyRoutes } from './routes/astrology/index.js';
 
 export function createApp(container: Container): Express {
   const app = express();
@@ -51,6 +52,7 @@ export function createApp(container: Container): Express {
   app.use('/api/auth', createAuthRoutes(container));
   app.use('/api/birth-chart', createBirthChartRoutes(container));
   app.use('/api/geocode', createGeocodeRoutes(container));
+  app.use('/api/astrology', createAstrologyRoutes(container));
   app.use('/api/docs', createDocsRoutes(container));
   app.use('/admin', createAdminRoutes(container));
   app.use('/crm', createCrmRoutes(container));
