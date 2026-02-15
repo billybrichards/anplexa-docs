@@ -198,6 +198,9 @@ export interface BirthDataStorage {
  */
 export const STORAGE_KEYS = {
   BIRTH_DATA: 'birthData',
+  CHART_RESULT: 'chartResult',
+  TRAIT_PROFILE: 'traitProfile',
+  COMPATIBILITY_RESULT: 'compatibilityResult',
   COMPANION: 'companion',
   USER_PREFERENCES: 'userPreferences',
   ONBOARDING_PROGRESS: 'onboardingProgress',

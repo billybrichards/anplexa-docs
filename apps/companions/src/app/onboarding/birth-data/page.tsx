@@ -7,7 +7,7 @@ import { CosmicButton } from '@/components/CosmicButton';
 import { CosmicCard, CosmicCardBody, CosmicCardFooter } from '@/components/CosmicCard';
 import { CosmicInput } from '@/components/CosmicInput';
 import { SectionLabel } from '@/components/SectionHeader';
-import { StorageService, STORAGE_KEYS } from '@/lib/storage/StorageService';
+import { StorageService, STORAGE_KEYS, type BirthDataStorage } from '@/lib/storage/StorageService';
 
 interface BirthData {
   date: string;
@@ -28,6 +28,7 @@ export default function BirthDataForm() {
   });
   const [errors, setErrors] = useState<Partial<Record<keyof BirthData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [geocodeError, setGeocodeError] = useState<string | null>(null);
 
   const handleChange = (field: keyof BirthData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -77,13 +78,44 @@ export default function BirthDataForm() {
     }
 
     setIsSubmitting(true);
+    setGeocodeError(null);
 
-    // Simulate API call to calculate chart
-    setTimeout(() => {
-      // Store birth data using StorageService for next step
-      StorageService.setSessionItem(STORAGE_KEYS.BIRTH_DATA, formData);
+    try {
+      // Call geocode API to resolve city/country → lat/lon/tz
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const params = new URLSearchParams({ city: formData.city, country: formData.country });
+      const response = await fetch(`${apiBase}/api/geocode/lookup?${params}`);
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        setGeocodeError(data.message || `Could not find "${formData.city}, ${formData.country}". Please check spelling.`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const geo = await response.json();
+
+      // Store birth data with resolved coordinates
+      const birthData: BirthDataStorage = {
+        userId: 'guest', // Will be replaced with real user ID after auth
+        date: formData.date,
+        time: formData.timeKnown ? formData.time : '',
+        location: {
+          name: `${geo.city}, ${geo.country}`,
+          latitude: geo.latitude,
+          longitude: geo.longitude,
+          timezone: geo.timezone,
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      StorageService.setSessionItem(STORAGE_KEYS.BIRTH_DATA, birthData);
       router.push('/onboarding/calculating');
-    }, 500);
+    } catch (err) {
+      console.error('Geocode lookup failed:', err);
+      setGeocodeError('Could not look up location. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -183,6 +215,13 @@ export default function BirthDataForm() {
                   required
                 />
               </div>
+
+              {/* Geocode Error */}
+              {geocodeError && (
+                <div className="bg-red-900/30 border border-red-500/30 rounded-lg p-4">
+                  <p className="text-sm text-red-300">{geocodeError}</p>
+                </div>
+              )}
 
               {/* Privacy Notice */}
               <div className="bg-cosmic-purple/50 border border-gold/10 rounded-lg p-4">
