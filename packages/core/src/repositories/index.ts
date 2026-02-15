@@ -29,3 +29,6 @@ export { ApiKeyRepository } from './api-key.repository.js';
 export { FunnelApiKeyRepository } from './funnel-api-key.repository.js';
 export { BirthChartRepository } from './birth-chart.repository.js';
 export { CompanionPersonaRepository } from './companion-persona.repository.js';
+export { LettaAgentRepository } from './letta-agent.repository.js';
+export { MediaGenerationRepository } from './media-generation.repository.js';
+export { WorkflowRepository } from './workflow.repository.js';

@@ -75,6 +75,9 @@ export {
   UserFeedbackRepository,
   BirthChartRepository,
   CompanionPersonaRepository,
+  LettaAgentRepository,
+  MediaGenerationRepository,
+  WorkflowRepository,
 } from './repositories/index.js';
 
 // ============================================================================

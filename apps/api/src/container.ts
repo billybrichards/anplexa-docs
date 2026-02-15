@@ -21,6 +21,9 @@ import {
   UserFeedbackRepository,
   BirthChartRepository,
   CompanionPersonaRepository,
+  LettaAgentRepository,
+  MediaGenerationRepository,
+  WorkflowRepository,
   createAllUseCases,
   type AllUseCases,
 } from '@anplexa/core';
@@ -84,6 +87,9 @@ export interface AppContainer {
   workflowBuilder: WorkflowBuilder;
   nativeMediaService: NativeMediaService;
   llmService: ILLMService;
+  lettaAgentRepository: LettaAgentRepository;
+  mediaGenerationRepository: MediaGenerationRepository;
+  workflowRepository: WorkflowRepository;
   emailScheduler: EmailScheduler;
 
   // Use Cases
@@ -156,6 +162,11 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     astrologyService: asClass(SimplifiedAstrologyService).singleton(),
 
     traitAnalysisService: asFunction(() => new MockTraitAnalysisService()).singleton(),
+
+    // Migration repositories
+    lettaAgentRepository: asClass(LettaAgentRepository).singleton(),
+    mediaGenerationRepository: asClass(MediaGenerationRepository).singleton(),
+    workflowRepository: asClass(WorkflowRepository).singleton(),
 
     llmService: asFunction(({ ollamaGateway }) => {
       return new OllamaLLMService(ollamaGateway);

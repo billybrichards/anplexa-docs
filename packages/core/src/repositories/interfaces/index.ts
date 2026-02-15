@@ -73,3 +73,25 @@ export type {
   CreateCompanionPersonaData,
   UpdateCompanionPersonaData,
 } from './companion-persona.repository.interface.js';
+
+// Letta Agent Repository
+export type {
+  ILettaAgentRepository,
+  LettaAgentRecord,
+  CreateLettaAgentData,
+} from './letta-agent.repository.interface.js';
+
+// Media Generation Repository
+export type {
+  IMediaGenerationRepository,
+  MediaGenerationRecord,
+  CreateMediaGenerationData,
+  UpdateMediaGenerationData,
+} from './media-generation.repository.interface.js';
+
+// Workflow Repository
+export type {
+  IWorkflowRepository,
+  WorkflowRecord,
+  CreateWorkflowData,
+} from './workflow.repository.interface.js';
