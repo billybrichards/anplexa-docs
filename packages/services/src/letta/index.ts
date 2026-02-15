@@ -3,6 +3,8 @@
  */
 
 export { LettaGateway } from './LettaGateway.js';
+export { MediaToolService } from './MediaToolService.js';
+export type { MediaToolConfig } from './MediaToolService.js';
 export type {
   LettaGatewayConfig,
   LettaAgent,
@@ -18,3 +20,13 @@ export type {
   LettaStreamEvent,
   LettaMessageType,
 } from './types.js';
+export type {
+  MediaType,
+  MediaGenerationStatus,
+  MediaGeneration,
+  MediaToolReturn,
+  PendingMediaGeneration,
+  TriggerGenerationInput,
+  MediaStatusResponse,
+} from './media.types.js';
+export { MEDIA_TOOL_NAMES } from './media.types.js';
