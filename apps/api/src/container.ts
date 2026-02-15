@@ -30,6 +30,11 @@ import {
   OllamaGateway,
   SimplifiedAstrologyService,
   MockTraitAnalysisService,
+  LettaGateway,
+  MediaToolService,
+  ComfyUIGateway,
+  WorkflowBuilder,
+  NativeMediaService,
 } from '@anplexa/services';
 import type { ITraitAnalysisService } from '@anplexa/core/domain/services/ITraitAnalysisService';
 
@@ -71,6 +76,11 @@ export interface AppContainer {
   ollamaGateway: OllamaGateway;
   astrologyService: SimplifiedAstrologyService;
   traitAnalysisService: ITraitAnalysisService;
+  lettaGateway: LettaGateway;
+  mediaToolService: MediaToolService;
+  comfyUIGateway: ComfyUIGateway;
+  workflowBuilder: WorkflowBuilder;
+  nativeMediaService: NativeMediaService;
   emailScheduler: EmailScheduler;
 
   // Use Cases
@@ -143,6 +153,34 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     astrologyService: asClass(SimplifiedAstrologyService).singleton(),
 
     traitAnalysisService: asFunction(() => new MockTraitAnalysisService()).singleton(),
+
+    // Letta
+    lettaGateway: asFunction(() => new LettaGateway({
+      baseUrl: process.env.LETTA_API_URL || 'http://localhost:8283',
+      apiKey: process.env.LETTA_API_KEY,
+      timeout: 180000,
+    })).singleton(),
+
+    mediaToolService: asFunction(() => new MediaToolService()).singleton(),
+
+    // ComfyUI
+    comfyUIGateway: asFunction(() => new ComfyUIGateway({
+      baseUrl: process.env.COMFYUI_API_URL || '',
+      apiKey: process.env.COMFYUI_API_KEY || '',
+    })).singleton(),
+
+    workflowBuilder: asFunction(() => new WorkflowBuilder()).singleton(),
+
+    nativeMediaService: asFunction(({ comfyUIGateway, workflowBuilder }) =>
+      new NativeMediaService(comfyUIGateway, workflowBuilder, {
+        s3Config: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+          bucketName: process.env.AWS_S3_BUCKET_NAME || 'anplexa-media',
+          region: process.env.AWS_REGION || 'us-east-1',
+        },
+      }),
+    ).singleton(),
 
     // Use Cases - wire up all use cases using the factory
     useCases: asFunction(({
