@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Starfield } from '@/components/Starfield';
 import { CosmicCard, CosmicCardBody } from '@/components/CosmicCard';
 import { SectionLabel } from '@/components/SectionHeader';
-import { StorageService, STORAGE_KEYS } from '@/lib/storage/StorageService';
+import { StorageService, STORAGE_KEYS, type BirthDataStorage } from '@/lib/storage/StorageService';
 
 const CALCULATION_STEPS = [
   'Calculating planetary positions...',
@@ -19,44 +19,81 @@ export default function CalculatingPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if birth data exists
-    const birthData = StorageService.getSessionItem(STORAGE_KEYS.BIRTH_DATA);
+    const birthData = StorageService.getSessionItem<BirthDataStorage>(STORAGE_KEYS.BIRTH_DATA);
     if (!birthData) {
       router.push('/onboarding/birth-data');
       return;
     }
 
-    // Simulate chart calculation with progress updates
-    const totalDuration = 5000; // 5 seconds total
-    const stepDuration = totalDuration / CALCULATION_STEPS.length;
+    // Start animation + API call concurrently
+    const minDuration = 3000; // Minimum animation time
+    const startTime = Date.now();
 
+    // Step animation
+    const stepDuration = 5000 / CALCULATION_STEPS.length;
     const stepInterval = setInterval(() => {
       setCurrentStep((prev) => {
         const next = prev + 1;
-        if (next >= CALCULATION_STEPS.length) {
-          clearInterval(stepInterval);
-          // Navigate to chart reveal after completion
-          setTimeout(() => {
-            router.push('/onboarding/chart-reveal');
-          }, 500);
-        }
-        return next;
+        if (next >= CALCULATION_STEPS.length) clearInterval(stepInterval);
+        return Math.min(next, CALCULATION_STEPS.length - 1);
       });
     }, stepDuration);
 
-    // Smooth progress bar animation
+    // Progress animation (goes to 80% while API runs, then jumps to 100%)
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
-        const next = prev + 1;
-        if (next >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return next;
+        if (prev >= 80) { clearInterval(progressInterval); return 80; }
+        return prev + 1;
       });
-    }, totalDuration / 100);
+    }, minDuration / 80);
+
+    // Call the real API
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+    fetch(`${apiBase}/api/birth-chart/calculate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: birthData.userId || 'guest',
+        birthDate: birthData.date,
+        birthTime: birthData.time || null,
+        timeZone: birthData.location.timezone,
+        latitude: birthData.location.latitude,
+        longitude: birthData.location.longitude,
+        placeName: birthData.location.name.split(',')[0]?.trim() || '',
+        country: birthData.location.name.split(',')[1]?.trim() || '',
+      }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || `Calculation failed (${res.status})`);
+        }
+        return res.json();
+      })
+      .then((chartResult) => {
+        // Store result for chart-reveal page
+        StorageService.setSessionItem(STORAGE_KEYS.CHART_RESULT, chartResult);
+
+        // Ensure minimum animation duration
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, minDuration - elapsed);
+
+        setTimeout(() => {
+          setProgress(100);
+          setCurrentStep(CALCULATION_STEPS.length);
+          setTimeout(() => router.push('/onboarding/chart-reveal'), 500);
+        }, remaining);
+      })
+      .catch((err) => {
+        console.error('Birth chart calculation failed:', err);
+        setError(err.message || 'Chart calculation failed. Please try again.');
+        clearInterval(stepInterval);
+        clearInterval(progressInterval);
+      });
 
     return () => {
       clearInterval(stepInterval);
@@ -148,6 +185,19 @@ export default function CalculatingPage() {
                 </div>
               ))}
             </div>
+
+            {/* Error State */}
+            {error && (
+              <div className="bg-red-900/30 border border-red-500/30 rounded-lg p-4 space-y-3">
+                <p className="text-sm text-red-300">{error}</p>
+                <button
+                  onClick={() => router.push('/onboarding/birth-data')}
+                  className="text-sm text-gold underline hover:text-gold/80"
+                >
+                  Go back and try again
+                </button>
+              </div>
+            )}
 
             {/* Info Box */}
             <div className="bg-cosmic-purple/50 border border-gold/10 rounded-lg p-4">
