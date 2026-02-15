@@ -187,9 +187,11 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       apiKey: process.env.COMFYUI_API_KEY || '',
     })).singleton(),
 
-    workflowBuilder: asFunction(() => new WorkflowBuilder()).singleton(),
+    workflowBuilder: asFunction(({ workflowRepository }) =>
+      new WorkflowBuilder(workflowRepository)
+    ).singleton(),
 
-    nativeMediaService: asFunction(({ comfyUIGateway, workflowBuilder }) =>
+    nativeMediaService: asFunction(({ comfyUIGateway, workflowBuilder, mediaGenerationRepository }) =>
       new NativeMediaService(comfyUIGateway, workflowBuilder, {
         s3Config: {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
@@ -197,7 +199,7 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
           bucketName: process.env.AWS_S3_BUCKET_NAME || 'anplexa-media',
           region: process.env.AWS_REGION || 'us-east-1',
         },
-      }),
+      }, mediaGenerationRepository),
     ).singleton(),
 
     // Use Cases - wire up all use cases using the factory

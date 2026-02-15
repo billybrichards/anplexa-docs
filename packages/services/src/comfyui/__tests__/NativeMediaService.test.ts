@@ -16,8 +16,8 @@ function createMockGateway() {
 
 function createMockWorkflowBuilder() {
   return {
-    buildPhotoWorkflow: vi.fn().mockReturnValue({ '1': { class_type: 'KSampler' } }),
-    buildVideoWorkflow: vi.fn().mockReturnValue({ '1': { class_type: 'WAN' } }),
+    buildPhotoWorkflow: vi.fn().mockResolvedValue({ '1': { class_type: 'KSampler' } }),
+    buildVideoWorkflow: vi.fn().mockResolvedValue({ '1': { class_type: 'WAN' } }),
     generateSeed: vi.fn().mockReturnValue(123456789012345),
     clearCache: vi.fn(),
   };

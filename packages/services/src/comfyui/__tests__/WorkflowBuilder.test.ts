@@ -13,63 +13,63 @@ describe('WorkflowBuilder', () => {
   });
 
   describe('buildPhotoWorkflow', () => {
-    it('should return a workflow object', () => {
-      const workflow = builder.buildPhotoWorkflow('a beautiful photo', 'gen-001');
+    it('should return a workflow object', async () => {
+      const workflow = await builder.buildPhotoWorkflow('a beautiful photo', 'gen-001');
       expect(workflow).toBeDefined();
       expect(typeof workflow).toBe('object');
     });
 
-    it('should inject prompt into prompt node (7)', () => {
-      const workflow = builder.buildPhotoWorkflow('test prompt', 'gen-002');
+    it('should inject prompt into prompt node (7)', async () => {
+      const workflow = await builder.buildPhotoWorkflow('test prompt', 'gen-002');
       expect((workflow as any)['7']?.inputs?.text).toBe('test prompt');
     });
 
-    it('should set output filename prefix in node 14', () => {
-      const workflow = builder.buildPhotoWorkflow('test', 'gen-003');
+    it('should set output filename prefix in node 14', async () => {
+      const workflow = await builder.buildPhotoWorkflow('test', 'gen-003');
       expect((workflow as any)['14']?.inputs?.filename_prefix).toContain('gen-003');
       expect((workflow as any)['14']?.inputs?.filename_prefix).toContain('anplexa_photo');
     });
 
-    it('should sanitize generation ID in filename', () => {
-      const workflow = builder.buildPhotoWorkflow('test', 'gen/../../bad');
+    it('should sanitize generation ID in filename', async () => {
+      const workflow = await builder.buildPhotoWorkflow('test', 'gen/../../bad');
       const prefix = (workflow as any)['14']?.inputs?.filename_prefix;
       expect(prefix).not.toContain('..');
       expect(prefix).not.toContain('/../../');
     });
 
-    it('should inject seed into seed node (10)', () => {
-      const workflow = builder.buildPhotoWorkflow('test', 'gen-004', 42);
+    it('should inject seed into seed node (10)', async () => {
+      const workflow = await builder.buildPhotoWorkflow('test', 'gen-004', 42);
       const seedNode = (workflow as any)['10'];
       expect(seedNode?.inputs?.seed).toBe(42);
     });
 
-    it('should inject face image filename into node 20', () => {
-      const workflow = builder.buildPhotoWorkflow('test', 'gen-005', undefined, 'face.png');
+    it('should inject face image filename into node 20', async () => {
+      const workflow = await builder.buildPhotoWorkflow('test', 'gen-005', undefined, 'face.png');
       expect((workflow as any)['20']?.inputs?.image).toBe('face.png');
     });
 
-    it('should not mutate cached workflow between builds', () => {
-      const w1 = builder.buildPhotoWorkflow('prompt A', 'gen-a');
-      const w2 = builder.buildPhotoWorkflow('prompt B', 'gen-b');
+    it('should not mutate cached workflow between builds', async () => {
+      const w1 = await builder.buildPhotoWorkflow('prompt A', 'gen-a');
+      const w2 = await builder.buildPhotoWorkflow('prompt B', 'gen-b');
       expect((w1 as any)['7']?.inputs?.text).toBe('prompt A');
       expect((w2 as any)['7']?.inputs?.text).toBe('prompt B');
     });
   });
 
   describe('buildVideoWorkflow', () => {
-    it('should return a workflow object', () => {
-      const workflow = builder.buildVideoWorkflow('a video of walking', 'vid-001');
+    it('should return a workflow object', async () => {
+      const workflow = await builder.buildVideoWorkflow('a video of walking', 'vid-001');
       expect(workflow).toBeDefined();
       expect(typeof workflow).toBe('object');
     });
 
-    it('should inject prompt into video prompt node (7)', () => {
-      const workflow = builder.buildVideoWorkflow('test video prompt', 'vid-002');
+    it('should inject prompt into video prompt node (7)', async () => {
+      const workflow = await builder.buildVideoWorkflow('test video prompt', 'vid-002');
       expect((workflow as any)['7']?.inputs?.text).toBe('test video prompt');
     });
 
-    it('should set video output filename prefix in node 14', () => {
-      const workflow = builder.buildVideoWorkflow('test', 'vid-003');
+    it('should set video output filename prefix in node 14', async () => {
+      const workflow = await builder.buildVideoWorkflow('test', 'vid-003');
       const prefix = (workflow as any)['14']?.inputs?.filename_prefix;
       expect(prefix).toContain('vid-003');
       expect(prefix).toContain('anplexa_video');

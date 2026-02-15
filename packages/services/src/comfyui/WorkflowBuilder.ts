@@ -1,9 +1,10 @@
 /**
  * ComfyUI Workflow Builder
  *
- * Loads workflow JSON templates from self-describing JSON files.
- * Each file contains metadata (node IDs) + the workflow itself.
- * Adapted from Letta-Lonely: uses JSON files instead of database storage.
+ * Loads workflow templates from DB (comfyui_workflows table) with fallback
+ * to self-describing JSON files on disk.
+ *
+ * Priority: DB → JSON file cache → Error
  */
 
 import { readFileSync } from 'node:fs';
@@ -22,10 +23,22 @@ interface WorkflowFile {
   workflow: Record<string, Record<string, unknown>>;
 }
 
-// In-memory cache
+export interface WorkflowRepositoryLike {
+  getByName(name: string): Promise<{
+    workflowJson: string;
+    promptNodeId: string;
+    outputNodeId: string;
+    seedNodeId: string | null;
+    faceImageNodeId: string | null;
+    name: string;
+    type: string;
+  } | null>;
+}
+
+// In-memory cache for JSON file fallback
 const workflowCache = new Map<string, WorkflowFile>();
 
-function loadWorkflow(name: string): WorkflowFile {
+function loadWorkflowFromFile(name: string): WorkflowFile {
   const cached = workflowCache.get(name);
   if (cached) return cached;
 
@@ -37,17 +50,47 @@ function loadWorkflow(name: string): WorkflowFile {
   return data;
 }
 
+async function loadWorkflow(name: string, repo?: WorkflowRepositoryLike): Promise<WorkflowFile> {
+  // Try DB first
+  if (repo) {
+    try {
+      const dbRecord = await repo.getByName(name);
+      if (dbRecord) {
+        return {
+          name: dbRecord.name,
+          type: dbRecord.type,
+          prompt_node_id: dbRecord.promptNodeId,
+          output_node_id: dbRecord.outputNodeId,
+          seed_node_id: dbRecord.seedNodeId,
+          face_image_node_id: dbRecord.faceImageNodeId,
+          workflow: JSON.parse(dbRecord.workflowJson),
+        };
+      }
+    } catch {
+      // DB error — fall through to JSON file
+    }
+  }
+
+  // Fallback to JSON file
+  return loadWorkflowFromFile(name);
+}
+
 export class WorkflowBuilder {
+  private workflowRepository?: WorkflowRepositoryLike;
+
+  constructor(workflowRepository?: WorkflowRepositoryLike) {
+    this.workflowRepository = workflowRepository;
+  }
   /**
    * Build a photo generation workflow (InstaGirlMix + IP Adapter)
    */
-  buildPhotoWorkflow(
+  async buildPhotoWorkflow(
     prompt: string,
     generationId: string,
     seed?: number,
     faceImageFilename?: string,
-  ): Record<string, unknown> {
-    const record = loadWorkflow('photo-instagirl-ipadapter');
+  ): Promise<Record<string, unknown>> {
+    const record = await loadWorkflow('photo-instagirl-ipadapter', this.workflowRepository);
     const workflow = JSON.parse(JSON.stringify(record.workflow)) as Record<string, Record<string, unknown>>;
     const safeId = generationId.replace(/[^a-zA-Z0-9_-]/g, '');
 
@@ -80,13 +123,13 @@ export class WorkflowBuilder {
   /**
    * Build a video generation workflow (WAN 2.2 + IP Adapter)
    */
-  buildVideoWorkflow(
+  async buildVideoWorkflow(
     prompt: string,
     generationId: string,
     seed?: number,
     faceImageFilename?: string,
-  ): Record<string, unknown> {
-    const record = loadWorkflow('video-wan22-ipadapter');
+  ): Promise<Record<string, unknown>> {
+    const record = await loadWorkflow('video-wan22-ipadapter', this.workflowRepository);
     const workflow = JSON.parse(JSON.stringify(record.workflow)) as Record<string, Record<string, unknown>>;
     const safeId = generationId.replace(/[^a-zA-Z0-9_-]/g, '');
 
