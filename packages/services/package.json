@@ -18,6 +18,10 @@
       "types": "./dist/ai/index.d.ts",
       "default": "./dist/ai/index.js"
     },
+    "./comfyui": {
+      "types": "./dist/comfyui/index.d.ts",
+      "default": "./dist/comfyui/index.js"
+    },
     "./letta": {
       "types": "./dist/letta/index.d.ts",
       "default": "./dist/letta/index.js"

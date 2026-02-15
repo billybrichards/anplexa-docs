@@ -25,6 +25,9 @@ export * from './auth/index.js';
 // AI Services
 export * from './ai/index.js';
 
+// ComfyUI Services
+export * from './comfyui/index.js';
+
 // Letta Services
 export * from './letta/index.js';
 
