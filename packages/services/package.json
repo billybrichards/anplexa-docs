@@ -18,6 +18,10 @@
       "types": "./dist/ai/index.d.ts",
       "default": "./dist/ai/index.js"
     },
+    "./letta": {
+      "types": "./dist/letta/index.d.ts",
+      "default": "./dist/letta/index.js"
+    },
     "./astrology/city-coordinates": {
       "types": "./dist/astrology/city-coordinates.d.ts",
       "default": "./dist/astrology/city-coordinates.js"

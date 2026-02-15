@@ -25,5 +25,8 @@ export * from './auth/index.js';
 // AI Services
 export * from './ai/index.js';
 
+// Letta Services
+export * from './letta/index.js';
+
 // Astrology Services
 export { SimplifiedAstrologyService } from './astrology/SimplifiedAstrologyService.js';
