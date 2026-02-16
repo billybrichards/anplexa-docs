@@ -39,6 +39,8 @@ import {
   ComfyUIGateway,
   WorkflowBuilder,
   NativeMediaService,
+  AgentProvisioner,
+  ProfileGeneratorAgent,
 } from '@anplexa/services';
 import type { ILLMService } from '@anplexa/core/domain/services/ILLMService';
 import type { ITraitAnalysisService } from '@anplexa/core/domain/services/ITraitAnalysisService';
@@ -90,6 +92,8 @@ export interface AppContainer {
   lettaAgentRepository: LettaAgentRepository;
   mediaGenerationRepository: MediaGenerationRepository;
   workflowRepository: WorkflowRepository;
+  agentProvisioner: AgentProvisioner;
+  profileGeneratorAgent: ProfileGeneratorAgent;
   emailScheduler: EmailScheduler;
 
   // Use Cases
@@ -167,6 +171,19 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     lettaAgentRepository: asClass(LettaAgentRepository).singleton(),
     mediaGenerationRepository: asClass(MediaGenerationRepository).singleton(),
     workflowRepository: asClass(WorkflowRepository).singleton(),
+
+    // Agent provisioning
+    agentProvisioner: asFunction(({ lettaGateway, lettaAgentRepository }) =>
+      new AgentProvisioner(lettaGateway, lettaAgentRepository, {
+        chatModel: process.env.LETTA_CHAT_MODEL || 'ollama/qwen3-8b-nsfw:latest',
+        embeddingModel: process.env.LETTA_EMBEDDING_MODEL || 'ollama/nomic-embed-text:latest',
+        contextWindowLimit: parseInt(process.env.LETTA_CONTEXT_WINDOW || '32768', 10),
+      }),
+    ).singleton(),
+
+    profileGeneratorAgent: asFunction(({ nativeMediaService }) =>
+      new ProfileGeneratorAgent(nativeMediaService),
+    ).singleton(),
 
     llmService: asFunction(({ ollamaGateway }) => {
       return new OllamaLLMService(ollamaGateway);

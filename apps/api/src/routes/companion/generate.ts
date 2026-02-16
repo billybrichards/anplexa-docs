@@ -47,7 +47,29 @@ export function createCompanionGenerateRoutes(container: Container): Router {
         preferences: body.preferences,
       });
 
-      return res.status(201).json(result);
+      // Trigger profile image generation (fire-and-forget)
+      let profileImageGenerationId: string | undefined;
+      try {
+        const { profileGeneratorAgent } = container.cradle;
+        if (profileGeneratorAgent && result.persona) {
+          const profileResult = await profileGeneratorAgent.generateProfileImage({
+            companionId: result.persona.id,
+            companionName: result.persona.name || 'companion',
+            appearanceDescription: '', // Will use name fallback
+            userId: body.userId,
+          });
+          if (profileResult.status === 'generating') {
+            profileImageGenerationId = profileResult.generationId;
+          }
+        }
+      } catch {
+        // Non-fatal — persona still created successfully
+      }
+
+      return res.status(201).json({
+        ...result,
+        profileImageGenerationId,
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Validation error', details: error.errors });

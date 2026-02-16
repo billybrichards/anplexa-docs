@@ -6,6 +6,13 @@ export { LettaGateway } from './LettaGateway.js';
 export { MediaToolService } from './MediaToolService.js';
 export { ProfileGeneratorAgent } from './ProfileGeneratorAgent.js';
 export type { ProfileGenerationInput, ProfileGenerationResult } from './ProfileGeneratorAgent.js';
+export { PersonaBuilder } from './PersonaBuilder.js';
+export type { PersonaInput } from './PersonaBuilder.js';
+export { CognitiveBlockFactory } from './CognitiveBlockFactory.js';
+export type { MemoryBlockDefinition } from './CognitiveBlockFactory.js';
+export { CognitivePromptService } from './CognitivePromptService.js';
+export { AgentProvisioner } from './AgentProvisioner.js';
+export type { ProvisionInput, ProvisionResult, AgentProvisionerConfig } from './AgentProvisioner.js';
 export type { MediaToolConfig } from './MediaToolService.js';
 export type {
   LettaGatewayConfig,
