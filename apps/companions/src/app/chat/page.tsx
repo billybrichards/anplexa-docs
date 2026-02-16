@@ -59,7 +59,8 @@ export default function ChatPage() {
     <div className="min-h-screen bg-deep-space">
       <ChatInterface
         companionName={companion.name}
-        companionPersonality={companion.personality.join(', ')}
+        companionPersonaId={(companion as any).id}
+        userId={(companion as any).userId || 'guest'}
       />
     </div>
   );
