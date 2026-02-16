@@ -34,6 +34,7 @@ import {
   OllamaLLMService,
   SimplifiedAstrologyService,
   MockTraitAnalysisService,
+  ClaudeTraitAnalysisService,
   LettaGateway,
   MediaToolService,
   ComfyUIGateway,
@@ -165,7 +166,15 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
 
     astrologyService: asClass(SimplifiedAstrologyService).singleton(),
 
-    traitAnalysisService: asFunction(() => new MockTraitAnalysisService()).singleton(),
+    traitAnalysisService: asFunction(() => {
+      const anthropicKey = process.env.ANTHROPIC_API_KEY;
+      if (anthropicKey) {
+        console.log('[DI] Using ClaudeTraitAnalysisService (Anthropic API)');
+        return new ClaudeTraitAnalysisService(anthropicKey);
+      }
+      console.log('[DI] No ANTHROPIC_API_KEY — using MockTraitAnalysisService');
+      return new MockTraitAnalysisService();
+    }).singleton(),
 
     // Migration repositories
     lettaAgentRepository: asClass(LettaAgentRepository).singleton(),
