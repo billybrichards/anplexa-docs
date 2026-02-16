@@ -116,7 +116,8 @@ function TraitGlobeContent() {
 
       abortControllerRef.current = new AbortController();
 
-      const response = await fetch('/api/astrology/analyze-personality', {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const response = await fetch(`${apiBase}/api/astrology/analyze-traits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
@@ -125,7 +126,7 @@ function TraitGlobeContent() {
 
       if (!response.ok) {
         const errorMsg = `Analysis failed (${response.status})`;
-        analytics.trackAPIError('/api/astrology/analyze-personality', response.status, errorMsg);
+        analytics.trackAPIError('/api/astrology/analyze-traits', response.status, errorMsg);
         throw new Error(errorMsg);
       }
 
@@ -222,7 +223,8 @@ function TraitGlobeContent() {
     try {
       abortControllerRef.current = new AbortController();
 
-      const response = await fetch('/api/companion/generate-with-compatibility', {
+      const apiBase2 = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const response = await fetch(`${apiBase2}/api/companion/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
@@ -231,7 +233,7 @@ function TraitGlobeContent() {
 
       if (!response.ok) {
         const errorMsg = `Companion generation failed (${response.status})`;
-        analytics.trackAPIError('/api/companion/generate-with-compatibility', response.status, errorMsg);
+        analytics.trackAPIError('/api/companion/generate', response.status, errorMsg);
         throw new Error(errorMsg);
       }
 
