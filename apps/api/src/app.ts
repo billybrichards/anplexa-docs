@@ -19,6 +19,7 @@ import { createGeocodeRoutes } from './routes/geocode/index.js';
 import { createAstrologyRoutes } from './routes/astrology/index.js';
 import { createMediaRoutes } from './routes/media/index.js';
 import { createCompanionRoutes } from './routes/companion/index.js';
+import { createChatRoutes } from './routes/chat/index.js';
 
 export function createApp(container: Container): Express {
   const app = express();
@@ -57,6 +58,7 @@ export function createApp(container: Container): Express {
   app.use('/api/astrology', createAstrologyRoutes(container));
   app.use('/api/media', createMediaRoutes(container));
   app.use('/api/companion', createCompanionRoutes(container));
+  app.use('/api/chat', createChatRoutes(container));
   app.use('/api/docs', createDocsRoutes(container));
   app.use('/admin', createAdminRoutes(container));
   app.use('/crm', createCrmRoutes(container));

@@ -58,10 +58,58 @@ function createMockContainer() {
   };
 
   // Minimal mock that satisfies Container interface
+  const mockLettaGateway = {
+    sendMessageStream: vi.fn(),
+    getMessages: vi.fn().mockResolvedValue([]),
+  };
+
+  const mockAgentProvisioner = {
+    provisionCompanionAgent: vi.fn().mockResolvedValue({
+      lettaAgentId: 'letta-agent-1',
+      agentName: 'companion_luna',
+      blockIds: ['b1', 'b2'],
+    }),
+  };
+
+  const mockLettaAgentRepository = {
+    findByCompanionPersona: vi.fn().mockResolvedValue({
+      lettaAgentId: 'letta-agent-1',
+    }),
+    findByConversation: vi.fn().mockResolvedValue(null),
+    create: vi.fn(),
+  };
+
+  const mockConversationRepository = {
+    create: vi.fn().mockImplementation(async (data: any) => ({
+      id: data.id,
+      userId: data.userId,
+      title: data.title,
+      createdAt: new Date().toISOString(),
+    })),
+    getByUserId: vi.fn().mockResolvedValue([]),
+  };
+
+  const mockMessageRepository = {
+    getByConversationId: vi.fn().mockResolvedValue([]),
+  };
+
+  const mockProfileGeneratorAgent = {
+    generateProfileImage: vi.fn().mockResolvedValue({
+      generationId: 'profile-gen-1',
+      status: 'generating',
+    }),
+  };
+
   return {
     cradle: {
       useCases: mockUseCases,
       nativeMediaService: mockNativeMediaService,
+      lettaGateway: mockLettaGateway,
+      agentProvisioner: mockAgentProvisioner,
+      lettaAgentRepository: mockLettaAgentRepository,
+      conversationRepository: mockConversationRepository,
+      messageRepository: mockMessageRepository,
+      profileGeneratorAgent: mockProfileGeneratorAgent,
     },
     resolve: (name: string) => (createMockContainer() as any).cradle[name],
   };
@@ -268,6 +316,59 @@ describe('API Routes E2E', () => {
         .send({
           preferences: { nameGender: 'invalid' },
         });
+
+      expect(res.status).toBe(400);
+    });
+  });
+
+  // ── Chat ─────────────────────────────────────────────────────────────────
+
+  describe('POST /api/chat/conversations', () => {
+    it('should create a conversation', async () => {
+      const res = await request(app)
+        .post('/api/chat/conversations')
+        .send({ userId: 'user-1', title: 'Test Chat' });
+
+      expect(res.status).toBe(201);
+      expect(res.body.title).toBe('Test Chat');
+    });
+  });
+
+  describe('GET /api/chat/conversations', () => {
+    it('should return conversations for a user', async () => {
+      const res = await request(app)
+        .get('/api/chat/conversations?userId=user-1');
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    it('should require userId', async () => {
+      const res = await request(app)
+        .get('/api/chat/conversations');
+
+      expect(res.status).toBe(400);
+    });
+  });
+
+  describe('POST /api/chat/send', () => {
+    it('should return 400 without a message', async () => {
+      const res = await request(app)
+        .post('/api/chat/send')
+        .send({ companionPersonaId: 'persona-1' });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 without companionPersonaId and no agent', async () => {
+      // Reset mock to return null (no existing agent)
+      const container = createMockContainer();
+      (container.cradle as any).lettaAgentRepository.findByCompanionPersona.mockResolvedValue(null);
+      const testApp = createApp(container as any);
+
+      const res = await request(testApp)
+        .post('/api/chat/send')
+        .send({ message: 'hello' });
 
       expect(res.status).toBe(400);
     });
