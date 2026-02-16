@@ -87,17 +87,58 @@ export function createChatSendRoutes(container: Container): Router {
       // 3. Stream from Letta
       try {
         const stream = lettaGateway.sendMessageStream(lettaAgentId, body.message);
+        let streamResult: { detectedToolCalls?: Array<{ toolName: string; toolArgs: Record<string, unknown> }> } | undefined;
 
-        for await (const chunk of stream) {
-          if (typeof chunk === 'string') {
-            // Token
-            sendSSE('token', { content: chunk });
-          } else if (chunk.type === 'activity') {
-            // Agent activity (thinking, tool_call, tool_return, responding)
+        while (true) {
+          const { done, value } = await stream.next();
+          if (done) {
+            streamResult = value;
+            break;
+          }
+
+          if (typeof value === 'string') {
+            sendSSE('token', { content: value });
+          } else if (value.type === 'activity') {
             sendSSE('agent_activity', {
-              status: chunk.status,
-              toolName: 'toolName' in chunk ? chunk.toolName : undefined,
+              status: value.status,
+              toolName: 'toolName' in value ? value.toolName : undefined,
             });
+          }
+        }
+
+        // 4. Check for media tool calls → trigger NativeMediaService
+        const { nativeMediaService } = container.cradle;
+        const mediaToolNames = ['generate_image', 'generate_video'];
+
+        if (streamResult?.detectedToolCalls && nativeMediaService) {
+          for (const toolCall of streamResult.detectedToolCalls) {
+            if (mediaToolNames.includes(toolCall.toolName)) {
+              const mediaType = toolCall.toolName === 'generate_image' ? 'image' : 'video';
+              const prompt = (toolCall.toolArgs.prompt as string) || '';
+
+              try {
+                const genResult = await nativeMediaService.triggerGeneration({
+                  type: mediaType as 'image' | 'video',
+                  enhancedPrompt: prompt,
+                  userId: body.userId,
+                  conversationId: body.conversationId,
+                  companionId: body.companionPersonaId,
+                });
+
+                sendSSE('media_started', {
+                  generationId: genResult.generationId,
+                  comfyRequestId: genResult.comfyRequestId,
+                  type: mediaType,
+                  status: genResult.status,
+                });
+              } catch {
+                sendSSE('media_started', {
+                  type: mediaType,
+                  status: 'failed',
+                  error: 'Failed to trigger media generation',
+                });
+              }
+            }
           }
         }
 
