@@ -1,10 +1,10 @@
-import type { ICompatibilityCalculationService } from '../../domain/services/ICompatibilityCalculationService';
-import type { ITraitAnalysisService } from '../../domain/services/ITraitAnalysisService';
+import type { ICompatibilityCalculationService } from '../../domain/services/ICompatibilityCalculationService.js';
+import type { ITraitAnalysisService } from '../../domain/services/ITraitAnalysisService.js';
 import {
   CompatibilityResult,
   type CompatibilityResultProps,
-} from '../../domain/value-objects/astrology/CompatibilityResult';
-import type { NatalChartData } from '../../domain/value-objects/astrology/NatalChartData';
+} from '../../domain/value-objects/astrology/CompatibilityResult.js';
+import type { NatalChartData } from '../../domain/value-objects/astrology/NatalChartData.js';
 
 /**
  * Input DTO for CalculateCompatibilityUseCase

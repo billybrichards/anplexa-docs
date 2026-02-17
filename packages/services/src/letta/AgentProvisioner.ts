@@ -55,13 +55,11 @@ export interface ProvisionResult {
 export interface AgentProvisionerConfig {
   chatModel: string;
   embeddingModel: string;
-  contextWindowLimit: number;
 }
 
 const DEFAULT_CONFIG: AgentProvisionerConfig = {
   chatModel: 'ollama/qwen3-8b-nsfw:latest',
   embeddingModel: 'ollama/nomic-embed-text:latest',
-  contextWindowLimit: 32768,
 };
 
 export class AgentProvisioner {
@@ -134,7 +132,6 @@ export class AgentProvisioner {
       system: systemPrompt,
       modelHandle: this.config.chatModel,
       embeddingHandle: this.config.embeddingModel,
-      contextWindowLimit: this.config.contextWindowLimit,
       metadata: {
         companionPersonaId: input.companionPersonaId,
         userId: input.userId,
@@ -156,7 +153,6 @@ export class AgentProvisioner {
           agentName,
           modelHandle: this.config.chatModel,
           blockIds: allBlockIds,
-          contextWindowLimit: this.config.contextWindowLimit,
         });
       } catch (err) {
         console.warn(`[AgentProvisioner] DB persist failed, agent still created on Letta`, err);

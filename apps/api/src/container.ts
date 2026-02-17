@@ -186,7 +186,6 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       new AgentProvisioner(lettaGateway, lettaAgentRepository, {
         chatModel: process.env.LETTA_CHAT_MODEL || 'ollama/qwen3-8b-nsfw:latest',
         embeddingModel: process.env.LETTA_EMBEDDING_MODEL || 'ollama/nomic-embed-text:latest',
-        contextWindowLimit: parseInt(process.env.LETTA_CONTEXT_WINDOW || '32768', 10),
       }),
     ).singleton(),
 

@@ -11,7 +11,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load .env from monorepo root
+// Load .env — check local first, then monorepo root
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 import { Pool } from 'pg';
 import { configureContainer } from './container.js';
@@ -23,8 +24,6 @@ async function main() {
     const requiredEnvVars = [
       'DATABASE_URL',
       'JWT_SECRET',
-      'STRIPE_SECRET_KEY',
-      'RESEND_API_KEY',
     ];
 
     const missing = requiredEnvVars.filter(varName => !process.env[varName]);

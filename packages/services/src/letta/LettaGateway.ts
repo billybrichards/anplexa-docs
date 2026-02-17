@@ -63,6 +63,7 @@ export class LettaGateway {
     };
 
     if (input.contextWindowLimit) {
+      // Let Letta derive context window from model — only send if explicitly overridden
       requestBody.context_window_limit = input.contextWindowLimit;
     }
     if (input.system) {

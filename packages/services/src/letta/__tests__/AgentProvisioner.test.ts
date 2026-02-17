@@ -121,7 +121,6 @@ describe('AgentProvisioner', () => {
     const customProvisioner = new AgentProvisioner(mockGateway as any, mockRepo, {
       chatModel: 'anthropic/claude-sonnet-4-5-20250929',
       embeddingModel: 'ollama/nomic-embed-text:latest',
-      contextWindowLimit: 65536,
     });
 
     await customProvisioner.provisionCompanionAgent({
@@ -132,6 +131,6 @@ describe('AgentProvisioner', () => {
 
     const agentCall = mockGateway.createAgent.mock.calls[0][0];
     expect(agentCall.modelHandle).toBe('anthropic/claude-sonnet-4-5-20250929');
-    expect(agentCall.contextWindowLimit).toBe(65536);
+    expect(agentCall.contextWindowLimit).toBeUndefined();
   });
 });
