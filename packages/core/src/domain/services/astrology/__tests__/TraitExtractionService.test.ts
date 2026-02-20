@@ -72,16 +72,16 @@ describe('TraitExtractionService', () => {
   };
 
   describe('extractTraits', () => {
-    it('should extract traits from all major planets', () => {
+    it('should extract traits from all major planets', async () => {
       const chart = createMockChart();
-      const traits = service.extractTraits(chart);
+      const result = await service.extractTraits(chart);
 
-      expect(traits.length).toBeGreaterThanOrEqual(10);
+      expect(result.traits.length).toBeGreaterThanOrEqual(10);
     });
 
-    it('should extract trait for Sun', () => {
+    it('should extract trait for Sun', async () => {
       const chart = createMockChart();
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       const sunTrait = traits.find((t) => t.sourcePosition.planet === 'Sun');
       expect(sunTrait).toBeDefined();
@@ -89,19 +89,19 @@ describe('TraitExtractionService', () => {
       expect(sunTrait?.category).toBe('identity');
     });
 
-    it('should assign correct planet-sign trait names', () => {
+    it('should assign correct planet-sign trait names', async () => {
       const chart = createMockChart();
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       const sunTrait = traits.find((t) => t.sourcePosition.planet === 'Sun');
       expect(sunTrait?.name).toBe('Bold Leadership');
     });
 
-    it('should add Ascendant trait when birth time known', () => {
+    it('should add Ascendant trait when birth time known', async () => {
       const chart = createMockChart({
         ascendant: ZodiacSign.create('leo', 5),
       });
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       const ascTrait = traits.find((t) => t.sourcePosition.planet === 'Ascendant');
       expect(ascTrait).toBeDefined();
@@ -109,20 +109,20 @@ describe('TraitExtractionService', () => {
       expect(ascTrait?.name).toBe('Magnetic Charisma');
     });
 
-    it('should not add Ascendant trait when birth time unknown', () => {
+    it('should not add Ascendant trait when birth time unknown', async () => {
       const chart = createMockChart({
         ascendant: null,
         houses: [],
       });
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       const ascTrait = traits.find((t) => t.sourcePosition.planet === 'Ascendant');
       expect(ascTrait).toBeUndefined();
     });
 
-    it('should set empty description', () => {
+    it('should set empty description', async () => {
       const chart = createMockChart();
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       traits.forEach((trait) => {
         expect(trait.description).toBe('');
@@ -131,7 +131,7 @@ describe('TraitExtractionService', () => {
   });
 
   describe('strength calculation', () => {
-    it('should calculate higher strength for planets in domicile', () => {
+    it('should calculate higher strength for planets in domicile', async () => {
       const chart1 = createMockChart({
         planets: {
           ...createMockChart().planets,
@@ -146,8 +146,8 @@ describe('TraitExtractionService', () => {
         },
       });
 
-      const traits1 = service.extractTraits(chart1);
-      const traits2 = service.extractTraits(chart2);
+      const { traits: traits1 } = await service.extractTraits(chart1);
+      const { traits: traits2 } = await service.extractTraits(chart2);
 
       const marsTrait1 = traits1.find((t) => t.sourcePosition.planet === 'Mars');
       const marsTrait2 = traits2.find((t) => t.sourcePosition.planet === 'Mars');
@@ -155,9 +155,9 @@ describe('TraitExtractionService', () => {
       expect(marsTrait1?.strength).toBeGreaterThan(marsTrait2?.strength || 0);
     });
 
-    it('should clamp strength to 0-100 range', () => {
+    it('should clamp strength to 0-100 range', async () => {
       const chart = createMockChart();
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       traits.forEach((trait) => {
         expect(trait.strength).toBeGreaterThanOrEqual(0);
@@ -165,9 +165,9 @@ describe('TraitExtractionService', () => {
       });
     });
 
-    it('should round strength to integer', () => {
+    it('should round strength to integer', async () => {
       const chart = createMockChart();
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       traits.forEach((trait) => {
         expect(trait.strength).toBe(Math.round(trait.strength));
@@ -190,9 +190,9 @@ describe('TraitExtractionService', () => {
     ];
 
     categoryTests.forEach(({ planet, category }) => {
-      it(`should assign "${category}" to ${planet}`, () => {
+      it(`should assign "${category}" to ${planet}`, async () => {
         const chart = createMockChart();
-        const traits = service.extractTraits(chart);
+        const { traits } = await service.extractTraits(chart);
 
         const trait = traits.find((t) => t.sourcePosition.planet === planet);
         expect(trait?.category).toBe(category);
@@ -201,12 +201,12 @@ describe('TraitExtractionService', () => {
   });
 
   describe('ecliptic coordinates', () => {
-    it('should use deterministic latitude for same planet', () => {
+    it('should use deterministic latitude for same planet', async () => {
       const chart1 = createMockChart();
       const chart2 = createMockChart();
 
-      const traits1 = service.extractTraits(chart1);
-      const traits2 = service.extractTraits(chart2);
+      const { traits: traits1 } = await service.extractTraits(chart1);
+      const { traits: traits2 } = await service.extractTraits(chart2);
 
       const sunTrait1 = traits1.find((t) => t.sourcePosition.planet === 'Sun');
       const sunTrait2 = traits2.find((t) => t.sourcePosition.planet === 'Sun');
@@ -214,9 +214,9 @@ describe('TraitExtractionService', () => {
       expect(sunTrait1?.eclipticLatitude).toBe(sunTrait2?.eclipticLatitude);
     });
 
-    it('should keep latitude within -5 to +5 degree range', () => {
+    it('should keep latitude within -5 to +5 degree range', async () => {
       const chart = createMockChart();
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       traits.forEach((trait) => {
         expect(trait.eclipticLatitude).toBeGreaterThanOrEqual(-5);
@@ -224,9 +224,9 @@ describe('TraitExtractionService', () => {
       });
     });
 
-    it('should set Ascendant latitude to 0', () => {
+    it('should set Ascendant latitude to 0', async () => {
       const chart = createMockChart();
-      const traits = service.extractTraits(chart);
+      const { traits } = await service.extractTraits(chart);
 
       const ascTrait = traits.find((t) => t.sourcePosition.planet === 'Ascendant');
       expect(ascTrait?.eclipticLatitude).toBe(0);

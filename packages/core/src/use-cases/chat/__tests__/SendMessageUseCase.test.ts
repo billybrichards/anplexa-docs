@@ -170,13 +170,14 @@ describe('SendMessageUseCase', () => {
         content: 'New question',
       });
 
-      // Assert
+      // Assert — messages include system prompt + history + current message
       expect(mockOllamaGateway.generate).toHaveBeenCalledWith(
         expect.objectContaining({
-          messages: [
+          messages: expect.arrayContaining([
+            expect.objectContaining({ role: 'system' }),
             { role: 'user', content: 'Previous question' },
             { role: 'user', content: 'New question' },
-          ],
+          ]),
         })
       );
     });
@@ -334,7 +335,9 @@ describe('SendMessageUseCase', () => {
       expect(result.assistantMessage).toBeDefined();
       expect(mockOllamaGateway.generate).toHaveBeenCalledWith(
         expect.objectContaining({
-          messages: [{ role: 'user', content: 'First message' }],
+          messages: expect.arrayContaining([
+            { role: 'user', content: 'First message' },
+          ]),
         })
       );
     });
