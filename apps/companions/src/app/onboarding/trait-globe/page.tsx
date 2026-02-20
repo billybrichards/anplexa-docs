@@ -19,6 +19,8 @@ import { TraitProfile } from '@anplexa/core/domain/value-objects/astrology/Trait
 import type { TraitVisualization } from '@anplexa/core/domain/value-objects/astrology/TraitVisualization';
 import { CompatibilityResult } from '@anplexa/core/domain/value-objects/astrology/CompatibilityResult';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+
 type Phase = 'analyzing' | 'exploring' | 'compatibility';
 
 const ANALYZING_MESSAGES = [
@@ -116,7 +118,7 @@ function TraitGlobeContent() {
 
       abortControllerRef.current = new AbortController();
 
-      const response = await fetch('/api/astrology/analyze-personality', {
+      const response = await fetch(`${API_BASE}/api/astrology/analyze-personality`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
@@ -222,7 +224,7 @@ function TraitGlobeContent() {
     try {
       abortControllerRef.current = new AbortController();
 
-      const response = await fetch('/api/companion/generate-with-compatibility', {
+      const response = await fetch(`${API_BASE}/api/companion/generate-with-compatibility`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),

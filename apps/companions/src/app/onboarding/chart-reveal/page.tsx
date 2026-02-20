@@ -8,6 +8,8 @@ import { CosmicCard, CosmicCardHeader, CosmicCardBody, CosmicCardFooter } from '
 import { SectionLabel } from '@/components/SectionHeader';
 import { StorageService, STORAGE_KEYS, type BirthDataStorage } from '@/lib/storage/StorageService';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+
 // Mock chart data (will be replaced with real API call)
 const MOCK_CHART_DATA = {
   sun: { sign: 'Leo', house: 10, degree: 15.3 },
@@ -46,7 +48,7 @@ export default function ChartReveal() {
       try {
 
         // Call API to calculate chart
-        const response = await fetch('/api/astrology/calculate-chart', {
+        const response = await fetch(`${API_BASE}/api/astrology/calculate-chart`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
