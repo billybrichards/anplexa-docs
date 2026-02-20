@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Starfield } from '@/components/Starfield';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -598,6 +598,8 @@ function TraitGlobeContent() {
 
 export default function TraitGlobePage() {
   return (
-    <TraitGlobeContent />
+    <Suspense>
+      <TraitGlobeContent />
+    </Suspense>
   );
 }
