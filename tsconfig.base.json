@@ -26,9 +26,7 @@
       "@anplexa/services": ["./packages/services/src"],
       "@anplexa/services/*": ["./packages/services/src/*"],
       "@anplexa/ui": ["./packages/ui/src"],
-      "@anplexa/ui/*": ["./packages/ui/src/*"],
-      "@anplexa/testing": ["./packages/testing/src"],
-      "@anplexa/testing/*": ["./packages/testing/src/*"]
+      "@anplexa/ui/*": ["./packages/ui/src/*"]
     },
     "baseUrl": "."
   },
