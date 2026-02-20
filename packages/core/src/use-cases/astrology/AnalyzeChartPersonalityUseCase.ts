@@ -1,8 +1,8 @@
-import type { ITraitExtractionService } from '../../domain/services/ITraitExtractionService';
-import type { ITraitAnalysisService } from '../../domain/services/ITraitAnalysisService';
-import { TraitProfile, type TraitProfileProps } from '../../domain/value-objects/astrology/TraitProfile';
-import type { NatalChartData } from '../../domain/value-objects/astrology/NatalChartData';
-import type { TraitVisualization } from '../../domain/value-objects/astrology/TraitVisualization';
+import type { ITraitExtractionService } from '../../domain/services/ITraitExtractionService.js';
+import type { ITraitAnalysisService } from '../../domain/services/ITraitAnalysisService.js';
+import { TraitProfile, type TraitProfileProps } from '../../domain/value-objects/astrology/TraitProfile.js';
+import type { NatalChartData } from '../../domain/value-objects/astrology/NatalChartData.js';
+import type { TraitVisualization } from '../../domain/value-objects/astrology/TraitVisualization.js';
 
 /**
  * Input DTO for AnalyzeChartPersonalityUseCase
