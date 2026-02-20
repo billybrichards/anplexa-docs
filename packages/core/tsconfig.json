@@ -5,8 +5,19 @@
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
-    "composite": true
+    "composite": true,
+    "skipLibCheck": true,
+    "emitDeclarationOnly": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false
   },
+  "references": [
+    { "path": "../contracts" },
+    { "path": "../database" }
+  ],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

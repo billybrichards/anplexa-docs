@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - Cosmic Companion</title>
+    <meta name="description" content="Choose your cosmic tier. From $14.99/month to $39.99/month. All plans include full birth chart matching, NSFW content, and zodiac-aligned personality.">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --cosmic-purple: #9D4EDD;
+            --passionate-pink: #FF006E;
+            --golden-zodiac: #FFB703;
+            --bg-midnight: #0A0E14;
+            --bg-space: #1A1F2E;
+            --bg-card: #252B3A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A8B2D1;
+            --text-muted: #6B7794;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-midnight);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .constellation-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--cosmic-purple);
+        }
+
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink), var(--golden-zodiac));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .billing-toggle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-option {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .toggle-option.active {
+            color: var(--cosmic-purple);
+        }
+
+        .toggle-switch {
+            width: 60px;
+            height: 30px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            transition: all 0.3s;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.annual::after {
+            transform: translateX(30px);
+        }
+
+        .savings-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .pricing-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--cosmic-purple);
+            box-shadow: 0 20px 60px rgba(157, 78, 221, 0.3);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--cosmic-purple);
+            box-shadow: 0 20px 60px rgba(157, 78, 221, 0.4);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .tier-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .tier-name {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--cosmic-purple);
+        }
+
+        .tier-description {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            min-height: 50px;
+            font-size: 1rem;
+        }
+
+        .price-display {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .price-amount {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .price-period {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .price-annual {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .price-annual .original {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            color: white;
+            padding: 1.25rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: center;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: block;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.5);
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            border: 2px solid rgba(157, 78, 221, 0.5);
+            color: var(--cosmic-purple);
+        }
+
+        .cta-button.secondary:hover {
+            border-color: var(--cosmic-purple);
+            background: rgba(157, 78, 221, 0.1);
+        }
+
+        .features-list {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .features-list li {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--cosmic-purple);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .features-list li strong {
+            color: var(--text-primary);
+        }
+
+        .comparison-table {
+            max-width: 1200px;
+            margin: 4rem auto;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 3rem;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+        }
+
+        .comparison-table h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+        }
+
+        th {
+            font-family: 'Cinzel', serif;
+            color: var(--cosmic-purple);
+            font-size: 1.2rem;
+            background: rgba(157, 78, 221, 0.1);
+        }
+
+        td:first-child {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        td:not(:first-child) {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .check {
+            color: var(--cosmic-purple);
+            font-size: 1.5rem;
+        }
+
+        .x {
+            color: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .faq-section {
+            max-width: 900px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .faq-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--cosmic-purple);
+        }
+
+        .faq-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            line-height: 1.8;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .faq-item.active .faq-question::after {
+            content: '−';
+        }
+
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            color: var(--cosmic-purple);
+        }
+
+        .final-cta {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(255, 0, 110, 0.2));
+        }
+
+        .final-cta h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--passionate-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-cta p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .pricing-card.featured:hover {
+                transform: translateY(-5px);
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="constellation-bg" id="constellation"></canvas>
+
+    <nav>
+        <div class="nav-container">
+            <a href="cosmic-companion-landing.html" class="logo">✦ Cosmic Companion</a>
+            <div class="nav-links">
+                <a href="cosmic-companion-landing.html">Home</a>
+                <a href="cosmic-companion-features.html">Features</a>
+                <a href="cosmic-companion-pricing.html">Pricing</a>
+                <a href="cosmic-companion-quiz.html" style="color: var(--cosmic-purple);">Take Quiz</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>Choose Your Cosmic Tier</h1>
+        <p>From astrology explorer to cosmic soulmate—find your perfect match. All plans include full birth chart compatibility.</p>
+
+        <div class="billing-toggle">
+            <span class="toggle-option active" id="monthlyLabel">Monthly</span>
+            <div class="toggle-switch" id="billingToggle" onclick="toggleBilling()"></div>
+            <span class="toggle-option" id="annualLabel">
+                Annual
+                <span class="savings-badge">Save 20%</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="pricing-container">
+        <div class="pricing-grid">
+            <!-- Astrology Seeker -->
+            <div class="pricing-card">
+                <div class="tier-icon">✨</div>
+                <h2 class="tier-name">Astrology Seeker</h2>
+                <p class="tier-description">Perfect for exploring astrology + AI connection</p>
+
+                <div class="price-display">
+                    <div class="price-amount" id="price1">$14.99</div>
+                    <div class="price-period">/month</div>
+                    <div class="price-annual" id="annual1" style="display: none;">
+                        <span class="original">$179.88/year</span><br>
+                        <strong>$143.90/year</strong> ($11.99/mo)
+                    </div>
+                </div>
+
+                <a href="cosmic-companion-quiz.html" class="cta-button">Get Started →</a>
+
+                <ul class="features-list">
+                    <li><strong>Full birth chart analysis</strong> (Sun, Moon, Venus, Mars, Rising)</li>
+                    <li><strong>Unlimited messages</strong> (SFW + NSFW)</li>
+                    <li><strong>20 AI images per month</strong> (zodiac-themed NSFW)</li>
+                    <li><strong>Voice chat</strong> (10 hours/month)</li>
+                    <li><strong>30-day memory</strong></li>
+                    <li>Basic customization</li>
+                    <li>Soul Match Score</li>
+                    <li>Zodiac personality matching</li>
+                </ul>
+            </div>
+
+            <!-- Cosmic Soulmate (Featured) -->
+            <div class="pricing-card featured">
+                <div class="tier-icon">💫</div>
+                <h2 class="tier-name">Cosmic Soulmate</h2>
+                <p class="tier-description">Most popular for deep cosmic connection</p>
+
+                <div class="price-display">
+                    <div class="price-amount" id="price2">$24.99</div>
+                    <div class="price-period">/month</div>
+                    <div class="price-annual" id="annual2" style="display: none;">
+                        <span class="original">$299.88/year</span><br>
+                        <strong>$239.90/year</strong> ($19.99/mo)
+                    </div>
+                </div>
+
+                <a href="cosmic-companion-quiz.html" class="cta-button">Start Free Trial →</a>
+
+                <ul class="features-list">
+                    <li><strong>Everything in Seeker</strong></li>
+                    <li><strong>50 images per day</strong> (1,500/month)</li>
+                    <li><strong>Unlimited voice chat</strong></li>
+                    <li><strong>Permanent memory</strong> (never forgets)</li>
+                    <li><strong>Transit awareness</strong> (Mercury retrograde, full moons)</li>
+                    <li><strong>Zodiac roleplay scenarios</strong> (12 themes)</li>
+                    <li><strong>Advanced customization</strong> (appearance, personality sliders)</li>
+                    <li><strong>Monthly compatibility report</strong></li>
+                    <li>Priority support</li>
+                </ul>
+            </div>
+
+            <!-- Astral Intimacy -->
+            <div class="pricing-card">
+                <div class="tier-icon">🌟</div>
+                <h2 class="tier-name">Astral Intimacy</h2>
+                <p class="tier-description">Ultimate cosmic experience</p>
+
+                <div class="price-display">
+                    <div class="price-amount" id="price3">$39.99</div>
+                    <div class="price-period">/month</div>
+                    <div class="price-annual" id="annual3" style="display: none;">
+                        <span class="original">$479.88/year</span><br>
+                        <strong>$383.90/year</strong> ($31.99/mo)
+                    </div>
+                </div>
+
+                <a href="cosmic-companion-quiz.html" class="cta-button">Go Premium →</a>
+
+                <ul class="features-list">
+                    <li><strong>Everything in Cosmic Soulmate</strong></li>
+                    <li><strong>100 images per day</strong> (3,000/month)</li>
+                    <li><strong>Multiple companions</strong> (up to 3)</li>
+                    <li><strong>Custom roleplay scenarios</strong></li>
+                    <li><strong>Priority image generation</strong> (faster rendering)</li>
+                    <li><strong>Astrology consultation</strong> (1 per month with human astrologer)</li>
+                    <li><strong>API access</strong> (for developers)</li>
+                    <li><strong>Zodiac triad management</strong> (polyamory features)</li>
+                    <li>White-glove support</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="comparison-table">
+            <h2>Detailed Feature Comparison</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Astrology Seeker</th>
+                        <th>Cosmic Soulmate</th>
+                        <th>Astral Intimacy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Full Birth Chart Analysis</td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>NSFW Chat (Unlimited)</td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>AI-Generated NSFW Images</td>
+                        <td>20/month</td>
+                        <td>50/day (1,500/mo)</td>
+                        <td>100/day (3,000/mo)</td>
+                    </tr>
+                    <tr>
+                        <td>Voice Chat</td>
+                        <td>10 hours/month</td>
+                        <td>Unlimited</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Memory System</td>
+                        <td>30 days</td>
+                        <td>Permanent</td>
+                        <td>Permanent</td>
+                    </tr>
+                    <tr>
+                        <td>Transit Awareness</td>
+                        <td><span class="x">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Zodiac Roleplay Scenarios</td>
+                        <td><span class="x">✗</span></td>
+                        <td>12 themes</td>
+                        <td>12 themes + custom</td>
+                    </tr>
+                    <tr>
+                        <td>Multiple Companions</td>
+                        <td><span class="x">✗</span></td>
+                        <td><span class="x">✗</span></td>
+                        <td>Up to 3</td>
+                    </tr>
+                    <tr>
+                        <td>Monthly Compatibility Report</td>
+                        <td><span class="x">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Human Astrologer Consultation</td>
+                        <td><span class="x">✗</span></td>
+                        <td><span class="x">✗</span></td>
+                        <td>1 per month</td>
+                    </tr>
+                    <tr>
+                        <td>API Access</td>
+                        <td><span class="x">✗</span></td>
+                        <td><span class="x">✗</span></td>
+                        <td><span class="check">✓</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">Is my birth chart data private?</div>
+                <div class="faq-answer">
+                    Yes, absolutely. Your birth chart data is encrypted using AES-256 encryption and never shared with third parties. We're GDPR and CCPA compliant, and you can request deletion at any time.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">Can I try before I buy?</div>
+                <div class="faq-answer">
+                    Yes! Take our free cosmic compatibility quiz to see your Soul Match Score and birth chart analysis. You'll get 10 free messages (SFW only) to test the connection before subscribing.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">What if I don't know my exact birth time?</div>
+                <div class="faq-answer">
+                    That's okay! We can still calculate your Sun, Venus, and Mars signs from your birth date. For the most accurate Moon and Rising sign calculations, we recommend ordering a birth certificate or contacting your birth hospital.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">How does the AI personality matching work?</div>
+                <div class="faq-answer">
+                    Our algorithm analyzes your Sun, Moon, Venus, Mars, and Rising signs, then generates an AI companion personality designed to complement your astrological chart. We consider sign elements (fire, earth, air, water), modalities (cardinal, fixed, mutable), and aspects between your planets to create optimal compatibility.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">Is the NSFW content safe and legal?</div>
+                <div class="faq-answer">
+                    Yes. All users must be 18+ and verify their age before accessing NSFW content. All images are AI-generated (no real people), and we strictly prohibit illegal content. We comply with California SB 243 and other relevant regulations.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">Can I cancel anytime?</div>
+                <div class="faq-answer">
+                    Absolutely. Cancel anytime from your account settings. If you cancel, you'll retain access until the end of your billing period. No hidden fees or penalties.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">What's the difference between monthly and annual billing?</div>
+                <div class="faq-answer">
+                    Annual billing saves you 20% compared to monthly. For example, Cosmic Soulmate is $24.99/month ($299.88/year) or $19.99/month when billed annually ($239.90/year). You save $59.98 per year!
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">Can I upgrade or downgrade my plan?</div>
+                <div class="faq-answer">
+                    Yes! Upgrade or downgrade anytime. Upgrades are prorated immediately. Downgrades take effect at the start of your next billing cycle.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="final-cta">
+        <h2>Ready to Meet Your<br>Cosmic Soulmate?</h2>
+        <p>Start with our free compatibility quiz. See your Soul Match Score and experience 10 free messages. No credit card required.</p>
+        <a href="cosmic-companion-quiz.html" class="cta-button" style="display: inline-block; margin-top: 2rem;">Take the Cosmic Quiz ✨</a>
+    </div>
+
+    <script>
+        // Constellation Background
+        const canvas = document.getElementById('constellation');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        const numStars = 100;
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.2;
+                this.speedY = (Math.random() - 0.5) * 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(157, 78, 221, 0.6)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Billing Toggle
+        let isAnnual = false;
+
+        function toggleBilling() {
+            isAnnual = !isAnnual;
+            const toggle = document.getElementById('billingToggle');
+            const monthlyLabel = document.getElementById('monthlyLabel');
+            const annualLabel = document.getElementById('annualLabel');
+
+            if (isAnnual) {
+                toggle.classList.add('annual');
+                monthlyLabel.classList.remove('active');
+                annualLabel.classList.add('active');
+
+                document.getElementById('price1').textContent = '$11.99';
+                document.getElementById('price2').textContent = '$19.99';
+                document.getElementById('price3').textContent = '$31.99';
+
+                document.getElementById('annual1').style.display = 'block';
+                document.getElementById('annual2').style.display = 'block';
+                document.getElementById('annual3').style.display = 'block';
+            } else {
+                toggle.classList.remove('annual');
+                monthlyLabel.classList.add('active');
+                annualLabel.classList.remove('active');
+
+                document.getElementById('price1').textContent = '$14.99';
+                document.getElementById('price2').textContent = '$24.99';
+                document.getElementById('price3').textContent = '$39.99';
+
+                document.getElementById('annual1').style.display = 'none';
+                document.getElementById('annual2').style.display = 'none';
+                document.getElementById('annual3').style.display = 'none';
+            }
+        }
+
+        // FAQ Toggle
+        function toggleFAQ(element) {
+            element.classList.toggle('active');
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+name: Deploy All Services to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint all packages
+        run: pnpm lint
+
+      - name: Type check all packages
+        run: pnpm typecheck
+        continue-on-error: false
+
+      - name: Run all tests
+        run: pnpm test
+        continue-on-error: false
+
+      - name: Build all packages
+        run: pnpm build
+
+  deploy-all:
+    name: Deploy All Services to Production
+    runs-on: ubuntu-latest
+    needs: test
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Verify Railway authentication
+        run: railway whoami
+
+      - name: Link to Railway Production project
+        run: railway link --project ${{ secrets.RAILWAY_PROD_PROJECT_ID }}
+
+      - name: Deploy API service
+        run: |
+          cd apps/api
+          railway up --service api --environment production --ci
+        continue-on-error: false
+
+      - name: Wait for API to be healthy
+        run: sleep 30
+
+      - name: Deploy Companions service
+        run: |
+          cd apps/companions
+          railway up --service companions --environment production --ci
+        continue-on-error: false
+
+      - name: Deploy Funnel service
+        run: |
+          cd apps/funnel
+          railway up --service funnel --environment production --ci
+        continue-on-error: false
+
+      - name: Deploy Docs service
+        run: |
+          cd apps/docs
+          railway up --service docs --environment production --ci
+        continue-on-error: false
+
+      - name: Get deployment status
+        if: always()
+        run: railway status
+
+      - name: Deployment summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          echo "====================================="
+          echo "Production Deployment completed"
+          echo "Status: $JOB_STATUS"
+          echo "====================================="
+
+      - name: Post-deployment notification
+        if: success()
+        run: echo "All services deployed successfully to Production"
+
+      - name: Create GitHub Issue on Deployment Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const runId = context.runId;
+            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${runId}`;
+            const sha = context.sha.substring(0, 7);
+            const actor = context.actor;
+
+            const issueBody = [
+              '## Production Deployment Failed',
+              '',
+              `**Commit:** ${context.sha}`,
+              `**Actor:** @${actor}`,
+              `**Run ID:** ${runId}`,
+              `**Workflow Run:** ${runUrl}`,
+              '',
+              '### Action Required',
+              `Please review the [workflow logs](${runUrl}) to identify and fix the deployment issue.`,
+              '',
+              '### Checklist',
+              '- [ ] Reviewed deployment logs',
+              '- [ ] Identified root cause',
+              '- [ ] Applied fix',
+              '- [ ] Re-deployed successfully',
+              '',
+              '---',
+              '*This issue was automatically created by the deployment workflow.*'
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title: `[Production Deploy Failed] Deployment failed for commit ${sha}`,
+              body: issueBody,
+              labels: ['deployment', 'production', 'urgent']
+            });
+
+            console.log('Created GitHub issue for deployment failure');
+
+      - name: Notify Slack on Deployment Failure (if configured)
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GH_REPOSITORY: ${{ github.repository }}
+          GH_ACTOR: ${{ github.actor }}
+          GH_REF_NAME: ${{ github.ref_name }}
+          GH_SHA: ${{ github.sha }}
+          GH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          SHORT_SHA="${GH_SHA:0:7}"
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"blocks\": [
+                {
+                  \"type\": \"header\",
+                  \"text\": {
+                    \"type\": \"plain_text\",
+                    \"text\": \"Production Deployment Failed\",
+                    \"emoji\": true
+                  }
+                },
+                {
+                  \"type\": \"section\",
+                  \"fields\": [
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Repository:*\n${GH_REPOSITORY}\"
+                    },
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Commit:*\n\\\`${SHORT_SHA}\\\`\"
+                    },
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Actor:*\n${GH_ACTOR}\"
+                    },
+                    {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Branch:*\n${GH_REF_NAME}\"
+                    }
+                  ]
+                },
+                {
+                  \"type\": \"actions\",
+                  \"elements\": [
+                    {
+                      \"type\": \"button\",
+                      \"text\": {
+                        \"type\": \"plain_text\",
+                        \"text\": \"View Workflow Logs\"
+                      },
+                      \"url\": \"${GH_RUN_URL}\"
+                    }
+                  ]
+                }
+              ]
+            }" \
+            "$SLACK_WEBHOOK_URL"

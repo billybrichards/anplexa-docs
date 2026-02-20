@@ -1,0 +1,204 @@
+{
+  "name": "photo-instagirl-ipadapter",
+  "description": "WAN 2.2 T2I with IP Adapter face injection and InstagirlMix LoRAs for character-consistent photo generation",
+  "type": "image",
+  "version": "1.0.0",
+  "prompt_node_id": "7",
+  "output_node_id": "14",
+  "seed_node_id": "10",
+  "face_image_node_id": "20",
+  "ip_adapter_weight": 0.85,
+  "workflow": {
+    "1": {
+      "inputs": {
+        "unet_name": "wan2.2_t2v_high_noise_14B_fp16.safetensors",
+        "weight_dtype": "default"
+      },
+      "class_type": "UNETLoader",
+      "_meta": {"title": "UNET High Noise"}
+    },
+    "2": {
+      "inputs": {
+        "unet_name": "wan2.2_t2v_low_noise_14B_fp16.safetensors",
+        "weight_dtype": "default"
+      },
+      "class_type": "UNETLoader",
+      "_meta": {"title": "UNET Low Noise"}
+    },
+    "3": {
+      "inputs": {
+        "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "type": "wan",
+        "device": "default"
+      },
+      "class_type": "CLIPLoader",
+      "_meta": {"title": "CLIP Loader"}
+    },
+    "4": {
+      "inputs": {
+        "vae_name": "wan_2.1_vae.safetensors"
+      },
+      "class_type": "VAELoader",
+      "_meta": {"title": "VAE Loader"}
+    },
+    "20": {
+      "inputs": {
+        "image": "{{FACE_IMAGE}}",
+        "upload": "image"
+      },
+      "class_type": "LoadImage",
+      "_meta": {"title": "Load Face Reference"}
+    },
+    "21": {
+      "inputs": {
+        "preset": "PLUS FACE (portraits)",
+        "model": ["1", 0]
+      },
+      "class_type": "IPAdapterUnifiedLoader",
+      "_meta": {"title": "IP Adapter High Noise"}
+    },
+    "22": {
+      "inputs": {
+        "preset": "PLUS FACE (portraits)",
+        "model": ["2", 0]
+      },
+      "class_type": "IPAdapterUnifiedLoader",
+      "_meta": {"title": "IP Adapter Low Noise"}
+    },
+    "23": {
+      "inputs": {
+        "weight": 0.85,
+        "start_at": 0,
+        "end_at": 1,
+        "weight_type": "style transfer",
+        "model": ["21", 0],
+        "ipadapter": ["21", 1],
+        "image": ["20", 0]
+      },
+      "class_type": "IPAdapter",
+      "_meta": {"title": "Apply Face High Noise"}
+    },
+    "24": {
+      "inputs": {
+        "weight": 0.85,
+        "start_at": 0,
+        "end_at": 1,
+        "weight_type": "style transfer",
+        "model": ["22", 0],
+        "ipadapter": ["22", 1],
+        "image": ["20", 0]
+      },
+      "class_type": "IPAdapter",
+      "_meta": {"title": "Apply Face Low Noise"}
+    },
+    "5": {
+      "inputs": {
+        "lora_name": "WAN2.2_HighNoise_InstagirlMix_V1.safetensors",
+        "strength_model": 1,
+        "strength_clip": 1,
+        "model": ["23", 0],
+        "clip": ["3", 0]
+      },
+      "class_type": "LoraLoader",
+      "_meta": {"title": "InstagirlMix High LoRA"}
+    },
+    "6": {
+      "inputs": {
+        "lora_name": "WAN2.2_LowNoise_InstagirlMix_V1.safetensors",
+        "strength_model": 1,
+        "strength_clip": 1,
+        "model": ["24", 0],
+        "clip": ["3", 0]
+      },
+      "class_type": "LoraLoader",
+      "_meta": {"title": "InstagirlMix Low LoRA"}
+    },
+    "7": {
+      "inputs": {
+        "text": "{{PROMPT}}",
+        "clip": ["3", 0]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {"title": "Positive Prompt"}
+    },
+    "8": {
+      "inputs": {
+        "text": "Vibrant colors, overexposed, static, blurry details, subtitles, worst quality, low quality, ugly, deformed, disfigured, extra fingers, poorly drawn hands, poorly drawn face, distorted limbs, censored, sunburnt skin, red cheeks",
+        "clip": ["3", 0]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {"title": "Negative Prompt"}
+    },
+    "9": {
+      "inputs": {
+        "width": 768,
+        "height": 1024,
+        "length": 1,
+        "batch_size": 1
+      },
+      "class_type": "EmptyHunyuanLatentVideo",
+      "_meta": {"title": "Empty Latent"}
+    },
+    "10": {
+      "inputs": {
+        "seed": "{{SEED}}"
+      },
+      "class_type": "Seed Generator",
+      "_meta": {"title": "Seed"}
+    },
+    "11": {
+      "inputs": {
+        "add_noise": "enable",
+        "noise_seed": ["10", 0],
+        "steps": 12,
+        "cfg": 1,
+        "sampler_name": "res_2s",
+        "scheduler": "beta57",
+        "start_at_step": 0,
+        "end_at_step": 4,
+        "return_with_leftover_noise": "disable",
+        "model": ["5", 0],
+        "positive": ["7", 0],
+        "negative": ["8", 0],
+        "latent_image": ["9", 0]
+      },
+      "class_type": "KSamplerAdvanced",
+      "_meta": {"title": "KSampler High Noise"}
+    },
+    "12": {
+      "inputs": {
+        "add_noise": "enable",
+        "noise_seed": ["10", 0],
+        "steps": 12,
+        "cfg": 1,
+        "sampler_name": "res_2s",
+        "scheduler": "beta57",
+        "start_at_step": 4,
+        "end_at_step": 12,
+        "return_with_leftover_noise": "disable",
+        "model": ["6", 0],
+        "positive": ["7", 0],
+        "negative": ["8", 0],
+        "latent_image": ["11", 0]
+      },
+      "class_type": "KSamplerAdvanced",
+      "_meta": {"title": "KSampler Low Noise"}
+    },
+    "13": {
+      "inputs": {
+        "samples": ["12", 0],
+        "vae": ["4", 0]
+      },
+      "class_type": "VAEDecode",
+      "_meta": {"title": "VAE Decode"}
+    },
+    "14": {
+      "inputs": {
+        "filename_prefix": "{{OUTPUT_PREFIX}}",
+        "images": ["13", 0]
+      },
+      "class_type": "SaveImage",
+      "_meta": {"title": "Save Image"}
+    }
+  }
+}

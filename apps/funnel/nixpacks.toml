@@ -1,0 +1,17 @@
+# Railway nixpacks configuration for @anplexa/funnel
+# This file is used when Railway deploys from monorepo root
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "pnpm"]
+
+[phases.install]
+cmds = ["cd ../.. && pnpm install --frozen-lockfile --no-strict-peer-dependencies"]
+
+[phases.build]
+# Build only funnel (no transitive dependencies needed)
+cmds = ["pnpm build --filter=@anplexa/funnel"]
+
+[start]
+# Serve the Vite build from the funnel directory
+# Uses vite preview to serve the production build
+cmd = "cd apps/funnel && pnpm preview --port ${PORT:-3002} --host 0.0.0.0"

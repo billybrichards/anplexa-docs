@@ -1,0 +1,21 @@
+# Root nixpacks configuration for Railway monorepo deployment
+#
+# IMPORTANT: Railway services should use their app-specific railway.json files
+# which contain buildCommand and startCommand overrides.
+#
+# This root nixpacks.toml provides defaults when deploying from monorepo root.
+# Each Railway service should have explicit build/start commands configured.
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "pnpm"]
+
+[phases.install]
+cmds = ["pnpm install --frozen-lockfile"]
+
+[phases.build]
+# Build the API app and its dependencies
+cmds = ["pnpm build --filter=@anplexa/api..."]
+
+[start]
+# Start the API server
+cmd = "cd apps/api && node dist/index.js"

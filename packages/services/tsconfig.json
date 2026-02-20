@@ -5,8 +5,14 @@
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
-    "composite": true
+    "composite": true,
+    "emitDeclarationOnly": false,
+    "skipLibCheck": true
   },
+  "references": [
+    { "path": "../contracts" },
+    { "path": "../core" }
+  ],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

@@ -1,0 +1,26 @@
+{
+  "id": "architecture/repository-pattern",
+  "title": "Repository Pattern Implementation",
+  "description": "Overview",
+  "source": "@site/docs/architecture/repository-pattern.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/repository-pattern",
+  "permalink": "/docs/architecture/repository-pattern",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Clean Architecture Audit & Implementation Status",
+    "permalink": "/docs/architecture/clean-architecture-audit"
+  },
+  "next": {
+    "title": "Dependency Injection with Awilix",
+    "permalink": "/docs/architecture/dependency-injection"
+  }
+}

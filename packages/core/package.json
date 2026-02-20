@@ -9,20 +9,130 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./domain": {
+      "types": "./dist/domain/index.d.ts",
+      "default": "./dist/domain/index.js"
+    },
+    "./domain/entities": {
+      "types": "./dist/domain/entities/index.d.ts",
+      "default": "./dist/domain/entities/index.js"
+    },
+    "./domain/errors": {
+      "types": "./dist/domain/errors/index.d.ts",
+      "default": "./dist/domain/errors/index.js"
+    },
+    "./repositories": {
+      "types": "./dist/repositories/index.d.ts",
+      "default": "./dist/repositories/index.js"
+    },
+    "./repositories/interfaces": {
+      "types": "./dist/repositories/interfaces/index.d.ts",
+      "default": "./dist/repositories/interfaces/index.js"
+    },
+    "./use-cases": {
+      "types": "./dist/use-cases/index.d.ts",
+      "default": "./dist/use-cases/index.js"
+    },
+    "./use-cases/auth": {
+      "types": "./dist/use-cases/auth/index.d.ts",
+      "default": "./dist/use-cases/auth/index.js"
+    },
+    "./use-cases/chat": {
+      "types": "./dist/use-cases/chat/index.d.ts",
+      "default": "./dist/use-cases/chat/index.js"
+    },
+    "./use-cases/subscription": {
+      "types": "./dist/use-cases/subscription/index.d.ts",
+      "default": "./dist/use-cases/subscription/index.js"
+    },
+    "./factories": {
+      "types": "./dist/factories.d.ts",
+      "default": "./dist/factories.js"
+    },
+    "./domain/services/IAstrologyCalculationService": {
+      "types": "./dist/domain/services/IAstrologyCalculationService.d.ts",
+      "default": "./dist/domain/services/IAstrologyCalculationService.js"
+    },
+    "./domain/services/IPasswordService": {
+      "types": "./dist/domain/services/IPasswordService.d.ts",
+      "default": "./dist/domain/services/IPasswordService.js"
+    },
+    "./domain/services/IJWTService": {
+      "types": "./dist/domain/services/IJWTService.d.ts",
+      "default": "./dist/domain/services/IJWTService.js"
+    },
+    "./domain/services/IStripeService": {
+      "types": "./dist/domain/services/IStripeService.d.ts",
+      "default": "./dist/domain/services/IStripeService.js"
+    },
+    "./domain/services/IChatGateway": {
+      "types": "./dist/domain/services/IChatGateway.d.ts",
+      "default": "./dist/domain/services/IChatGateway.js"
+    },
+    "./domain/value-objects/astrology/BirthData": {
+      "types": "./dist/domain/value-objects/astrology/BirthData.d.ts",
+      "default": "./dist/domain/value-objects/astrology/BirthData.js"
+    },
+    "./domain/value-objects/astrology/NatalChartData": {
+      "types": "./dist/domain/value-objects/astrology/NatalChartData.d.ts",
+      "default": "./dist/domain/value-objects/astrology/NatalChartData.js"
+    },
+    "./domain/value-objects/astrology/ZodiacSign": {
+      "types": "./dist/domain/value-objects/astrology/ZodiacSign.d.ts",
+      "default": "./dist/domain/value-objects/astrology/ZodiacSign.js"
+    },
+    "./domain/value-objects/companion/PersonalityTraits": {
+      "types": "./dist/domain/value-objects/companion/PersonalityTraits.d.ts",
+      "default": "./dist/domain/value-objects/companion/PersonalityTraits.js"
+    },
+    "./domain/value-objects/companion/CommunicationStyle": {
+      "types": "./dist/domain/value-objects/companion/CommunicationStyle.d.ts",
+      "default": "./dist/domain/value-objects/companion/CommunicationStyle.js"
+    },
+    "./domain/value-objects/companion/EmotionalApproach": {
+      "types": "./dist/domain/value-objects/companion/EmotionalApproach.d.ts",
+      "default": "./dist/domain/value-objects/companion/EmotionalApproach.js"
+    },
+    "./domain/value-objects/astrology/TraitProfile": {
+      "types": "./dist/domain/value-objects/astrology/TraitProfile.d.ts",
+      "default": "./dist/domain/value-objects/astrology/TraitProfile.js"
+    },
+    "./domain/value-objects/astrology/TraitVisualization": {
+      "types": "./dist/domain/value-objects/astrology/TraitVisualization.d.ts",
+      "default": "./dist/domain/value-objects/astrology/TraitVisualization.js"
+    },
+    "./domain/value-objects/astrology/CompatibilityResult": {
+      "types": "./dist/domain/value-objects/astrology/CompatibilityResult.d.ts",
+      "default": "./dist/domain/value-objects/astrology/CompatibilityResult.js"
+    },
+    "./domain/services/ILLMService": {
+      "types": "./dist/domain/services/ILLMService.d.ts",
+      "default": "./dist/domain/services/ILLMService.js"
+    },
+    "./domain/services/ITraitAnalysisService": {
+      "types": "./dist/domain/services/ITraitAnalysisService.d.ts",
+      "default": "./dist/domain/services/ITraitAnalysisService.js"
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build",
     "dev": "tsc --watch",
     "lint": "eslint src/",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist build .next *.tsbuildinfo"
   },
   "dependencies": {
-    "@anplexa/contracts": "workspace:*"
+    "@anplexa/contracts": "workspace:*",
+    "@anplexa/database": "workspace:*"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@vitest/coverage-v8": "^4.0.17",
+    "better-sqlite3": "^12.6.0",
     "typescript": "^5.7.2",
+    "vite-tsconfig-paths": "^6.0.4",
     "vitest": "^1.2.0"
   }
 }

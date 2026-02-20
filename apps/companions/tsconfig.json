@@ -3,13 +3,31 @@
   "compilerOptions": {
     "jsx": "preserve",
     "incremental": true,
+    "skipLibCheck": true,
+    "strict": false,
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "allowJs": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "../../packages/**/*.ts"
+  ]
 }

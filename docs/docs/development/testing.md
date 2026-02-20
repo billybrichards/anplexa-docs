@@ -4,6 +4,11 @@ sidebar_position: 3
 
 # Testing
 
+> **ℹ️ NEEDS UPDATE**: This guide references legacy app directory names. Update in progress:
+> - `2-terminal-companion` → `apps/api`
+> - `v0-ai-companion-prototype` → `apps/companions`
+> - `Funnel-Forge` → `apps/funnel`
+
 Testing strategy and guidelines for the Anplexa platform using Vitest and Playwright.
 
 ## Testing Stack

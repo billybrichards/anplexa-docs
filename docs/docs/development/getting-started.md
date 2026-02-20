@@ -4,6 +4,8 @@ sidebar_position: 1
 
 # Getting Started
 
+> **⚠️ PARTIALLY OUTDATED**: Parts of this guide reference the legacy separate repository structure. The platform is now a unified monorepo. See the [monorepo structure](../../../) and current [Environment Setup](./environment-setup.md) for the latest information.
+
 This guide walks you through setting up the Anplexa platform for local development.
 
 ## Prerequisites
