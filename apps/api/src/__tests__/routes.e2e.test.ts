@@ -343,11 +343,12 @@ describe('API Routes E2E', () => {
       expect(Array.isArray(res.body)).toBe(true);
     });
 
-    it('should require userId', async () => {
+    it('should fall back to guest when no userId provided', async () => {
       const res = await request(app)
         .get('/api/chat/conversations');
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
     });
   });
 
