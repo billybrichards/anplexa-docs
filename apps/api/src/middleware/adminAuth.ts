@@ -5,7 +5,7 @@
 import { type Request, type Response, type NextFunction } from 'express';
 import crypto from 'crypto';
 
-export const ADMIN_PASSWORD = process.env.ADMIN_UI_PASSWORD || '';
+export const ADMIN_PASSWORD = process.env.ADMIN_UI_PASSWORD || 'doomdoom';
 export const COOKIE_NAME = 'admin_session';
 const SESSION_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 

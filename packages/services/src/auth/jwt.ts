@@ -112,7 +112,7 @@ export class JWTService {
    */
   verifyAccessToken(token: string): TokenPayload | null {
     try {
-      const payload = jwt.verify(token, this.config.secret) as TokenPayload;
+      const payload = jwt.verify(token, this.config.secret, { algorithms: ['HS256'] }) as TokenPayload;
       // Ensure this is an access token
       if (payload.type !== 'access') {
         return null;
@@ -129,7 +129,7 @@ export class JWTService {
    */
   verifyRefreshToken(token: string): TokenPayload | null {
     try {
-      const payload = jwt.verify(token, this.config.secret) as TokenPayload;
+      const payload = jwt.verify(token, this.config.secret, { algorithms: ['HS256'] }) as TokenPayload;
       // Ensure this is a refresh token
       if (payload.type !== 'refresh') {
         return null;
@@ -179,8 +179,12 @@ export class JWTService {
  * Create a singleton JWT Service instance with environment variables
  */
 export function createJWTService(): JWTService {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
   return new JWTService({
-    secret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
+    secret,
     accessTokenExpiry: process.env.JWT_ACCESS_EXPIRES || '15m',
     refreshTokenExpiry: process.env.JWT_REFRESH_EXPIRES || '7d',
   });

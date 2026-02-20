@@ -86,8 +86,12 @@ export class LettaGateway {
       const response = await this.request(`/v1/agents/${agentId}`);
       const data = (await response.json()) as LettaAgentResponse;
       return this.mapAgentResponse(data, (data.metadata?.conversationId as string) || 'unknown');
-    } catch {
-      return null;
+    } catch (error) {
+      if (error instanceof LettaApiError && error.statusCode === 404) {
+        return null;
+      }
+      console.error(`[LettaGateway] Failed to get agent ${agentId}:`, error);
+      throw error;
     }
   }
 
@@ -103,8 +107,12 @@ export class LettaGateway {
       // Return the companion agent (not prompt_enhancer)
       const companion = matching.find((a) => a.metadata?.agentType === 'companion') || matching[0];
       return this.mapAgentResponse(companion, conversationId);
-    } catch {
-      return null;
+    } catch (error) {
+      if (error instanceof LettaApiError && error.statusCode === 404) {
+        return null;
+      }
+      console.error(`[LettaGateway] Failed to find agent for conversation ${conversationId}:`, error);
+      throw error;
     }
   }
 
@@ -275,8 +283,8 @@ export class LettaGateway {
               try {
                 const argsStr = event.tool_call?.arguments || event.arguments || '{}';
                 toolCallArgs = typeof argsStr === 'string' ? JSON.parse(argsStr) : argsStr;
-              } catch {
-                /* ignore parse errors */
+              } catch (parseError) {
+                console.error(`[LettaGateway] Failed to parse tool call args for ${toolCallName}:`, parseError);
               }
               pendingToolCallName = toolCallName;
               pendingToolCallArgs = toolCallArgs;
@@ -309,8 +317,8 @@ export class LettaGateway {
               accumulatedContent += event.delta;
               tokenCount++;
             }
-          } catch {
-            // skip malformed chunks
+          } catch (chunkError) {
+            console.warn(`[LettaGateway] Skipping malformed SSE chunk:`, jsonStr.substring(0, 100), chunkError);
           }
         }
       }

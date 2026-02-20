@@ -15,7 +15,6 @@ import type { Container } from '../../container.js';
 const sendSchema = z.object({
   conversationId: z.string().optional(),
   message: z.string().min(1),
-  userId: z.string().optional().default('guest'),
   companionPersonaId: z.string().optional(),
 });
 
@@ -25,6 +24,7 @@ export function createChatSendRoutes(container: Container): Router {
   router.post('/send', async (req, res) => {
     try {
       const body = sendSchema.parse(req.body);
+      const userId = req.user?.sub || 'guest';
 
       const {
         lettaGateway,
@@ -42,8 +42,8 @@ export function createChatSendRoutes(container: Container): Router {
           if (existing) {
             lettaAgentId = existing.lettaAgentId;
           }
-        } catch {
-          // DB not available — fall through to provisioning
+        } catch (dbError) {
+          console.error(`[ChatSend] DB lookup failed for persona ${body.companionPersonaId}:`, dbError);
         }
       }
 
@@ -51,7 +51,7 @@ export function createChatSendRoutes(container: Container): Router {
       if (!lettaAgentId && body.companionPersonaId && agentProvisioner) {
         try {
           const provisioned = await agentProvisioner.provisionCompanionAgent({
-            userId: body.userId,
+            userId,
             companionPersonaId: body.companionPersonaId,
             companionName: 'Companion', // Could be enriched from DB lookup
             conversationId: body.conversationId,
@@ -120,7 +120,7 @@ export function createChatSendRoutes(container: Container): Router {
                 const genResult = await nativeMediaService.triggerGeneration({
                   type: mediaType as 'image' | 'video',
                   enhancedPrompt: prompt,
-                  userId: body.userId,
+                  userId,
                   conversationId: body.conversationId,
                   companionId: body.companionPersonaId,
                 });
@@ -131,7 +131,8 @@ export function createChatSendRoutes(container: Container): Router {
                   type: mediaType,
                   status: genResult.status,
                 });
-              } catch {
+              } catch (mediaError) {
+                console.error(`[ChatSend] Media generation failed for ${mediaType}:`, mediaError);
                 sendSSE('media_started', {
                   type: mediaType,
                   status: 'failed',
@@ -144,6 +145,7 @@ export function createChatSendRoutes(container: Container): Router {
 
         sendSSE('done', { status: 'completed' });
       } catch (err) {
+        console.error(`[ChatSend] Stream error for agent ${lettaAgentId}:`, err);
         sendSSE('error', {
           message: err instanceof Error ? err.message : 'Stream error',
         });
@@ -154,8 +156,9 @@ export function createChatSendRoutes(container: Container): Router {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Validation error', details: error.errors });
       }
+      console.error('[ChatSend] Unexpected error:', error);
       return res.status(500).json({
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: 'An internal error occurred',
       });
     }
   });

@@ -5,6 +5,7 @@
  */
 
 import { Router, type Request, type Response } from 'express';
+import crypto from 'crypto';
 import {
   ADMIN_PASSWORD,
   COOKIE_NAME,
@@ -58,7 +59,14 @@ export function createAuthRoutes(): Router {
       return res.redirect('/admin?error=rate_limited');
     }
 
-    if (password === ADMIN_PASSWORD) {
+    if (!ADMIN_PASSWORD) {
+      return res.redirect('/admin?error=not_configured');
+    }
+
+    const passwordMatch = password && password.length === ADMIN_PASSWORD.length &&
+      crypto.timingSafeEqual(Buffer.from(password), Buffer.from(ADMIN_PASSWORD));
+
+    if (passwordMatch) {
       recordLoginAttempt(clientIp, true);
       const sessionToken = generateSessionToken();
       activeSessions.set(sessionToken, { expiresAt: Date.now() + 24 * 60 * 60 * 1000 });

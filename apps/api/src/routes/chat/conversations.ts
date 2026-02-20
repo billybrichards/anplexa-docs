@@ -11,7 +11,6 @@ import { z } from 'zod';
 import type { Container } from '../../container.js';
 
 const createConversationSchema = z.object({
-  userId: z.string().optional().default('guest'),
   title: z.string().optional(),
   companionPersonaId: z.string().optional(),
 });
@@ -25,6 +24,7 @@ export function createChatConversationRoutes(container: Container): Router {
   router.post('/conversations', async (req, res, next) => {
     try {
       const body = createConversationSchema.parse(req.body);
+      const userId = req.user?.sub || 'guest';
       const conversationRepository = container.cradle.conversationRepository;
       if (!conversationRepository) {
         return res.status(501).json({ error: 'Conversations not available' });
@@ -33,7 +33,7 @@ export function createChatConversationRoutes(container: Container): Router {
       const id = `conv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       const conversation = await conversationRepository.create({
         id,
-        userId: body.userId,
+        userId,
         title: body.title || 'New Conversation',
       });
 
@@ -51,10 +51,7 @@ export function createChatConversationRoutes(container: Container): Router {
    */
   router.get('/conversations', async (req, res, next) => {
     try {
-      const userId = req.query.userId as string;
-      if (!userId) {
-        return res.status(400).json({ error: 'userId query parameter required' });
-      }
+      const userId = req.user?.sub || (req.query.userId as string) || 'guest';
 
       const conversationRepository = container.cradle.conversationRepository;
       const conversations = await conversationRepository.getByUserId(userId);

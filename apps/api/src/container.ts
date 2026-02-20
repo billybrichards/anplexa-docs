@@ -172,7 +172,10 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
         console.log('[DI] Using ClaudeTraitAnalysisService (Anthropic API)');
         return new ClaudeTraitAnalysisService(anthropicKey);
       }
-      console.log('[DI] No ANTHROPIC_API_KEY — using MockTraitAnalysisService');
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('ANTHROPIC_API_KEY is required in production for trait analysis');
+      }
+      console.warn('[DI] WARNING: No ANTHROPIC_API_KEY — using MockTraitAnalysisService (dev only)');
       return new MockTraitAnalysisService();
     }).singleton(),
 
@@ -226,6 +229,15 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
         },
       }, mediaGenerationRepository),
     ).singleton(),
+
+    // Email Scheduler (stub for dev/testing — replace with real implementation)
+    emailScheduler: asFunction(() => ({
+      async processPendingEmails() { console.warn('[EmailScheduler] Stub: processPendingEmails'); return { sent: 0, failed: 0 }; },
+      async scheduleWaitlistInvite(_userId: string) { console.warn('[EmailScheduler] Stub: scheduleWaitlistInvite'); },
+      async cancelPendingEmails(_userId: string) { console.warn('[EmailScheduler] Stub: cancelPendingEmails'); },
+      async trackEmailOpen(_logId: string) { console.warn('[EmailScheduler] Stub: trackEmailOpen'); },
+      async trackEmailClick(_logId: string, _source: string) { console.warn('[EmailScheduler] Stub: trackEmailClick'); },
+    } satisfies EmailScheduler)).singleton(),
 
     // Use Cases - wire up all use cases using the factory
     useCases: asFunction(({
