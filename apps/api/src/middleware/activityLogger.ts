@@ -14,10 +14,11 @@ const SKIP_PATHS = ['/health', '/admin'];
 
 export function createActivityLoggerMiddleware(container: Container) {
   const { activityLogRepository } = container.cradle;
+  let disabled = false;
 
   return (req: Request, res: Response, next: NextFunction) => {
-    // Skip health checks and admin routes
-    if (SKIP_PATHS.some((p) => req.path.startsWith(p))) {
+    // Skip if logging is disabled (table doesn't exist) or path should be skipped
+    if (disabled || SKIP_PATHS.some((p) => req.path.startsWith(p))) {
       return next();
     }
 
@@ -49,7 +50,9 @@ export function createActivityLoggerMiddleware(container: Container) {
           referrer: req.headers.referer ?? null,
         })
         .catch((err: unknown) => {
-          console.error('[ActivityLogger] Failed to log request:', err);
+          // Disable logging if the table doesn't exist to avoid spam
+          console.warn('[ActivityLogger] Disabling — activity_logs table may not exist:', String(err));
+          disabled = true;
         });
     });
 

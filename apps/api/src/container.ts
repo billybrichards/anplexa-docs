@@ -258,7 +258,7 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       traitAnalysisService,
       llmService,
     }) => {
-      return createAllUseCases({
+      const deps = {
         userRepository,
         conversationRepository,
         messageRepository,
@@ -271,7 +271,26 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
         ollamaGateway,
         traitAnalysisService,
         llmService,
+      };
+
+      // Log which optional deps resolved for use case creation
+      console.log('[DI] Use case deps:', {
+        birthChartRepository: !!birthChartRepository,
+        astrologyService: !!astrologyService,
+        traitAnalysisService: !!traitAnalysisService,
+        ollamaGateway: !!ollamaGateway,
+        llmService: !!llmService,
       });
+
+      const useCases = createAllUseCases(deps);
+
+      console.log('[DI] Use cases created:', {
+        calculateBirthChart: !!useCases.calculateBirthChart,
+        analyzeChartPersonality: !!useCases.analyzeChartPersonality,
+        sendMessage: !!useCases.sendMessage,
+      });
+
+      return useCases;
     }).singleton(),
   });
 
