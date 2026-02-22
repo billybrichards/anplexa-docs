@@ -20,14 +20,26 @@ import { createAstrologyRoutes } from './routes/astrology/index.js';
 import { createMediaRoutes } from './routes/media/index.js';
 import { createCompanionRoutes } from './routes/companion/index.js';
 import { createChatRoutes } from './routes/chat/index.js';
+import { createLogsRoutes } from './routes/logs/index.js';
+import { createActivityLoggerMiddleware } from './middleware/activityLogger.js';
 
 export function createApp(container: Container): Express {
   const app = express();
 
   // Security middleware
   app.use(helmet());
+
+  // Parse CORS_ORIGIN as comma-separated list to support multiple frontends
+  // e.g. CORS_ORIGIN=https://prod.example.com,https://dev.example.com
+  const corsOrigin = process.env.CORS_ORIGIN;
+  const origin = !corsOrigin
+    ? '*'
+    : corsOrigin.includes(',')
+      ? corsOrigin.split(',').map((o) => o.trim())
+      : corsOrigin;
+
   app.use(cors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin,
     credentials: true,
   }));
 
@@ -38,6 +50,9 @@ export function createApp(container: Container): Express {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   app.use(cookieParser());
+
+  // Activity logging middleware (after body parsing, before routes)
+  app.use(createActivityLoggerMiddleware(container));
 
   // Make container available to all routes
   app.locals.container = container;
@@ -60,6 +75,7 @@ export function createApp(container: Container): Express {
   app.use('/api/companion', createCompanionRoutes(container));
   app.use('/api/chat', createChatRoutes(container));
   app.use('/api/docs', createDocsRoutes(container));
+  app.use('/api/logs', createLogsRoutes(container));
   app.use('/admin', createAdminRoutes(container));
   app.use('/crm', createCrmRoutes(container));
 

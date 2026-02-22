@@ -78,6 +78,7 @@ export {
   LettaAgentRepository,
   MediaGenerationRepository,
   WorkflowRepository,
+  ActivityLogRepository,
 } from './repositories/index.js';
 
 // ============================================================================

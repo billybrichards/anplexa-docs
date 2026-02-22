@@ -356,6 +356,28 @@ export const comfyuiWorkflows = pgTable('comfyui_workflows', {
   updatedAt: text('updated_at').default('CURRENT_TIMESTAMP'),
 });
 
+// Activity Logs — unified tracking for frontend events and backend API requests
+export const activityLogs = pgTable('activity_logs', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').references(() => users.id),
+  sessionId: text('session_id'), // Browser sessionStorage ID
+  eventType: text('event_type').notNull(), // 'click' | 'page_view' | 'navigation' | 'onboarding' | 'api_request' | 'api_response' | 'error'
+  eventName: text('event_name').notNull(), // e.g. 'login_button_click', 'GET /api/chat'
+  source: text('source').notNull().default('backend'), // 'frontend' | 'backend'
+  requestId: text('request_id'), // X-Request-ID for correlating frontend/backend
+  method: text('method'), // HTTP method (GET, POST, etc.)
+  path: text('path'), // URL path
+  statusCode: integer('status_code'),
+  durationMs: integer('duration_ms'),
+  metadata: text('metadata'), // JSON string for arbitrary extra data
+  errorMessage: text('error_message'),
+  errorStack: text('error_stack'),
+  userAgent: text('user_agent'),
+  ipAddress: text('ip_address'),
+  referrer: text('referrer'),
+  createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   conversations: many(conversations),
@@ -545,3 +567,6 @@ export type MediaGeneration = typeof mediaGenerations.$inferSelect;
 export type NewMediaGeneration = typeof mediaGenerations.$inferInsert;
 export type ComfyuiWorkflow = typeof comfyuiWorkflows.$inferSelect;
 export type NewComfyuiWorkflow = typeof comfyuiWorkflows.$inferInsert;
+
+export type ActivityLog = typeof activityLogs.$inferSelect;
+export type NewActivityLog = typeof activityLogs.$inferInsert;

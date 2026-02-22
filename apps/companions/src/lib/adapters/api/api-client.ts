@@ -8,7 +8,10 @@
  * - Handle errors globally
  * - Mock for testing
  * - Add logging/monitoring
+ * - Correlate requests via X-Request-ID
  */
+
+import { activityLogger } from '@/lib/analytics';
 
 export interface ApiClientOptions {
   baseUrl?: string;
@@ -68,11 +71,16 @@ export class ApiClient {
     const url = `${this.baseUrl}${endpoint}`;
     const method = config.method || 'GET';
 
+    const requestId = typeof crypto !== 'undefined'
+      ? crypto.randomUUID()
+      : Math.random().toString(36).slice(2);
+
     const fetchOptions: RequestInit = {
       method,
       headers: {
         ...this.defaultHeaders,
         ...config.headers,
+        'X-Request-ID': requestId,
       },
       signal: config.signal,
     };
@@ -82,8 +90,22 @@ export class ApiClient {
       fetchOptions.body = JSON.stringify(config.body);
     }
 
+    const startTime = Date.now();
+
     try {
       const response = await fetch(url, fetchOptions);
+      const durationMs = Date.now() - startTime;
+
+      // Log the API call (skip logging the logs endpoint itself)
+      if (!endpoint.startsWith('/logs')) {
+        activityLogger.trackApiCall({
+          requestId,
+          method,
+          path: endpoint,
+          statusCode: response.status,
+          durationMs,
+        });
+      }
 
       // Handle non-2xx responses
       if (!response.ok) {
@@ -102,9 +124,22 @@ export class ApiClient {
 
       return await response.json();
     } catch (error) {
+      const durationMs = Date.now() - startTime;
+
       // Re-throw API errors as-is
       if (error instanceof ApiError) {
         throw error;
+      }
+
+      // Log network errors
+      if (!endpoint.startsWith('/logs')) {
+        activityLogger.trackApiCall({
+          requestId,
+          method,
+          path: endpoint,
+          durationMs,
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        });
       }
 
       // Wrap other errors

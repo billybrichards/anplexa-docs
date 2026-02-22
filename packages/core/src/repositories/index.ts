@@ -32,3 +32,4 @@ export { CompanionPersonaRepository } from './companion-persona.repository.js';
 export { LettaAgentRepository } from './letta-agent.repository.js';
 export { MediaGenerationRepository } from './media-generation.repository.js';
 export { WorkflowRepository } from './workflow.repository.js';
+export { ActivityLogRepository } from './activity-log.repository.js';

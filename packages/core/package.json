@@ -113,6 +113,18 @@
     "./domain/services/ITraitAnalysisService": {
       "types": "./dist/domain/services/ITraitAnalysisService.d.ts",
       "default": "./dist/domain/services/ITraitAnalysisService.js"
+    },
+    "./domain/services/astrology/TraitExtractionService": {
+      "types": "./dist/domain/services/astrology/TraitExtractionService.d.ts",
+      "default": "./dist/domain/services/astrology/TraitExtractionService.js"
+    },
+    "./domain/services/astrology/CompatibilityCalculationService": {
+      "types": "./dist/domain/services/astrology/CompatibilityCalculationService.d.ts",
+      "default": "./dist/domain/services/astrology/CompatibilityCalculationService.js"
+    },
+    "./use-cases/astrology/CalculateBirthChartUseCase": {
+      "types": "./dist/use-cases/astrology/CalculateBirthChartUseCase.d.ts",
+      "default": "./dist/use-cases/astrology/CalculateBirthChartUseCase.js"
     }
   },
   "scripts": {

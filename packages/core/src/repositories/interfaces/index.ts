@@ -95,3 +95,10 @@ export type {
   WorkflowRecord,
   CreateWorkflowData,
 } from './workflow.repository.interface.js';
+
+// Activity Log Repository
+export type {
+  IActivityLogRepository,
+  CreateActivityLogData,
+  ActivityLogQuery,
+} from './activity-log.repository.interface.js';

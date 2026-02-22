@@ -24,6 +24,7 @@ import {
   LettaAgentRepository,
   MediaGenerationRepository,
   WorkflowRepository,
+  ActivityLogRepository,
   createAllUseCases,
   type AllUseCases,
 } from '@anplexa/core';
@@ -77,6 +78,7 @@ export interface AppContainer {
   userFeedbackRepository: UserFeedbackRepository;
   birthChartRepository: BirthChartRepository;
   companionPersonaRepository: CompanionPersonaRepository;
+  activityLogRepository: ActivityLogRepository;
 
   // Services
   jwtService: JWTService;
@@ -137,6 +139,7 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     userFeedbackRepository: asClass(UserFeedbackRepository).singleton(),
     birthChartRepository: asClass(BirthChartRepository).singleton(),
     companionPersonaRepository: asClass(CompanionPersonaRepository).singleton(),
+    activityLogRepository: asClass(ActivityLogRepository).singleton(),
 
     // Services
     jwtService: asFunction(() => {

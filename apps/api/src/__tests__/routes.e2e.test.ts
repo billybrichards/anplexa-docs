@@ -100,6 +100,19 @@ function createMockContainer() {
     }),
   };
 
+  const mockActivityLogRepository = {
+    create: vi.fn().mockResolvedValue({}),
+    createBatch: vi.fn().mockResolvedValue(undefined),
+    query: vi.fn().mockResolvedValue([]),
+    getByRequestId: vi.fn().mockResolvedValue([]),
+    getUserJourney: vi.fn().mockResolvedValue([]),
+    deleteOlderThan: vi.fn().mockResolvedValue(0),
+  };
+
+  const mockJwtService = {
+    verifyAccessToken: vi.fn().mockReturnValue(null),
+  };
+
   return {
     cradle: {
       useCases: mockUseCases,
@@ -110,6 +123,8 @@ function createMockContainer() {
       conversationRepository: mockConversationRepository,
       messageRepository: mockMessageRepository,
       profileGeneratorAgent: mockProfileGeneratorAgent,
+      activityLogRepository: mockActivityLogRepository,
+      jwtService: mockJwtService,
     },
     resolve: (name: string) => (createMockContainer() as any).cradle[name],
   };
