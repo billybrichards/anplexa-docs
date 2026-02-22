@@ -131,7 +131,7 @@ function TraitGlobeContent() {
       const data = await response.json();
 
       // Reconstruct TraitProfile from API response
-      const profile = TraitProfile.fromJSON(data);
+      const profile = TraitProfile.fromJSON(data.traitProfile);
 
       clearInterval(messageInterval);
 
