@@ -123,8 +123,10 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     }).singleton(),
 
     // Drizzle ORM instance with PostgreSQL
-    db: asFunction(({ pool }) => {
-      return drizzle(pool, { schema });
+    // NOTE: Resolve pool from cradle explicitly — Awilix CLASSIC mode
+    // silently fails to inject destructured arrow function params.
+    db: asFunction(() => {
+      return drizzle(container.cradle.pool, { schema });
     }).singleton(),
 
     // Repositories
@@ -188,20 +190,21 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     workflowRepository: asClass(WorkflowRepository).singleton(),
 
     // Agent provisioning
-    agentProvisioner: asFunction(({ lettaGateway, lettaAgentRepository }) =>
-      new AgentProvisioner(lettaGateway, lettaAgentRepository, {
+    agentProvisioner: asFunction(() => {
+      const c = container.cradle;
+      return new AgentProvisioner(c.lettaGateway, c.lettaAgentRepository, {
         chatModel: process.env.LETTA_CHAT_MODEL || 'ollama/qwen3-8b-nsfw:latest',
         embeddingModel: process.env.LETTA_EMBEDDING_MODEL || 'ollama/nomic-embed-text:latest',
-      }),
+      });
+    }).singleton(),
+
+    profileGeneratorAgent: asFunction(() =>
+      new ProfileGeneratorAgent(container.cradle.nativeMediaService),
     ).singleton(),
 
-    profileGeneratorAgent: asFunction(({ nativeMediaService }) =>
-      new ProfileGeneratorAgent(nativeMediaService),
-    ).singleton(),
-
-    llmService: asFunction(({ ollamaGateway }) => {
+    llmService: asFunction(() => {
       const model = process.env.OLLAMA_LONG_FORM_MODEL || process.env.OLLAMA_GENERAL_MODEL || 'llama2';
-      return new OllamaLLMService(ollamaGateway, model);
+      return new OllamaLLMService(container.cradle.ollamaGateway, model);
     }).singleton(),
 
     // Letta
@@ -219,20 +222,21 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       apiKey: process.env.COMFYUI_API_KEY || '',
     })).singleton(),
 
-    workflowBuilder: asFunction(({ workflowRepository }) =>
-      new WorkflowBuilder(workflowRepository)
+    workflowBuilder: asFunction(() =>
+      new WorkflowBuilder(container.cradle.workflowRepository)
     ).singleton(),
 
-    nativeMediaService: asFunction(({ comfyUIGateway, workflowBuilder, mediaGenerationRepository }) =>
-      new NativeMediaService(comfyUIGateway, workflowBuilder, {
+    nativeMediaService: asFunction(() => {
+      const c = container.cradle;
+      return new NativeMediaService(c.comfyUIGateway, c.workflowBuilder, {
         s3Config: {
           accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
           secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
           bucketName: process.env.AWS_S3_BUCKET_NAME || 'anplexa-media',
           region: process.env.AWS_REGION || 'us-east-1',
         },
-      }, mediaGenerationRepository),
-    ).singleton(),
+      }, c.mediaGenerationRepository);
+    }).singleton(),
 
     // Email Scheduler (stub for dev/testing — replace with real implementation)
     emailScheduler: asFunction(() => ({
