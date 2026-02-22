@@ -1,16 +1,19 @@
 /**
  * Birth Chart Calculation Routes
  *
- * Handles birth chart calculation using @anplexa/core use cases.
+ * Compute-only endpoint — calculates natal chart without DB persistence.
+ * Chart data lives in frontend session storage until the user authenticates,
+ * at which point it can be persisted via a separate endpoint.
  */
 
 import { Router } from 'express';
 import { z } from 'zod';
+import { BirthData } from '@anplexa/core/domain/value-objects/astrology/BirthData';
 import type { Container } from '../../container.js';
 
-// Validation schema
+// Validation schema — userId removed (not needed for compute-only)
 const calculateBirthChartSchema = z.object({
-  userId: z.string(),
+  userId: z.string().optional(), // ignored — kept for backwards compat with frontend
   birthDate: z.string(), // ISO date string
   birthTime: z.string().nullable(), // HH:MM or null
   timeZone: z.string(), // IANA timezone
@@ -19,7 +22,6 @@ const calculateBirthChartSchema = z.object({
   placeName: z.string(),
   country: z.string(),
   displayName: z.string().optional().nullable(),
-  setAsActive: z.boolean().optional(),
   houseSystem: z.enum(['placidus', 'whole_sign', 'koch', 'equal']).optional(),
 });
 
@@ -28,44 +30,41 @@ const calculateBirthChartSchema = z.object({
  */
 export function createCalculateBirthChartRoutes(container: Container): Router {
   const router = Router();
-  const { useCases } = container.cradle;
+  const { astrologyService } = container.cradle;
 
   // POST /api/birth-chart/calculate
   router.post('/calculate', async (req, res, next) => {
     try {
       const body = calculateBirthChartSchema.parse(req.body);
 
-      if (!useCases.calculateBirthChart) {
-        return res.status(501).json({ error: 'Birth chart calculation is not available' });
-      }
-
-      // Execute calculation use case
-      const result = await useCases.calculateBirthChart.execute({
-        userId: body.userId,
-        birthDate: body.birthDate,
-        birthTime: body.birthTime,
+      // Build the domain value object
+      const birthData = BirthData.create({
+        date: new Date(body.birthDate),
+        time: body.birthTime || '12:00',
         timeZone: body.timeZone,
         latitude: body.latitude,
         longitude: body.longitude,
         placeName: body.placeName,
         country: body.country,
-        displayName: body.displayName,
-        setAsActive: body.setAsActive,
-        houseSystem: body.houseSystem,
+        timeKnown: body.birthTime !== null,
       });
 
-      res.status(201).json({
+      // Pure computation — no DB writes
+      const chartData = await astrologyService.calculateNatalChart(birthData);
+      const [interpretation, companionContext] = await Promise.all([
+        astrologyService.generateInterpretation(chartData),
+        astrologyService.generateCompanionContext(chartData),
+      ]);
+
+      const bigThree = chartData.getBigThree();
+
+      res.status(200).json({
         message: 'Birth chart calculated successfully',
-        birthChart: {
-          id: result.birthChart.id,
-          displayName: result.birthChart.displayName,
-          isActive: result.birthChart.isActive,
-        },
-        sunSign: result.sunSign,
-        moonSign: result.moonSign,
-        risingSign: result.risingSign,
-        interpretation: result.interpretation,
-        companionContext: result.companionContext,
+        sunSign: bigThree.sun,
+        moonSign: bigThree.moon,
+        risingSign: bigThree.rising,
+        interpretation,
+        companionContext,
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -75,7 +74,6 @@ export function createCalculateBirthChartRoutes(container: Container): Router {
         });
       }
       if (error instanceof Error) {
-        // Handle domain errors (e.g., duplicate chart, invalid birth data)
         return res.status(400).json({
           error: error.message,
         });
