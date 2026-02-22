@@ -13,7 +13,7 @@ import type {
 import { PersonalityTraits } from '@anplexa/core/domain/value-objects/companion/PersonalityTraits';
 import { CommunicationStyle } from '@anplexa/core/domain/value-objects/companion/CommunicationStyle';
 import { EmotionalApproach } from '@anplexa/core/domain/value-objects/companion/EmotionalApproach';
-import { OllamaGateway, type OllamaConfig } from './ollama.js';
+import { OllamaGateway } from './ollama.js';
 import { buildPersonaGenerationMessages } from './persona-prompt-builder.js';
 
 /**
@@ -52,12 +52,8 @@ interface RawPersonaResponse {
  * Ollama LLM Service
  *
  * @example
- * const service = new OllamaLLMService({
- *   baseUrl: 'http://localhost:11434',
- *   apiKey: '',
- *   generalModel: 'dolphin-mixtral:latest',
- *   longFormModel: 'dolphin-mixtral:latest',
- * });
+ * const gateway = new OllamaGateway({ baseUrl: 'http://localhost:11434', ... });
+ * const service = new OllamaLLMService(gateway, 'dolphin-mixtral:latest');
  *
  * const persona = await service.generateCompanionPersona({
  *   birthChart,
@@ -69,10 +65,9 @@ export class OllamaLLMService implements ILLMService {
   private gateway: OllamaGateway;
   private model: string;
 
-  constructor(config: OllamaConfig) {
-    this.gateway = new OllamaGateway(config);
-    // Use longFormModel for persona generation (needs detailed output)
-    this.model = config.longFormModel || config.generalModel;
+  constructor(gateway: OllamaGateway, model?: string) {
+    this.gateway = gateway;
+    this.model = model || 'llama2';
   }
 
   /**
@@ -284,10 +279,12 @@ export class OllamaLLMService implements ILLMService {
  * Create an Ollama LLM service from environment variables
  */
 export function createOllamaLLMService(): OllamaLLMService {
-  return new OllamaLLMService({
+  const gateway = new OllamaGateway({
     baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
     apiKey: process.env.OLLAMA_API_KEY || '',
     generalModel: process.env.OLLAMA_GENERAL_MODEL || 'dolphin-mixtral:latest',
     longFormModel: process.env.OLLAMA_LONGFORM_MODEL || 'dolphin-mixtral:latest',
   });
+  const model = process.env.OLLAMA_LONGFORM_MODEL || process.env.OLLAMA_GENERAL_MODEL || 'dolphin-mixtral:latest';
+  return new OllamaLLMService(gateway, model);
 }

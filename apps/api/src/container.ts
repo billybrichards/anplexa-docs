@@ -197,7 +197,8 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     ).singleton(),
 
     llmService: asFunction(({ ollamaGateway }) => {
-      return new OllamaLLMService(ollamaGateway);
+      const model = process.env.OLLAMA_LONG_FORM_MODEL || process.env.OLLAMA_GENERAL_MODEL || 'llama2';
+      return new OllamaLLMService(ollamaGateway, model);
     }).singleton(),
 
     // Letta
