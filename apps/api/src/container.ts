@@ -244,53 +244,25 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     } satisfies EmailScheduler)).singleton(),
 
     // Use Cases - wire up all use cases using the factory
-    useCases: asFunction(({
-      userRepository,
-      conversationRepository,
-      messageRepository,
-      sessionRepository,
-      birthChartRepository,
-      companionPersonaRepository,
-      passwordService,
-      jwtService,
-      astrologyService,
-      ollamaGateway,
-      traitAnalysisService,
-      llmService,
-    }) => {
-      const deps = {
-        userRepository,
-        conversationRepository,
-        messageRepository,
-        sessionRepository,
-        birthChartRepository,
-        companionPersonaRepository,
-        passwordService,
-        jwtService,
-        astrologyService,
-        ollamaGateway,
-        traitAnalysisService,
-        llmService,
-      };
-
-      // Log which optional deps resolved for use case creation
-      console.log('[DI] Use case deps:', {
-        birthChartRepository: !!birthChartRepository,
-        astrologyService: !!astrologyService,
-        traitAnalysisService: !!traitAnalysisService,
-        ollamaGateway: !!ollamaGateway,
-        llmService: !!llmService,
+    // NOTE: Resolve deps directly from container.cradle instead of relying on
+    // Awilix CLASSIC mode parameter parsing, which silently fails to inject
+    // destructured arrow function params beyond a certain count.
+    useCases: asFunction(() => {
+      const c = container.cradle;
+      return createAllUseCases({
+        userRepository: c.userRepository,
+        conversationRepository: c.conversationRepository,
+        messageRepository: c.messageRepository,
+        sessionRepository: c.sessionRepository,
+        birthChartRepository: c.birthChartRepository,
+        companionPersonaRepository: c.companionPersonaRepository,
+        passwordService: c.passwordService,
+        jwtService: c.jwtService,
+        astrologyService: c.astrologyService,
+        ollamaGateway: c.ollamaGateway,
+        traitAnalysisService: c.traitAnalysisService,
+        llmService: c.llmService,
       });
-
-      const useCases = createAllUseCases(deps);
-
-      console.log('[DI] Use cases created:', {
-        calculateBirthChart: !!useCases.calculateBirthChart,
-        analyzeChartPersonality: !!useCases.analyzeChartPersonality,
-        sendMessage: !!useCases.sendMessage,
-      });
-
-      return useCases;
     }).singleton(),
   });
 
