@@ -51,7 +51,7 @@ export class ApiClient {
   private defaultHeaders: Record<string, string>;
 
   constructor(options?: ApiClientOptions) {
-    this.baseUrl = options?.baseUrl || '/api';
+    this.baseUrl = (options?.baseUrl || '/api').replace(/\/+$/, '');
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       ...options?.headers,
