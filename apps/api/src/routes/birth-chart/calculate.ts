@@ -63,6 +63,7 @@ export function createCalculateBirthChartRoutes(container: Container): Router {
         sunSign: bigThree.sun,
         moonSign: bigThree.moon,
         risingSign: bigThree.rising,
+        chartData: chartData.toJSON(),
         interpretation,
         companionContext,
       });

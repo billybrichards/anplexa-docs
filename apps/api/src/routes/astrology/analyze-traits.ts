@@ -1,13 +1,14 @@
 /**
  * Trait Analysis Routes
  *
- * POST /api/astrology/analyze-traits — Extract personality traits from chart data
+ * POST /api/astrology/analyze-traits — Extract personality traits from chart data.
+ * Compute-only: accepts serialized chart data from the client, no DB access.
  */
 
 import { Router } from 'express';
 import { z } from 'zod';
 import type { Container } from '../../container.js';
-import type { NatalChartData } from '@anplexa/core/domain/value-objects/astrology/NatalChartData';
+import { NatalChartData } from '@anplexa/core/domain/value-objects/astrology/NatalChartData';
 
 const analyzeTraitsSchema = z.object({
   chartData: z.record(z.unknown()),
@@ -22,7 +23,8 @@ export function createAnalyzeTraitsRoutes(container: Container): Router {
   /**
    * POST /api/astrology/analyze-traits
    *
-   * Takes natal chart data, extracts personality traits via TraitExtractionService + AI enrichment.
+   * Takes serialized natal chart data, reconstructs it, then extracts
+   * personality traits via TraitExtractionService + AI enrichment.
    */
   router.post('/analyze-traits', async (req, res, next) => {
     try {
@@ -32,8 +34,11 @@ export function createAnalyzeTraitsRoutes(container: Container): Router {
         return res.status(501).json({ error: 'Trait analysis is not available' });
       }
 
+      // Reconstruct the NatalChartData value object from serialized JSON
+      const chartData = NatalChartData.fromJSON(body.chartData);
+
       const result = await useCases.analyzeChartPersonality.execute({
-        chartData: body.chartData as unknown as NatalChartData,
+        chartData,
         userId: body.userId,
         birthChartId: body.birthChartId,
       });

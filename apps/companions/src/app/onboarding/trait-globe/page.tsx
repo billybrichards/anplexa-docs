@@ -104,15 +104,13 @@ function TraitGlobeContent() {
     }, 800);
 
     try {
-      // Retrieve birthData from session storage using StorageService
-      const birthData = StorageService.getSessionItem<BirthDataStorage>(STORAGE_KEYS.BIRTH_DATA);
-      if (!birthData) {
+      // Retrieve chart result from session storage (stored by calculating page)
+      const chartResult = StorageService.getSessionItem<Record<string, unknown>>(STORAGE_KEYS.CHART_RESULT);
+      if (!chartResult?.chartData) {
         clearInterval(messageInterval);
         router.push('/onboarding/birth-data');
         return;
       }
-
-      const userId = birthData.userId || 'current-user';
 
       abortControllerRef.current = new AbortController();
 
@@ -120,7 +118,7 @@ function TraitGlobeContent() {
       const response = await fetch(`${apiBase}/api/astrology/analyze-traits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ chartData: chartResult.chartData }),
         signal: abortControllerRef.current.signal,
       });
 
@@ -207,6 +205,7 @@ function TraitGlobeContent() {
 
     // Track analytics
     const birthData = StorageService.getSessionItem<BirthDataStorage>(STORAGE_KEYS.BIRTH_DATA);
+    const chartResult = StorageService.getSessionItem<Record<string, unknown>>(STORAGE_KEYS.CHART_RESULT);
     const userId = birthData?.userId || 'current-user';
     analytics.trackCompanionGenerationStarted(userId);
     analytics.trackPhaseTransition('exploring', 'compatibility');
@@ -221,13 +220,29 @@ function TraitGlobeContent() {
     }, 1200);
 
     try {
+      if (!chartResult?.chartData || !birthData) {
+        throw new Error('Missing chart data. Please restart the onboarding flow.');
+      }
+
       abortControllerRef.current = new AbortController();
 
       const apiBase2 = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
       const response = await fetch(`${apiBase2}/api/companion/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({
+          chartData: chartResult.chartData,
+          birthData: {
+            date: birthData.date,
+            time: birthData.time || '12:00',
+            timeZone: birthData.location.timezone,
+            latitude: birthData.location.latitude,
+            longitude: birthData.location.longitude,
+            placeName: birthData.location.name.split(',')[0]?.trim() || '',
+            country: birthData.location.name.split(',')[1]?.trim() || '',
+            timeKnown: !!birthData.time,
+          },
+        }),
         signal: abortControllerRef.current.signal,
       });
 
