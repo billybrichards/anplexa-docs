@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { parseSSEStream, type SSEEvent } from '@/lib/sse-parser';
+import { parseSSEStream } from '@/lib/sse-parser';
 
 interface Message {
   id: string;

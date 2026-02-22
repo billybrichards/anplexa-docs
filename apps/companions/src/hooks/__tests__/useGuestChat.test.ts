@@ -11,7 +11,8 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useGuestChat, Message, Conversation } from '../useGuestChat';
+import { useGuestChat } from '../useGuestChat';
+import { Message, Conversation } from '@anplexa/core/domain/entities';
 
 /**
  * Mock localStorage implementation for testing
@@ -43,29 +44,27 @@ const originalWindow = globalThis.window;
 /**
  * Helper to create a test message
  */
-function createTestMessage(overrides?: Partial<Message>): Message {
-  return {
-    id: 'msg-1',
-    conversationId: 'conv-1',
-    role: 'user',
-    content: 'Hello, assistant!',
-    createdAt: new Date(),
-    ...overrides,
-  };
+function createTestMessage(overrides?: Partial<{ id: string; conversationId: string; role: 'user' | 'assistant' | 'system'; content: string; createdAt: Date }>): Message {
+  return Message.create({
+    id: overrides?.id ?? 'msg-1',
+    conversationId: overrides?.conversationId ?? 'conv-1',
+    role: overrides?.role ?? 'user',
+    content: overrides?.content ?? 'Hello, assistant!',
+    createdAt: overrides?.createdAt ?? new Date(),
+  });
 }
 
 /**
  * Helper to create a test conversation
  */
-function createTestConversation(overrides?: Partial<Conversation>): Conversation {
-  return {
-    id: 'conv-1',
-    userId: 'guest',
-    title: 'Test Conversation',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ...overrides,
-  };
+function createTestConversation(overrides?: Partial<{ id: string; userId: string; title: string | null; createdAt: Date; updatedAt: Date }>): Conversation {
+  return Conversation.create({
+    id: overrides?.id ?? 'conv-1',
+    userId: overrides?.userId ?? 'guest',
+    title: overrides?.title ?? 'Test Conversation',
+    createdAt: overrides?.createdAt ?? new Date(),
+    updatedAt: overrides?.updatedAt ?? new Date(),
+  });
 }
 
 describe('useGuestChat Hook', () => {

@@ -122,6 +122,10 @@
       "types": "./dist/domain/services/astrology/CompatibilityCalculationService.d.ts",
       "default": "./dist/domain/services/astrology/CompatibilityCalculationService.js"
     },
+    "./use-cases/astrology": {
+      "types": "./dist/use-cases/astrology/index.d.ts",
+      "default": "./dist/use-cases/astrology/index.js"
+    },
     "./use-cases/astrology/CalculateBirthChartUseCase": {
       "types": "./dist/use-cases/astrology/CalculateBirthChartUseCase.d.ts",
       "default": "./dist/use-cases/astrology/CalculateBirthChartUseCase.js"

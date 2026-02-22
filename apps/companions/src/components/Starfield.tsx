@@ -28,7 +28,7 @@ interface Star {
 export function Starfield({ starCount = 150, className = '' }: StarfieldProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const starsRef = useRef<Star[]>([]);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;

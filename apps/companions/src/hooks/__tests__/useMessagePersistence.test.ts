@@ -15,7 +15,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useMessagePersistence } from '../useMessagePersistence';
 import { apiClient } from '../../lib/adapters/api/api-client';
 import { storageService } from '../../lib/adapters/storage/storage-service';
-import type { Message } from '@anplexa/core';
+import { Message } from '@anplexa/core/domain/entities';
 import type { MessageDTO } from '@anplexa/contracts';
 
 // Mock dependencies
@@ -26,13 +26,13 @@ describe('useMessagePersistence', () => {
   const conversationId = 'conv-123';
   const userId = 'user-123';
 
-  const mockMessage: Message = {
+  const mockMessage: Message = Message.create({
     id: 'msg-1',
     conversationId,
     role: 'user',
     content: 'Hello, how are you?',
-    createdAt: new Date().toISOString(),
-  };
+    createdAt: new Date(),
+  });
 
   const mockMessageDTO: MessageDTO = {
     id: 'msg-1',
@@ -278,7 +278,7 @@ describe('useMessagePersistence', () => {
 
     it('should return cached messages when available', async () => {
       const cachedMessages: Message[] = [
-        { ...mockMessage, content: 'Cached message' },
+        Message.create({ id: mockMessage.id, conversationId: mockMessage.conversationId, role: mockMessage.role, content: 'Cached message' }),
       ];
       vi.mocked(storageService.get).mockReturnValueOnce(cachedMessages);
 
@@ -412,7 +412,7 @@ describe('useMessagePersistence', () => {
     it('should invalidate cache after saveMessage', async () => {
       // Setup initial cached messages
       const cachedMessages: Message[] = [
-        { ...mockMessage, id: 'old-msg', content: 'Old cached message' },
+        Message.create({ id: 'old-msg', conversationId, role: 'user', content: 'Old cached message' }),
       ];
       vi.mocked(storageService.get).mockReturnValue(cachedMessages);
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockMessageDTO);
@@ -442,13 +442,13 @@ describe('useMessagePersistence', () => {
 
     it('should invalidate cache after deleteMessage', async () => {
       // Setup initial cached messages with two messages
-      const messageToDelete: Message = {
+      const messageToDelete: Message = Message.create({
         id: 'msg-to-delete',
         conversationId,
         role: 'user',
         content: 'Message to delete',
-        createdAt: new Date().toISOString(),
-      };
+        createdAt: new Date(),
+      });
       const cachedMessages: Message[] = [mockMessage, messageToDelete];
       vi.mocked(storageService.get).mockReturnValue(cachedMessages);
       vi.mocked(apiClient.delete).mockResolvedValueOnce(undefined);

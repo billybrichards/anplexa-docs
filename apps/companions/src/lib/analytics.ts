@@ -16,7 +16,10 @@ interface QueuedEvent {
 
 const FLUSH_INTERVAL_MS = 5_000;
 const MAX_BATCH_SIZE = 20;
-const ENDPOINT = '/api/logs';
+const API_BASE = typeof window !== 'undefined'
+  ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002')
+  : '';
+const ENDPOINT = `${API_BASE}/api/logs`;
 
 function getSessionId(): string {
   if (typeof window === 'undefined') return '';
@@ -30,13 +33,12 @@ function getSessionId(): string {
 
 class ActivityLogger {
   private queue: QueuedEvent[] = [];
-  private timer: ReturnType<typeof setInterval> | null = null;
   private sessionId = '';
 
   constructor() {
     if (typeof window !== 'undefined') {
       this.sessionId = getSessionId();
-      this.timer = setInterval(() => this.flush(), FLUSH_INTERVAL_MS);
+      setInterval(() => this.flush(), FLUSH_INTERVAL_MS);
 
       window.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {

@@ -49,7 +49,7 @@ export function CosmicNav({
           <CosmicButton
             variant="secondary"
             size="sm"
-            as Link
+            asLink
             href={ctaHref}
             className="hover:scale-105"
           >

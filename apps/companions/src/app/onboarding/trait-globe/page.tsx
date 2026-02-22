@@ -45,12 +45,12 @@ function TraitGlobeContent() {
 
   // Phase management
   const [phase, setPhase] = useState<Phase>('analyzing');
-  const [previousPhase, setPreviousPhase] = useState<Phase | null>(null);
+  const [, setPreviousPhase] = useState<Phase | null>(null);
 
   // Phase 1: Analysis
   const [analysisStep, setAnalysisStep] = useState(0);
   const [traitProfile, setTraitProfile] = useState<TraitProfile | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(true);
+  const [, setIsAnalyzing] = useState(true);
 
   // Phase 2: Exploration
   const [selectedTrait, setSelectedTrait] = useState<TraitVisualization | null>(null);
@@ -61,7 +61,7 @@ function TraitGlobeContent() {
   // Phase 3: Compatibility
   const [compatibilityStep, setCompatibilityStep] = useState(0);
   const [compatibilityResult, setCompatibilityResult] = useState<CompatibilityResult | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [, setIsGenerating] = useState(false);
 
   // Error handling
   const [error, setError] = useState<string | null>(null);
