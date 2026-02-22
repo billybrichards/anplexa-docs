@@ -19,8 +19,17 @@ const AI_GENERATION_STEPS = [
   'Finalizing companion characteristics...',
 ];
 
-// Mock generated companion data
-const MOCK_COMPANION = {
+interface CompanionData {
+  id: string;
+  name: string;
+  personality: string[];
+  communicationStyle: string;
+  specializations: string[];
+}
+
+// Fallback companion data if session storage is empty (should rarely happen)
+const FALLBACK_COMPANION: CompanionData = {
+  id: `fallback_${Date.now()}`,
   name: 'Lunara',
   personality: [
     'Deeply empathetic and intuitive',
@@ -42,7 +51,7 @@ export default function CompanionCreation() {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [companion, setCompanion] = useState(MOCK_COMPANION);
+  const [companion, setCompanion] = useState<CompanionData>(FALLBACK_COMPANION);
 
   useEffect(() => {
     // Check if birth data exists
@@ -50,6 +59,15 @@ export default function CompanionCreation() {
     if (!birthData) {
       router.push('/onboarding/birth-data');
       return;
+    }
+
+    // Load real companion data from session storage (stored by trait-globe)
+    const storedCompanion = StorageService.getSessionItem<CompanionData>(STORAGE_KEYS.COMPANION);
+    if (storedCompanion?.name) {
+      console.log('[CompanionCreation] Loaded companion from storage:', storedCompanion.name, 'id:', storedCompanion.id);
+      setCompanion(storedCompanion);
+    } else {
+      console.warn('[CompanionCreation] No companion in storage, using fallback');
     }
 
     // Simulate AI generation process
@@ -87,9 +105,9 @@ export default function CompanionCreation() {
   }, [router]);
 
   const handleGetStarted = () => {
-    // Store companion data
+    // Ensure companion data is in session storage (may already be there from trait-globe)
+    console.log('[CompanionCreation] Navigating to chat with companion:', companion.name, 'id:', companion.id);
     StorageService.setSessionItem(STORAGE_KEYS.COMPANION, companion);
-    // Navigate to chat
     router.push('/chat');
   };
 

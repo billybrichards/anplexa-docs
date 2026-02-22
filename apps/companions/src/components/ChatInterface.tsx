@@ -65,18 +65,27 @@ export function ChatInterface({
       abortControllerRef.current = new AbortController();
       const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
+      const payload = {
+        message: input,
+        userId,
+        companionPersonaId,
+      };
+      console.log('[ChatInterface] Sending to /api/chat/send:', {
+        companionPersonaId: companionPersonaId || '(undefined!)',
+        userId,
+        messageLength: input.length,
+      });
+
       const response = await fetch(`${apiBase}/api/chat/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: input,
-          userId,
-          companionPersonaId,
-        }),
+        body: JSON.stringify(payload),
         signal: abortControllerRef.current.signal,
       });
 
       if (!response.ok) {
+        const errorBody = await response.text().catch(() => '');
+        console.error('[ChatInterface] Chat send failed:', response.status, errorBody);
         throw new Error(`Chat failed (${response.status})`);
       }
 

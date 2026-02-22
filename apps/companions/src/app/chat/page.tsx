@@ -6,6 +6,7 @@ import { ChatInterface } from '@/components/ChatInterface';
 import { StorageService, STORAGE_KEYS } from '@/lib/storage/StorageService';
 
 interface CompanionData {
+  id: string;
   name: string;
   personality: string[];
   communicationStyle: string;
@@ -31,11 +32,12 @@ export default function ChatPage() {
     const companionData = StorageService.getSessionItem<CompanionData>(STORAGE_KEYS.COMPANION);
 
     if (!companionData) {
-      // No companion - redirect to onboarding
+      console.warn('[ChatPage] No companion in session storage, redirecting to onboarding');
       router.push('/onboarding');
       return;
     }
 
+    console.log('[ChatPage] Loaded companion:', companionData.name, 'id:', companionData.id);
     setCompanion(companionData);
     setIsLoading(false);
   }, [router]);
@@ -59,8 +61,8 @@ export default function ChatPage() {
     <div className="min-h-screen bg-deep-space">
       <ChatInterface
         companionName={companion.name}
-        companionPersonaId={(companion as any).id}
-        userId={(companion as any).userId || 'guest'}
+        companionPersonaId={companion.id}
+        userId="guest"
       />
     </div>
   );

@@ -256,6 +256,25 @@ function TraitGlobeContent() {
 
       clearInterval(messageInterval);
 
+      // Store companion data for the companion-creation and chat pages
+      if (data.persona) {
+        StorageService.setSessionItem(STORAGE_KEYS.COMPANION, {
+          id: data.compatibility?.companionPersonaId || `companion_${Date.now()}`,
+          name: data.persona.name || data.preview?.name || 'Companion',
+          personality: data.persona.personalityTraits
+            ? Object.values(data.persona.personalityTraits).filter((v): v is string => typeof v === 'string').slice(0, 4)
+            : [],
+          communicationStyle: data.persona.reasoning || data.preview?.description || '',
+          specializations: [
+            'Emotional support and validation',
+            'Creative brainstorming',
+            'Practical life advice',
+            'Spiritual growth discussions',
+          ],
+        });
+        console.log('[TraitGlobe] Stored companion data:', data.persona.name);
+      }
+
       // Reconstruct CompatibilityResult from API response
       const result = CompatibilityResult.fromJSON(data.compatibility);
 
