@@ -26,9 +26,13 @@ export function ChatInterface({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [agentStatus, setAgentStatus] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -36,6 +40,58 @@ export function ChatInterface({
 
   useEffect(() => { scrollToBottom(); }, [messages, scrollToBottom]);
 
+  // ──────────────────────────────────────────────────────────────────
+  // Load chat history on mount
+  // ──────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!companionPersonaId) {
+      setIsLoadingHistory(false);
+      return;
+    }
+
+    const loadHistory = async () => {
+      try {
+        console.log('[ChatInterface] Loading history for companion:', companionPersonaId);
+        const response = await fetch(
+          `${apiBase}/api/chat/messages-by-companion/${encodeURIComponent(companionPersonaId)}?userId=${encodeURIComponent(userId)}`,
+        );
+
+        if (!response.ok) {
+          console.warn('[ChatInterface] Failed to load history:', response.status);
+          setIsLoadingHistory(false);
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data.conversationId) {
+          setConversationId(data.conversationId);
+          console.log('[ChatInterface] Restored conversationId:', data.conversationId);
+        }
+
+        if (data.messages && data.messages.length > 0) {
+          const loadedMessages: Message[] = data.messages.map((m: { id: string; role: string; content: string; createdAt: string }) => ({
+            id: m.id,
+            content: m.content,
+            sender: m.role === 'user' ? 'user' : 'assistant',
+            timestamp: new Date(m.createdAt),
+          }));
+          setMessages(loadedMessages);
+          console.log('[ChatInterface] Loaded', loadedMessages.length, 'messages from history');
+        }
+      } catch (err) {
+        console.warn('[ChatInterface] Error loading history:', err);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    };
+
+    loadHistory();
+  }, [companionPersonaId, userId, apiBase]);
+
+  // ──────────────────────────────────────────────────────────────────
+  // Send message
+  // ──────────────────────────────────────────────────────────────────
   const handleSendMessage = useCallback(async () => {
     if (!input.trim() || isStreaming) return;
 
@@ -63,15 +119,16 @@ export function ChatInterface({
 
     try {
       abortControllerRef.current = new AbortController();
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
       const payload = {
         message: input,
         userId,
         companionPersonaId,
+        conversationId: conversationId || undefined,
       };
       console.log('[ChatInterface] Sending to /api/chat/send:', {
         companionPersonaId: companionPersonaId || '(undefined!)',
+        conversationId: conversationId || '(new)',
         userId,
         messageLength: input.length,
       });
@@ -99,10 +156,21 @@ export function ChatInterface({
           case 'agent_activity':
             setAgentStatus(event.status);
             break;
+          case 'conversation':
+            // Server sent us the conversationId for this chat
+            if ('conversationId' in event && event.conversationId) {
+              setConversationId(event.conversationId as string);
+              console.log('[ChatInterface] Got conversationId from server:', event.conversationId);
+            }
+            break;
           case 'done':
             setMessages(prev => prev.map(m =>
               m.id === assistantId ? { ...m, isStreaming: false } : m,
             ));
+            // Capture conversationId from done event if present
+            if ('conversationId' in event && event.conversationId) {
+              setConversationId(event.conversationId as string);
+            }
             break;
           case 'error':
             setMessages(prev => prev.map(m =>
@@ -124,7 +192,7 @@ export function ChatInterface({
       setIsStreaming(false);
       setAgentStatus(null);
     }
-  }, [input, isStreaming, userId, companionPersonaId]);
+  }, [input, isStreaming, userId, companionPersonaId, conversationId, apiBase]);
 
   return (
     <div className="flex flex-col h-screen" style={{ background: '#1a1a2e' }}>
@@ -151,7 +219,14 @@ export function ChatInterface({
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 ? (
+        {isLoadingHistory ? (
+          <div className="flex items-center justify-center h-full" style={{ color: '#9d4edd', opacity: 0.7 }}>
+            <div className="text-center space-y-2">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#d4af37' }} />
+              <p>Loading conversation...</p>
+            </div>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="flex items-center justify-center h-full" style={{ color: '#9d4edd', opacity: 0.7 }}>
             Start a conversation with {companionName}!
           </div>
@@ -183,7 +258,7 @@ export function ChatInterface({
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
           placeholder="Type your message..."
-          disabled={isStreaming}
+          disabled={isStreaming || isLoadingHistory}
           className="flex-1 rounded px-3 py-2"
           style={{
             background: 'rgba(45, 45, 68, 0.8)',
@@ -193,7 +268,7 @@ export function ChatInterface({
         />
         <button
           onClick={handleSendMessage}
-          disabled={isStreaming || !input.trim()}
+          disabled={isStreaming || !input.trim() || isLoadingHistory}
           className="px-4 py-2 rounded font-semibold transition-all"
           style={{
             background: isStreaming ? 'rgba(212, 175, 55, 0.3)' : 'linear-gradient(135deg, #d4af37 0%, #f4e16b 100%)',

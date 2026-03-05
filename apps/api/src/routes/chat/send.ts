@@ -76,26 +76,15 @@ export function createChatSendRoutes(container: Container): Router {
       }
 
       if (!conversationId && conversationRepository) {
-        // Create a new conversation
+        // Create a new conversation with companion persona link
         try {
           const convId = `conv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
           const conv = await conversationRepository.create({
             id: convId,
             userId,
             title: 'Chat',
+            companionPersonaId: body.companionPersonaId || null,
           });
-
-          // Update the conversation with companionPersonaId if we have one
-          if (body.companionPersonaId) {
-            try {
-              await conversationRepository.update(convId, {
-                companionPersonaId: body.companionPersonaId,
-              } as Record<string, unknown>);
-            } catch {
-              // The update method might not support companionPersonaId directly;
-              // we'll handle this via the lettaAgents table mapping instead
-            }
-          }
 
           conversationId = conv.id;
           console.log('[ChatSend] Created new conversation:', conversationId);
