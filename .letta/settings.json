@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm build:*)",
+      "Bash(export PATH=\"/opt/homebrew/bin:$PATH\" && cd /Users/billyrichards/Code/anplexa-migration/apps/api && timeout 8 node dist/index.js 2>&1)",
+      "Bash(export PATH=\"/opt/homebrew/bin:$PATH\" && cd /Users/billyrichards/Code/anplexa-migration/apps/api && node -e \"\nimport dotenv from 'dotenv';\nimport path from 'path';\nimport { fileURLToPath } from 'url';\nconst __dirname = path.dirname(fileURLToPath(import.meta.url));\nconst r1 = dotenv.config({ path: path.resolve(__dirname, '.env') });\nconsole.log('Local .env:', r1.error ? r1.error.message : 'loaded');\nconsole.log('DATABASE_URL:', process.env.DATABASE_URL ? 'set' : 'NOT SET');\nconsole.log('JWT_SECRET:', process.env.JWT_SECRET ? 'set' : 'NOT SET');\n\" --input-type=module 2>&1)",
+      "Bash(export PATH=\"/opt/homebrew/bin:$PATH\" && cd /Users/billyrichards/Code/anplexa-migration/apps/api && node --input-type=module -e \"\nimport dotenv from 'dotenv';\nimport path from 'path';\nimport { fileURLToPath } from 'url';\nconst __dirname = path.dirname(fileURLToPath(import.meta.url));\ndotenv.config({ path: path.resolve(__dirname, '.env') });\n\nconsole.log('ENV loaded, DATABASE_URL:', process.env.DATABASE_URL?.substring(0,30) + '...');\n\n// Try importing container\nconsole.log('Importing container...');\nconst { configureContainer } = await import('./dist/container.js');\nconsole.log('Configuring container...');\nconst container = configureContainer();\nconsole.log('Container ready!');\n\nconst { createApp } = await import('./dist/app.js');\nconsole.log('Creating app...');\nconst app = createApp(container);\nconsole.log('App created!');\n\nconst server = app.listen(3002, () => { console.log('LISTENING on 3002'); });\nsetTimeout(() => { server.close(); process.exit(0); }, 3000);\n\" 2>&1)",
+      "Bash(grep:*)"
+    ]
+  }
+}
