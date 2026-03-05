@@ -149,21 +149,16 @@ export class ConversationRepository implements IConversationRepository {
   async create(conversationData: CreateConversationData): Promise<Conversation> {
     try {
       const now = new Date().toISOString();
-      const newConversation: Record<string, unknown> = {
+      const newConversation = {
         id: conversationData.id,
         userId: conversationData.userId,
         title: conversationData.title || null,
         createdAt: conversationData.createdAt || now,
         updatedAt: conversationData.updatedAt || now,
+        // Companion and Letta references for direct lookup
+        ...(conversationData.companionPersonaId && { companionPersonaId: conversationData.companionPersonaId }),
+        ...(conversationData.lettaAgentId && { lettaAgentId: conversationData.lettaAgentId }),
       };
-
-      // Include companion and Letta references if provided
-      if (conversationData.companionPersonaId) {
-        newConversation.companionPersonaId = conversationData.companionPersonaId;
-      }
-      if (conversationData.lettaAgentId) {
-        newConversation.lettaAgentId = conversationData.lettaAgentId;
-      }
 
       const result = await this.db
         .insert(conversations)

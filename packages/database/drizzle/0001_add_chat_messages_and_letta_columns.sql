@@ -1,19 +1,13 @@
--- Migration: Add chat_messages table and letta columns to companion_personas
+-- Migration: Add letta columns, make birthChartId nullable, add companionPersonaId to conversations
 -- Generated: 2026-03-05
 
 -- Add letta_agent_id and letta_conversation_id convenience columns to companion_personas
 ALTER TABLE "companion_personas" ADD COLUMN IF NOT EXISTS "letta_agent_id" text;
 ALTER TABLE "companion_personas" ADD COLUMN IF NOT EXISTS "letta_conversation_id" text;
 
--- Create chat_messages table for companion-keyed message history
-CREATE TABLE IF NOT EXISTS "chat_messages" (
-  "id" text PRIMARY KEY NOT NULL,
-  "companion_id" text NOT NULL REFERENCES "companion_personas"("id"),
-  "user_id" text NOT NULL,
-  "role" text NOT NULL,
-  "content" text NOT NULL,
-  "created_at" timestamp with time zone DEFAULT now() NOT NULL
-);
+-- Make birth_chart_id nullable (companions can be created before birth chart is persisted)
+ALTER TABLE "companion_personas" ALTER COLUMN "birth_chart_id" DROP NOT NULL;
 
--- Index for fast history lookups by companion + user
-CREATE INDEX IF NOT EXISTS "idx_chat_messages_companion_user" ON "chat_messages" ("companion_id", "user_id", "created_at" DESC);
+-- Add companion_persona_id to conversations for direct lookup
+ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "companion_persona_id" text REFERENCES "companion_personas"("id");
+ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "letta_agent_id" text;

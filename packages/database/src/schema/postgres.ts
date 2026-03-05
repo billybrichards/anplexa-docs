@@ -1,4 +1,4 @@
-import { pgTable, text, integer, doublePrecision, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, doublePrecision, boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table
@@ -130,7 +130,7 @@ export const birthCharts = pgTable('birth_charts', {
 export const companionPersonas = pgTable('companion_personas', {
   id: text('id').primaryKey(),
   userId: text('user_id').references(() => users.id).notNull(),
-  birthChartId: text('birth_chart_id').references(() => birthCharts.id).notNull(),
+  birthChartId: text('birth_chart_id').references(() => birthCharts.id), // Nullable: may not exist during initial onboarding save
 
   // Persona attributes
   name: text('name').notNull(),
@@ -184,17 +184,9 @@ export const messages = pgTable('messages', {
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
 });
 
-// Chat Messages — Simplified message log keyed by companion persona (not conversation)
-// Used for retrieving chat history by companionId without requiring conversation lookup.
-// Complements the `messages` table which is keyed by conversationId.
-export const chatMessages = pgTable('chat_messages', {
-  id: text('id').primaryKey(), // UUID
-  companionId: text('companion_id').references(() => companionPersonas.id).notNull(),
-  userId: text('user_id').notNull(),
-  role: text('role').notNull(), // 'user' | 'assistant'
-  content: text('content').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-});
+// NOTE: chat_messages table was considered but removed — message storage goes through
+// the existing `messages` table via conversation lookup (conversations now have
+// companionPersonaId for direct lookup). This avoids dual write paths.
 
 // Context/Memory summaries (for long conversations)
 export const conversationContext = pgTable('conversation_context', {
@@ -449,12 +441,7 @@ export const messagesRelations = relations(messages, ({ one }) => ({
   }),
 }));
 
-export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
-  companionPersona: one(companionPersonas, {
-    fields: [chatMessages.companionId],
-    references: [companionPersonas.id],
-  }),
-}));
+// chatMessages relations removed — table not used (see note above)
 
 // System prompts with version control
 export const systemPrompts = pgTable('system_prompts', {
@@ -594,5 +581,4 @@ export type NewComfyuiWorkflow = typeof comfyuiWorkflows.$inferInsert;
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
 
-export type ChatMessage = typeof chatMessages.$inferSelect;
-export type NewChatMessage = typeof chatMessages.$inferInsert;
+// ChatMessage types removed — using existing messages table via conversation lookup

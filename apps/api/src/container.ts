@@ -211,7 +211,7 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
         console.log('[DI] Using ClaudeLLMService for companion generation (Anthropic API)');
         return new ClaudeLLMService({
           apiKey: anthropicKey,
-          model: process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022',
+          model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5-20250929',
         });
       }
       // Fallback to Ollama for local development

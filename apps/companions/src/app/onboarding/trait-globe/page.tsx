@@ -264,6 +264,10 @@ function TraitGlobeContent() {
 
         // Persist to DB to get a real ID for Letta agent mapping
         try {
+          // Include birth data so save endpoint can create the birth chart record (FK requirement)
+          const storedBirthData = StorageService.getSessionItem(STORAGE_KEYS.BIRTH_DATA);
+          const storedChartResult = StorageService.getSessionItem(STORAGE_KEYS.CHART_RESULT);
+
           const saveResponse = await fetch(`${apiBase2}/api/companion/save`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -274,6 +278,8 @@ function TraitGlobeContent() {
               emotionalApproach: data.persona.emotionalApproach || {},
               reasoning: data.persona.reasoning || '',
               llmModel: 'ollama/qwen3-30b-nsfw:latest',
+              birthData: storedBirthData || undefined,
+              chartData: storedChartResult?.chartData || undefined,
             }),
           });
 
