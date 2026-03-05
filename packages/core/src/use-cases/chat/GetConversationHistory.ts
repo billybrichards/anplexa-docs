@@ -1,7 +1,12 @@
 /**
  * Get Conversation History Use Case
  *
- * Orchestrates fetching conversation history:
+ * ⚠️ STUB — Not yet implemented. History retrieval is currently handled by:
+ * - GET /api/chat/conversations/:id/messages (fetches from Letta or local messages table)
+ * - GET /api/chat/history/:companionId (fetches by companion persona from Letta or chat_messages)
+ * See apps/api/src/routes/chat/conversations.ts for the working implementation.
+ *
+ * Original design:
  * 1. Validates conversation exists
  * 2. Validates user owns the conversation
  * 3. Fetches messages with pagination

@@ -3,7 +3,8 @@
  *
  * POST /api/chat/conversations — Create a conversation
  * GET  /api/chat/conversations — List user's conversations
- * GET  /api/chat/conversations/:id/messages — Get messages
+ * GET  /api/chat/conversations/:id/messages — Get messages for a conversation
+ * GET  /api/chat/messages-by-companion/:companionPersonaId — Get messages by companion persona
  */
 
 import { Router } from 'express';
@@ -63,38 +64,58 @@ export function createChatConversationRoutes(container: Container): Router {
   });
 
   /**
-   * GET /api/chat/conversations/:id/messages — Get message history
+   * GET /api/chat/conversations/:id/messages — Get message history for a conversation
    */
   router.get('/conversations/:id/messages', async (req, res, next) => {
     try {
       const { id } = req.params;
       const limit = parseInt(req.query.limit as string) || 50;
 
-      const { lettaGateway, lettaAgentRepository } = container.cradle;
+      const { messageRepository } = container.cradle;
 
-      // Find the Letta agent for this conversation
-      let lettaAgentId: string | null = null;
-      if (lettaAgentRepository) {
-        try {
-          const agentRecord = await lettaAgentRepository.findByConversation(id);
-          if (agentRecord) {
-            lettaAgentId = agentRecord.lettaAgentId;
-          }
-        } catch {
-          // DB not available
-        }
-      }
-
-      if (lettaAgentId) {
-        // Fetch from Letta server
-        const messages = await lettaGateway.getMessages(lettaAgentId, limit);
-        return res.json(messages);
-      }
-
-      // Fall back to local DB
-      const messageRepository = container.cradle.messageRepository;
+      // Fetch from local DB (messages are now persisted by send.ts)
       const messages = await messageRepository.getByConversationId(id, { limit });
       return res.json(messages);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  /**
+   * GET /api/chat/messages-by-companion/:companionPersonaId — Get chat history for a companion
+   *
+   * Looks up the conversation associated with a companionPersonaId and returns messages.
+   * This is the primary endpoint the frontend uses to load chat history.
+   */
+  router.get('/messages-by-companion/:companionPersonaId', async (req, res, next) => {
+    try {
+      const { companionPersonaId } = req.params;
+      const userId = req.user?.sub || (req.query.userId as string) || 'guest';
+      const limit = parseInt(req.query.limit as string) || 100;
+
+      const { conversationRepository, messageRepository } = container.cradle;
+
+      if (!conversationRepository || !messageRepository) {
+        return res.status(501).json({ error: 'Chat persistence not available' });
+      }
+
+      // Find conversation for this companion persona
+      const userConversations = await conversationRepository.getByUserId(userId);
+      const conversation = userConversations.find(
+        (c: { companionPersonaId?: string | null }) => c.companionPersonaId === companionPersonaId
+      );
+
+      if (!conversation) {
+        // No conversation yet — return empty array (first chat)
+        return res.json({ conversationId: null, messages: [] });
+      }
+
+      const messages = await messageRepository.getByConversationId(conversation.id, { limit });
+
+      return res.json({
+        conversationId: conversation.id,
+        messages,
+      });
     } catch (error) {
       next(error);
     }

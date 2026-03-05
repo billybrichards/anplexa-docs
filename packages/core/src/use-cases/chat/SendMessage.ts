@@ -1,7 +1,11 @@
 /**
  * Send Message Use Case
  *
- * Orchestrates the message sending and AI response flow:
+ * ⚠️ DEAD CODE — Chat messaging now goes through Letta agents directly via
+ * the /api/chat/send SSE endpoint (apps/api/src/routes/chat/send.ts).
+ * This use case is retained for reference but is never called in production.
+ *
+ * Original design:
  * 1. Validates user has sufficient credits
  * 2. Saves user message to conversation
  * 3. Calls AI service to generate response
@@ -33,16 +37,9 @@ export class SendMessage {
   ) {}
 
   async execute(request: SendMessageRequest): Promise<SendMessageResponse> {
-    // TODO: Implement send message logic
-    // 1. Validate user exists
-    // 2. Check user has sufficient credits
-    // 3. Validate conversation exists
-    // 4. Save user message
-    // 5. Call AI provider (via infrastructure)
-    // 6. Stream response
-    // 7. Save AI message
-    // 8. Deduct credits
-    // 9. Return response
-    throw new Error('SendMessage.execute() must be implemented');
+    // DEAD CODE — Chat goes through Letta agents directly (see routes/chat/send.ts).
+    // This use case is not wired up and should not be called.
+    // Kept for reference in case the architecture reverts to a non-Letta chat path.
+    throw new Error('SendMessage is dead code — chat goes through Letta agents directly. See routes/chat/send.ts');
   }
 }

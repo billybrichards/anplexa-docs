@@ -5,10 +5,11 @@
 export interface SSETokenEvent { type: 'token'; content: string; }
 export interface SSEActivityEvent { type: 'agent_activity'; status: string; toolName?: string; }
 export interface SSEMediaStartedEvent { type: 'media_started'; generationId: string; mediaType: string; }
-export interface SSEDoneEvent { type: 'done'; }
+export interface SSEConversationEvent { type: 'conversation'; conversationId: string; }
+export interface SSEDoneEvent { type: 'done'; conversationId?: string; }
 export interface SSEErrorEvent { type: 'error'; message: string; }
 
-export type SSEEvent = SSETokenEvent | SSEActivityEvent | SSEMediaStartedEvent | SSEDoneEvent | SSEErrorEvent;
+export type SSEEvent = SSETokenEvent | SSEActivityEvent | SSEMediaStartedEvent | SSEConversationEvent | SSEDoneEvent | SSEErrorEvent;
 
 export async function* parseSSEStream(response: Response): AsyncGenerator<SSEEvent> {
   if (!response.body) { yield { type: 'error', message: 'No response body' }; return; }
@@ -40,7 +41,8 @@ export async function* parseSSEStream(response: Response): AsyncGenerator<SSEEve
               case 'token': yield { type: 'token', content: parsed.content }; break;
               case 'agent_activity': yield { type: 'agent_activity', status: parsed.status, toolName: parsed.toolName }; break;
               case 'media_started': yield { type: 'media_started', generationId: parsed.generationId, mediaType: parsed.type }; break;
-              case 'done': yield { type: 'done' }; break;
+              case 'conversation': yield { type: 'conversation', conversationId: parsed.conversationId }; break;
+              case 'done': yield { type: 'done', conversationId: parsed.conversationId }; break;
               case 'error': yield { type: 'error', message: parsed.message }; break;
             }
           } catch { /* skip */ }

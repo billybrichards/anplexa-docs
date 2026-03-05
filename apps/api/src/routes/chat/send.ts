@@ -2,10 +2,12 @@
  * Chat Send Route — SSE streaming endpoint
  *
  * POST /api/chat/send
- * Body: { conversationId, message, userId, companionPersonaId }
+ * Body: { conversationId?, message, userId?, companionPersonaId }
  *
  * Opens an SSE stream, sends message to Letta agent, proxies tokens + activity events.
- * Auto-provisions Letta agent if conversation doesn't have one yet.
+ * Auto-provisions Letta agent if companion doesn't have one yet.
+ *
+ * FIX: Now creates/reuses conversations, persists messages to DB after stream completes.
  */
 
 import { Router } from 'express';
@@ -37,15 +39,63 @@ export function createChatSendRoutes(container: Container): Router {
         lettaGateway,
         agentProvisioner,
         lettaAgentRepository,
+        conversationRepository,
+        messageRepository,
       } = container.cradle;
 
-      console.log('[ChatSend] Container services:', {
-        hasLettaGateway: !!lettaGateway,
-        hasAgentProvisioner: !!agentProvisioner,
-        hasLettaAgentRepository: !!lettaAgentRepository,
-      });
+      // ──────────────────────────────────────────────────────────────────
+      // 0. Validate companionPersonaId is a real DB ID (not preview_*)
+      // ──────────────────────────────────────────────────────────────────
+      if (body.companionPersonaId && body.companionPersonaId.startsWith('preview_')) {
+        console.error('[ChatSend] Received preview ID — frontend must call /api/companion/save first');
+        return res.status(400).json({
+          error: 'Invalid companionPersonaId',
+          message: 'The companionPersonaId is a temporary preview ID. Call POST /api/companion/save first to persist the companion.',
+        });
+      }
 
-      // 1. Resolve the Letta agent ID
+      // ──────────────────────────────────────────────────────────────────
+      // 1. Resolve or create a conversation
+      // ──────────────────────────────────────────────────────────────────
+      let conversationId = body.conversationId || null;
+
+      if (!conversationId && body.companionPersonaId && conversationRepository) {
+        // Look for an existing conversation for this companion persona
+        try {
+          const userConversations = await conversationRepository.getByUserId(userId);
+          const existingConv = userConversations.find(
+            (c: { companionPersonaId?: string | null }) => c.companionPersonaId === body.companionPersonaId
+          );
+          if (existingConv) {
+            conversationId = existingConv.id;
+            console.log('[ChatSend] Found existing conversation:', conversationId);
+          }
+        } catch (err) {
+          console.warn('[ChatSend] Could not search for existing conversation:', err);
+        }
+      }
+
+      if (!conversationId && conversationRepository) {
+        // Create a new conversation with companion persona link
+        try {
+          const convId = `conv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+          const conv = await conversationRepository.create({
+            id: convId,
+            userId,
+            title: 'Chat',
+            companionPersonaId: body.companionPersonaId || null,
+          });
+
+          conversationId = conv.id;
+          console.log('[ChatSend] Created new conversation:', conversationId);
+        } catch (err) {
+          console.warn('[ChatSend] Failed to create conversation:', err);
+        }
+      }
+
+      // ──────────────────────────────────────────────────────────────────
+      // 2. Resolve the Letta agent ID
+      // ──────────────────────────────────────────────────────────────────
       let lettaAgentId: string | null = null;
 
       // Try to find existing agent for this companion persona
@@ -62,22 +112,32 @@ export function createChatSendRoutes(container: Container): Router {
         } catch (dbError) {
           console.error(`[ChatSend] DB lookup failed for persona ${body.companionPersonaId}:`, dbError);
         }
-      } else {
-        console.log('[ChatSend] Skipping DB lookup:', {
-          hasPersonaId: !!body.companionPersonaId,
-          hasRepository: !!lettaAgentRepository,
-        });
       }
 
       // Auto-provision if no agent exists
       if (!lettaAgentId && body.companionPersonaId && agentProvisioner) {
         try {
           console.log('[ChatSend] Auto-provisioning new agent for persona:', body.companionPersonaId);
+
+          // Try to get companion name from the persona record
+          let companionName = 'Companion';
+          try {
+            const { companionPersonaRepository } = container.cradle;
+            if (companionPersonaRepository) {
+              const persona = await companionPersonaRepository.getById(body.companionPersonaId);
+              if (persona) {
+                companionName = persona.name;
+              }
+            }
+          } catch {
+            // Use default name
+          }
+
           const provisioned = await agentProvisioner.provisionCompanionAgent({
             userId,
             companionPersonaId: body.companionPersonaId,
-            companionName: 'Companion',
-            conversationId: body.conversationId,
+            companionName,
+            conversationId: conversationId || undefined,
           });
           lettaAgentId = provisioned.lettaAgentId;
           console.log('[ChatSend] Provisioned new agent:', lettaAgentId);
@@ -91,16 +151,18 @@ export function createChatSendRoutes(container: Container): Router {
       }
 
       if (!lettaAgentId) {
-        console.error('[ChatSend] No agent resolved. companionPersonaId:', body.companionPersonaId, 'agentProvisioner:', !!agentProvisioner);
+        console.error('[ChatSend] No agent resolved. companionPersonaId:', body.companionPersonaId);
         return res.status(400).json({
           error: 'No agent available',
-          message: 'Provide companionPersonaId to auto-provision an agent',
+          message: 'Provide a valid companionPersonaId to auto-provision an agent',
         });
       }
 
       console.log('[ChatSend] Using agent:', lettaAgentId, '— starting SSE stream');
 
-      // 2. Set up SSE headers
+      // ──────────────────────────────────────────────────────────────────
+      // 3. Set up SSE headers
+      // ──────────────────────────────────────────────────────────────────
       res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
@@ -112,7 +174,16 @@ export function createChatSendRoutes(container: Container): Router {
         res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
       };
 
-      // 3. Stream from Letta
+      // Send conversationId to the client so it can track it
+      if (conversationId) {
+        sendSSE('conversation', { conversationId });
+      }
+
+      // ──────────────────────────────────────────────────────────────────
+      // 4. Stream from Letta
+      // ──────────────────────────────────────────────────────────────────
+      let accumulatedResponse = '';
+
       try {
         console.log('[ChatSend] Sending message to Letta agent:', lettaAgentId);
         const stream = lettaGateway.sendMessageStream(lettaAgentId, body.message);
@@ -127,6 +198,7 @@ export function createChatSendRoutes(container: Container): Router {
 
           if (typeof value === 'string') {
             sendSSE('token', { content: value });
+            accumulatedResponse += value;
           } else if (value.type === 'activity') {
             sendSSE('agent_activity', {
               status: value.status,
@@ -135,7 +207,7 @@ export function createChatSendRoutes(container: Container): Router {
           }
         }
 
-        // 4. Check for media tool calls → trigger NativeMediaService
+        // 5. Check for media tool calls → trigger NativeMediaService
         const { nativeMediaService } = container.cradle;
         const mediaToolNames = ['generate_image', 'generate_video'];
 
@@ -150,7 +222,7 @@ export function createChatSendRoutes(container: Container): Router {
                   type: mediaType as 'image' | 'video',
                   enhancedPrompt: prompt,
                   userId,
-                  conversationId: body.conversationId,
+                  conversationId: conversationId || undefined,
                   companionId: body.companionPersonaId,
                 });
 
@@ -172,8 +244,31 @@ export function createChatSendRoutes(container: Container): Router {
           }
         }
 
+        // ──────────────────────────────────────────────────────────────────
+        // 6. Persist messages to local DB (user message + assistant response)
+        // ──────────────────────────────────────────────────────────────────
+        if (conversationId && messageRepository && accumulatedResponse) {
+          try {
+            await messageRepository.bulkCreate([
+              {
+                conversationId,
+                role: 'user',
+                content: body.message,
+              },
+              {
+                conversationId,
+                role: 'assistant',
+                content: accumulatedResponse,
+              },
+            ]);
+            console.log('[ChatSend] Persisted user + assistant messages to DB for conversation:', conversationId);
+          } catch (dbErr) {
+            console.warn('[ChatSend] Failed to persist messages:', dbErr);
+          }
+        }
+
         console.log('[ChatSend] Stream completed for agent:', lettaAgentId);
-        sendSSE('done', { status: 'completed' });
+        sendSSE('done', { status: 'completed', conversationId });
       } catch (err) {
         console.error(`[ChatSend] Stream error for agent ${lettaAgentId}:`, {
           error: err instanceof Error ? err.message : err,

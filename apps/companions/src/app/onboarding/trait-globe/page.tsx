@@ -256,10 +256,40 @@ function TraitGlobeContent() {
 
       clearInterval(messageInterval);
 
-      // Store companion data for the companion-creation and chat pages
+      // Store companion data for the companion-creation and chat pages.
+      // FIX: Persist the companion to DB via /api/companion/save to get a real
+      // companionPersonaId (instead of preview_<timestamp>) for Letta agent mapping.
       if (data.persona) {
+        let companionPersonaId = data.compatibility?.companionPersonaId || `companion_${Date.now()}`;
+
+        // Persist to DB to get a real ID for Letta agent mapping
+        try {
+          const saveResponse = await fetch(`${apiBase2}/api/companion/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: data.persona.name || 'Companion',
+              personalityTraits: data.persona.personalityTraits || {},
+              communicationStyle: data.persona.communicationStyle || {},
+              emotionalApproach: data.persona.emotionalApproach || {},
+              reasoning: data.persona.reasoning || '',
+              llmModel: 'ollama/qwen3-30b-nsfw:latest',
+            }),
+          });
+
+          if (saveResponse.ok) {
+            const saveData = await saveResponse.json();
+            companionPersonaId = saveData.companionPersonaId;
+            console.log('[TraitGlobe] Persisted companion to DB:', companionPersonaId, saveData.isExisting ? '(existing)' : '(new)');
+          } else {
+            console.warn('[TraitGlobe] Failed to persist companion, using preview ID');
+          }
+        } catch (saveErr) {
+          console.warn('[TraitGlobe] Could not persist companion:', saveErr);
+        }
+
         StorageService.setSessionItem(STORAGE_KEYS.COMPANION, {
-          id: data.compatibility?.companionPersonaId || `companion_${Date.now()}`,
+          id: companionPersonaId,
           name: data.persona.name || data.preview?.name || 'Companion',
           personality: data.persona.personalityTraits
             ? Object.values(data.persona.personalityTraits).filter((v): v is string => typeof v === 'string').slice(0, 4)
@@ -272,7 +302,7 @@ function TraitGlobeContent() {
             'Spiritual growth discussions',
           ],
         });
-        console.log('[TraitGlobe] Stored companion data:', data.persona.name);
+        console.log('[TraitGlobe] Stored companion data:', data.persona.name, 'id:', companionPersonaId);
       }
 
       // Reconstruct CompatibilityResult from API response
