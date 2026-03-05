@@ -257,6 +257,8 @@ function TraitGlobeContent() {
       clearInterval(messageInterval);
 
       // Store companion data for the companion-creation and chat pages
+      // FIX: Also persist lettaAgentId from the API response so the chat page
+      // can communicate with the provisioned Letta agent.
       if (data.persona) {
         StorageService.setSessionItem(STORAGE_KEYS.COMPANION, {
           id: data.compatibility?.companionPersonaId || `companion_${Date.now()}`,
@@ -271,8 +273,10 @@ function TraitGlobeContent() {
             'Practical life advice',
             'Spiritual growth discussions',
           ],
+          // Letta agent ID for chat — may be null if provisioning failed
+          lettaAgentId: data.lettaAgentId || null,
         });
-        console.log('[TraitGlobe] Stored companion data:', data.persona.name);
+        console.log('[TraitGlobe] Stored companion data:', data.persona.name, 'lettaAgentId:', data.lettaAgentId);
       }
 
       // Reconstruct CompatibilityResult from API response

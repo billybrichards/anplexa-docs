@@ -456,8 +456,9 @@ export function createAllUseCases(container: DIContainer) {
     ),
   };
 
-  // Add sendMessage use case if chatGateway is provided
-  // Persona repository is optional - if not provided, default system prompt is used
+  // NOTE: sendMessage use case is dead code — chat now goes through Letta agents
+  // directly via the /api/chat/send SSE endpoint. Kept for backward compatibility
+  // but never called in production. See SendMessage.ts for details.
   if (container.chatGateway) {
     useCases.sendMessage = createSendMessageUseCase(
       container.conversationRepository,

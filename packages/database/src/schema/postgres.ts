@@ -1,4 +1,4 @@
-import { pgTable, text, integer, doublePrecision, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, doublePrecision, boolean, timestamp } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table
@@ -152,6 +152,10 @@ export const companionPersonas = pgTable('companion_personas', {
   profileImageGenerationId: text('profile_image_generation_id'), // FK to media_generations
   appearanceDescription: text('appearance_description'), // Physical description for image gen
 
+  // Letta agent mapping (convenience columns — canonical mapping is in lettaAgents table)
+  lettaAgentId: text('letta_agent_id'), // Letta server agent ID for quick lookup
+  lettaConversationId: text('letta_conversation_id'), // Letta conversation/thread ID
+
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
   updatedAt: text('updated_at').default('CURRENT_TIMESTAMP'),
 });
@@ -178,6 +182,18 @@ export const messages = pgTable('messages', {
   role: text('role').notNull(), // 'user' | 'assistant' | 'system'
   content: text('content').notNull(),
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+});
+
+// Chat Messages — Simplified message log keyed by companion persona (not conversation)
+// Used for retrieving chat history by companionId without requiring conversation lookup.
+// Complements the `messages` table which is keyed by conversationId.
+export const chatMessages = pgTable('chat_messages', {
+  id: text('id').primaryKey(), // UUID
+  companionId: text('companion_id').references(() => companionPersonas.id).notNull(),
+  userId: text('user_id').notNull(),
+  role: text('role').notNull(), // 'user' | 'assistant'
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
 // Context/Memory summaries (for long conversations)
@@ -433,6 +449,13 @@ export const messagesRelations = relations(messages, ({ one }) => ({
   }),
 }));
 
+export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
+  companionPersona: one(companionPersonas, {
+    fields: [chatMessages.companionId],
+    references: [companionPersonas.id],
+  }),
+}));
+
 // System prompts with version control
 export const systemPrompts = pgTable('system_prompts', {
   id: text('id').primaryKey(),
@@ -570,3 +593,6 @@ export type NewComfyuiWorkflow = typeof comfyuiWorkflows.$inferInsert;
 
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
+
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type NewChatMessage = typeof chatMessages.$inferInsert;

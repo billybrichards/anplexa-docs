@@ -104,8 +104,69 @@ export function createCompanionGenerateRoutes(container: Container): Router {
         compatibility.scores.emotionalResonance * 0.25
       );
 
+      // FIX: Provision a Letta agent for the companion so chat works after onboarding.
+      // Uses AgentProvisioner which creates the agent on the Letta server and stores the mapping.
+      let lettaAgentId: string | null = null;
+      try {
+        const { agentProvisioner } = container.cradle;
+        const provisionResult = await agentProvisioner.provisionCompanionAgent({
+          userId: 'guest', // Guest user during onboarding; will be linked on auth
+          companionPersonaId: compatibility.companionPersonaId,
+          companionName: generatedPersona.name,
+          description: generatedPersona.reasoning,
+          style: generatedPersona.communicationStyle?.tone || undefined,
+        });
+        lettaAgentId = provisionResult.lettaAgentId;
+        console.log(`[CompanionGenerate] Letta agent provisioned: ${lettaAgentId} for ${generatedPersona.name}`);
+      } catch (lettaError) {
+        // Non-fatal: companion can still be created without Letta agent
+        // Chat will need to handle missing agent gracefully
+        console.warn('[CompanionGenerate] Letta agent provisioning failed (non-fatal):', lettaError);
+      }
+
+      // Persist the companion persona to DB so the returned ID can be used for chat
+      const userId = req.user?.sub || 'guest';
+      const personaId = `persona_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      const { companionPersonaRepository, birthChartRepository } = container.cradle;
+
+      let persistedPersonaId: string | null = null;
+      if (companionPersonaRepository && birthChartRepository) {
+        try {
+          // Create a birth chart record from submitted data
+          const birthChartId = `chart_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+          await birthChartRepository.create({
+            id: birthChartId,
+            userId,
+            birthData: JSON.stringify(body.birthData),
+            chartData: JSON.stringify(body.chartData),
+            displayName: generatedPersona.name,
+          });
+
+          await companionPersonaRepository.create({
+            id: personaId,
+            userId,
+            birthChartId,
+            name: generatedPersona.name,
+            personalityTraits: JSON.stringify(traits),
+            communicationStyle: JSON.stringify(generatedPersona.communicationStyle),
+            emotionalApproach: JSON.stringify(generatedPersona.emotionalApproach),
+            systemPrompt: generatedPersona.reasoning || '',
+            llmModel: 'ollama',
+            generationReasoning: generatedPersona.reasoning,
+            generatedAt: new Date().toISOString(),
+            lettaAgentId: lettaAgentId || undefined,
+          });
+          persistedPersonaId = personaId;
+          console.log(`[CompanionGenerate] Persisted persona ${personaId} for user ${userId}`);
+        } catch (persistError) {
+          // Non-fatal: persona generation still succeeds even if DB persistence fails
+          console.warn('[CompanionGenerate] Failed to persist persona:', persistError);
+        }
+      }
+
       return res.status(200).json({
         persona: {
+          id: persistedPersonaId || personaId, // Usable ID for subsequent chat requests
           name: generatedPersona.name,
           personalityTraits: traits,
           communicationStyle: generatedPersona.communicationStyle,
@@ -118,6 +179,8 @@ export function createCompanionGenerateRoutes(container: Container): Router {
           sampleGreeting: `Hello! I'm ${generatedPersona.name}, and I'm here to explore the cosmos with you.`,
         },
         compatibility,
+        // Include Letta agent ID so the frontend can store it for chat
+        lettaAgentId,
       });
     } catch (error) {
       if (error instanceof z.ZodError) {

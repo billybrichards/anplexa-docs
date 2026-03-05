@@ -43,23 +43,51 @@ export default function ChartReveal() {
     }
 
     // Read chart result from storage (set by calculating page)
+    // API response shape: { sunSign, moonSign, risingSign, chartData: { planets: { sun: { sign: { name, degree }, house, degree }, ... }, dominantElement, dominantModality }, interpretation, companionContext }
     const chartResult = StorageService.getSessionItem<Record<string, unknown>>(STORAGE_KEYS.CHART_RESULT);
     if (chartResult) {
-      // Map API response to the shape the UI expects
-      const sunSign = (chartResult.sunSign as string) || 'Leo';
-      const moonSign = (chartResult.moonSign as string) || 'Pisces';
-      const risingSign = (chartResult.risingSign as string) || 'Virgo';
-      const interpretation = chartResult.interpretation as Record<string, unknown> | undefined;
+      // FIX: Read planet data from chartData.planets (the real computed values)
+      // instead of interpretation which doesn't contain planet signs.
+      const planets = (chartResult.chartData as Record<string, unknown>)?.planets as Record<string, Record<string, unknown>> | undefined;
+
+      // Helper to safely extract sign name from a planet placement object
+      // Planet shape: { sign: { name: "Leo", degree: 15.3 }, house: 10, degree: 195.3 }
+      const getSignName = (planetKey: string, fallback: string): string => {
+        const planet = planets?.[planetKey];
+        if (!planet) return fallback;
+        const sign = planet.sign as Record<string, unknown> | string | undefined;
+        if (typeof sign === 'string') return sign;
+        if (sign && typeof sign === 'object' && 'name' in sign) return sign.name as string;
+        return fallback;
+      };
+
+      const getHouse = (planetKey: string, fallback: number): number => {
+        const planet = planets?.[planetKey];
+        return (planet?.house as number) ?? fallback;
+      };
+
+      const getDegree = (planetKey: string, fallback: number): number => {
+        const planet = planets?.[planetKey];
+        const sign = planet?.sign as Record<string, unknown> | undefined;
+        return (sign?.degree as number) ?? fallback;
+      };
+
+      // Top-level sunSign/moonSign/risingSign are the big three from getBigThree()
+      const sunSign = (chartResult.sunSign as string) || getSignName('sun', 'Leo');
+      const moonSign = (chartResult.moonSign as string) || getSignName('moon', 'Pisces');
+      const risingSign = (chartResult.risingSign as string) || getSignName('rising', 'Virgo');
+
+      const chartDataObj = chartResult.chartData as Record<string, unknown> | undefined;
 
       setChartData({
-        sun: { sign: sunSign, house: 10, degree: 15.3 },
-        moon: { sign: moonSign, house: 5, degree: 22.1 },
-        rising: { sign: risingSign, degree: 8.7 },
-        mercury: { sign: (interpretation?.mercurySign as string) || 'Cancer', house: 9, degree: 28.5 },
-        venus: { sign: (interpretation?.venusSign as string) || 'Leo', house: 10, degree: 3.2 },
-        mars: { sign: (interpretation?.marsSign as string) || 'Gemini', house: 8, degree: 19.8 },
-        dominantElement: (interpretation?.dominantElement as string) || 'water',
-        dominantModality: (interpretation?.dominantModality as string) || 'fixed',
+        sun: { sign: sunSign, house: getHouse('sun', 10), degree: getDegree('sun', 15.3) },
+        moon: { sign: moonSign, house: getHouse('moon', 5), degree: getDegree('moon', 22.1) },
+        rising: { sign: risingSign, degree: getDegree('rising', 8.7) },
+        mercury: { sign: getSignName('mercury', 'Cancer'), house: getHouse('mercury', 9), degree: getDegree('mercury', 28.5) },
+        venus: { sign: getSignName('venus', 'Leo'), house: getHouse('venus', 10), degree: getDegree('venus', 3.2) },
+        mars: { sign: getSignName('mars', 'Gemini'), house: getHouse('mars', 8), degree: getDegree('mars', 19.8) },
+        dominantElement: (chartDataObj?.dominantElement as string) || 'water',
+        dominantModality: (chartDataObj?.dominantModality as string) || 'fixed',
       });
     }
 
