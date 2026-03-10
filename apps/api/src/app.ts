@@ -15,6 +15,7 @@ import { createDocsRoutes } from './routes/docs/index.js';
 import { createAdminRoutes } from './routes/admin/index.js';
 import { createCrmRoutes } from './routes/crm/index.js';
 import { createBirthChartRoutes } from './routes/birth-chart/index.js';
+import { createChatRoutes } from './routes/chat/index.js';
 
 export function createApp(container: Container): Express {
   const app = express();
@@ -49,6 +50,7 @@ export function createApp(container: Container): Express {
   // Mount route modules
   app.use('/api/auth', createAuthRoutes(container));
   app.use('/api/birth-chart', createBirthChartRoutes(container));
+  app.use('/api/chat', createChatRoutes(container));
   app.use('/api/docs', createDocsRoutes(container));
   app.use('/admin', createAdminRoutes(container));
   app.use('/crm', createCrmRoutes(container));
