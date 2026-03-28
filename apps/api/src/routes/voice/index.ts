@@ -10,7 +10,6 @@
  */
 
 import { Router, type Request, type Response } from 'express';
-import express from 'express';
 import { z } from 'zod';
 import type { Container } from '../../container.js';
 import { createAuthMiddleware } from '../../middleware/auth.js';
@@ -55,7 +54,7 @@ export function createVoiceRoutes(container: Container): Router {
         conversationId: body.conversationId,
         userId,
         hasVideo,
-        backendUrl: process.env.API_BASE_URL || '',
+        backendUrl: process.env.API_BASE_URL || `${req.protocol}://${req.get('host')}`,
       };
 
       // Determine agent name to dispatch
@@ -112,10 +111,17 @@ export function createVoiceRoutes(container: Container): Router {
   router.get('/status/:roomName', authMiddleware, async (req: Request, res: Response, next) => {
     try {
       const { roomName } = req.params;
-      const { callEventService } = container.cradle;
+      const userId = req.user!.sub;
+      const { callEventService, voiceCallMetadataRepository } = container.cradle;
+
+      // Verify the authenticated user owns the call associated with this room
+      const callMetadata = await voiceCallMetadataRepository.findByRoomName(roomName);
+      if (!callMetadata || callMetadata.userId !== userId) {
+        return res.status(404).json({ error: 'Room not found' });
+      }
 
       const events = await callEventService.getEventsByRoom(roomName);
-      const lastEvent = events.length > 0 ? events[events.length - 1] : null;
+      const lastEvent = events.length > 0 ? events[0] : null;
 
       return res.json({
         roomName,
@@ -220,10 +226,10 @@ export function createVoiceRoutes(container: Container): Router {
   // Validates webhook signature, then logs events
   // ──────────────────────────────────────────────────────────────────────────
 
-  // Use express.raw() to preserve exact body bytes for webhook signature verification.
-  // LiveKit signature verification requires the exact raw body — JSON.stringify(parsed)
-  // may produce different output (key ordering, whitespace) and fail verification.
-  router.post('/webhooks', express.raw({ type: '*/*' }), async (req: Request, res: Response, next) => {
+  // LiveKit signature verification requires the exact raw body bytes.
+  // The app-level express.json() middleware stashes the raw Buffer via its `verify` callback
+  // as req.rawBody, so we can use it here for signature verification.
+  router.post('/webhooks', async (req: Request, res: Response, next) => {
     try {
       const { liveKitService, callEventService } = container.cradle;
 
@@ -231,8 +237,9 @@ export function createVoiceRoutes(container: Container): Router {
         return res.status(503).json({ error: 'LiveKit not configured' });
       }
 
-      // req.body is a Buffer from express.raw()
-      const rawBody = Buffer.isBuffer(req.body) ? req.body.toString('utf-8') : (typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
+      // Use the raw body stashed by express.json's verify callback for accurate signature verification
+      const rawBodyBuf = (req as any).rawBody as Buffer | undefined;
+      const rawBody = rawBodyBuf ? rawBodyBuf.toString('utf-8') : JSON.stringify(req.body);
       const authHeader = req.headers.authorization || '';
 
       let event;

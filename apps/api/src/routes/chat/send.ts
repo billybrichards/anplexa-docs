@@ -249,6 +249,7 @@ export function createChatSendRoutes(container: Container): Router {
         // 9. Persist assistant message (fire-and-forget)
         if (accumulatedContent) {
           messageRepository.create({
+            id: assistantMessageId,
             conversationId,
             role: 'assistant',
             content: accumulatedContent,

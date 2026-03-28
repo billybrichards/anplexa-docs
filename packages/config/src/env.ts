@@ -83,6 +83,7 @@ const apiSchema = z.object({
   FUNNEL_API_SECRET: z.string().optional(),
   ADMIN_EMAIL: z.string().email().optional(),
   INTERNAL_API_KEY: z.string().optional(),
+  API_BASE_URL: z.string().url().optional(),
 });
 
 /**

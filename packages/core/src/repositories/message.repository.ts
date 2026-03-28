@@ -97,7 +97,7 @@ export class MessageRepository implements IMessageRepository {
    */
   async create(messageData: CreateMessageData): Promise<MessageDTO> {
     try {
-      const id = randomUUID();
+      const id = messageData.id ?? randomUUID();
       const createdAt = new Date().toISOString();
 
       const newMessage = {

@@ -42,7 +42,7 @@ export class CompanionBlockBuilder {
         const lines = traits.map((t) => `- ${t}`).join('\n');
         sections.push(`PERSONALITY:\n${lines}`);
       }
-      const archetype = (companion.personalityTraits as { coreArchetype?: string | null }).coreArchetype;
+      const archetype = companion.personalityTraits.coreArchetype;
       if (archetype) {
         sections.push(`ARCHETYPE: ${archetype}`);
       }
