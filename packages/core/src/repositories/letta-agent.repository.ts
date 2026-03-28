@@ -62,6 +62,16 @@ export class LettaAgentRepository implements ILettaAgentRepository {
     return results[0] || null;
   }
 
+  async findByCompanionPersonaId(companionPersonaId: string): Promise<LettaAgentRecord[]> {
+    return this.db
+      .select()
+      .from(lettaAgents)
+      .where(and(
+        eq(lettaAgents.companionPersonaId, companionPersonaId),
+        eq(lettaAgents.isActive, true),
+      ));
+  }
+
   async findByConversation(conversationId: string): Promise<LettaAgentRecord | null> {
     const results = await this.db
       .select()

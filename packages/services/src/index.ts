@@ -31,5 +31,11 @@ export * from './comfyui/index.js';
 // Letta Services
 export * from './letta/index.js';
 
+// LiveKit Voice/Video
+export * from './livekit/index.js';
+
+// Rate Limiting
+export * from './rate-limit/index.js';
+
 // Astrology Services
 export { SimplifiedAstrologyService } from './astrology/SimplifiedAstrologyService.js';

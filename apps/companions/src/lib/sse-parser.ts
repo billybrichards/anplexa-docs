@@ -1,17 +1,72 @@
 /**
  * SSE Parser for chat streaming from Express API.
+ *
+ * Event types match the backend SSE contract (apps/api/src/routes/chat/send.ts):
+ * - start: Stream beginning with conversationId + messageId
+ * - token: Text chunk from LLM
+ * - activity: Agent status (thinking, tool_call, tool_return, responding)
+ * - media_started: Media generation triggered
+ * - done: Stream complete with metadata
+ * - error: Stream error
  */
 
-export interface SSETokenEvent { type: 'token'; content: string; }
-export interface SSEActivityEvent { type: 'agent_activity'; status: string; toolName?: string; }
-export interface SSEMediaStartedEvent { type: 'media_started'; generationId: string; mediaType: string; }
-export interface SSEDoneEvent { type: 'done'; }
-export interface SSEErrorEvent { type: 'error'; message: string; }
+import type {
+  AgentActivityStatus,
+} from '@anplexa/contracts';
 
-export type SSEEvent = SSETokenEvent | SSEActivityEvent | SSEMediaStartedEvent | SSEDoneEvent | SSEErrorEvent;
+export interface SSEStartEvent {
+  type: 'start';
+  conversationId: string;
+  messageId: string;
+}
+
+export interface SSETokenEvent {
+  type: 'token';
+  content: string;
+}
+
+export interface SSEActivityEvent {
+  type: 'activity';
+  status: AgentActivityStatus;
+  toolName?: string;
+}
+
+export interface SSEMediaStartedEvent {
+  type: 'media_started';
+  generationId?: string;
+  comfyRequestId?: string;
+  mediaType: string;
+  status: string;
+  error?: string;
+}
+
+export interface SSEDoneEvent {
+  type: 'done';
+  conversationId: string;
+  messageId: string;
+  creditsRemaining?: number;
+  chunkCount?: number;
+}
+
+export interface SSEErrorEvent {
+  type: 'error';
+  error: string;
+  code?: string;
+}
+
+export type SSEEvent =
+  | SSEStartEvent
+  | SSETokenEvent
+  | SSEActivityEvent
+  | SSEMediaStartedEvent
+  | SSEDoneEvent
+  | SSEErrorEvent;
 
 export async function* parseSSEStream(response: Response): AsyncGenerator<SSEEvent> {
-  if (!response.body) { yield { type: 'error', message: 'No response body' }; return; }
+  if (!response.body) {
+    yield { type: 'error', error: 'No response body' };
+    return;
+  }
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -37,17 +92,55 @@ export async function* parseSSEStream(response: Response): AsyncGenerator<SSEEve
           try {
             const parsed = JSON.parse(currentData);
             switch (currentEvent) {
-              case 'token': yield { type: 'token', content: parsed.content }; break;
-              case 'agent_activity': yield { type: 'agent_activity', status: parsed.status, toolName: parsed.toolName }; break;
-              case 'media_started': yield { type: 'media_started', generationId: parsed.generationId, mediaType: parsed.type }; break;
-              case 'done': yield { type: 'done' }; break;
-              case 'error': yield { type: 'error', message: parsed.message }; break;
+              case 'start':
+                yield {
+                  type: 'start',
+                  conversationId: parsed.conversationId,
+                  messageId: parsed.messageId,
+                };
+                break;
+              case 'token':
+                yield { type: 'token', content: parsed.content };
+                break;
+              case 'activity':
+                yield {
+                  type: 'activity',
+                  status: parsed.status,
+                  toolName: parsed.toolName,
+                };
+                break;
+              case 'media_started':
+                yield {
+                  type: 'media_started',
+                  generationId: parsed.generationId,
+                  comfyRequestId: parsed.comfyRequestId,
+                  mediaType: parsed.mediaType || parsed.type,
+                  status: parsed.status,
+                  error: parsed.error,
+                };
+                break;
+              case 'done':
+                yield {
+                  type: 'done',
+                  conversationId: parsed.conversationId,
+                  messageId: parsed.messageId,
+                  creditsRemaining: parsed.creditsRemaining,
+                  chunkCount: parsed.chunkCount,
+                };
+                break;
+              case 'error':
+                yield { type: 'error', error: parsed.error || parsed.message };
+                break;
             }
-          } catch { /* skip */ }
+          } catch {
+            /* skip malformed JSON */
+          }
           currentEvent = '';
           currentData = '';
         }
       }
     }
-  } finally { reader.releaseLock(); }
+  } finally {
+    reader.releaseLock();
+  }
 }

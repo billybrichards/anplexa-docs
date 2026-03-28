@@ -8,6 +8,7 @@
 import { asClass, asFunction, createContainer, InjectionMode } from 'awilix';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
+import { Redis } from 'ioredis';
 import { postgres as schema } from '@anplexa/database';
 import {
   UserRepository,
@@ -25,6 +26,11 @@ import {
   MediaGenerationRepository,
   WorkflowRepository,
   ActivityLogRepository,
+  CompanionVoiceRepository,
+  VoiceCallMetadataRepository,
+  LivekitAgentConfigRepository,
+  LivekitCallEventRepository,
+  ChatDebugLogRepository,
   createAllUseCases,
   type AllUseCases,
 } from '@anplexa/core';
@@ -43,6 +49,9 @@ import {
   NativeMediaService,
   AgentProvisioner,
   ProfileGeneratorAgent,
+  RateLimitService,
+  LiveKitService,
+  CallEventService,
 } from '@anplexa/services';
 import type { ILLMService } from '@anplexa/core/domain/services/ILLMService';
 import type { ITraitAnalysisService } from '@anplexa/core/domain/services/ITraitAnalysisService';
@@ -62,9 +71,10 @@ export interface EmailScheduler {
  * Container interface defining all dependencies
  */
 export interface AppContainer {
-  // Database
+  // Database & Infrastructure
   pool: Pool;
   db: ReturnType<typeof drizzle>;
+  redis: Redis | null;
 
   // Repositories
   userRepository: UserRepository;
@@ -79,6 +89,11 @@ export interface AppContainer {
   birthChartRepository: BirthChartRepository;
   companionPersonaRepository: CompanionPersonaRepository;
   activityLogRepository: ActivityLogRepository;
+  companionVoiceRepository: CompanionVoiceRepository;
+  voiceCallMetadataRepository: VoiceCallMetadataRepository;
+  livekitAgentConfigRepository: LivekitAgentConfigRepository;
+  livekitCallEventRepository: LivekitCallEventRepository;
+  chatDebugLogRepository: ChatDebugLogRepository;
 
   // Services
   jwtService: JWTService;
@@ -98,6 +113,9 @@ export interface AppContainer {
   agentProvisioner: AgentProvisioner;
   profileGeneratorAgent: ProfileGeneratorAgent;
   emailScheduler: EmailScheduler;
+  rateLimitService: RateLimitService;
+  liveKitService: LiveKitService | null;
+  callEventService: CallEventService;
 
   // Use Cases
   useCases: AllUseCases;
@@ -129,6 +147,16 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       return drizzle(container.cradle.pool, { schema });
     }).singleton(),
 
+    // Redis (optional — degrades gracefully if REDIS_URL not set)
+    redis: asFunction(() => {
+      const redisUrl = process.env.REDIS_URL;
+      if (!redisUrl) {
+        console.warn('[DI] No REDIS_URL — rate limiting will be unavailable');
+        return null;
+      }
+      return new Redis(redisUrl, { maxRetriesPerRequest: 3 });
+    }).singleton(),
+
     // Repositories
     userRepository: asClass(UserRepository).singleton(),
     conversationRepository: asClass(ConversationRepository).singleton(),
@@ -142,6 +170,11 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
     birthChartRepository: asClass(BirthChartRepository).singleton(),
     companionPersonaRepository: asClass(CompanionPersonaRepository).singleton(),
     activityLogRepository: asClass(ActivityLogRepository).singleton(),
+    companionVoiceRepository: asClass(CompanionVoiceRepository).singleton(),
+    voiceCallMetadataRepository: asClass(VoiceCallMetadataRepository).singleton(),
+    livekitAgentConfigRepository: asClass(LivekitAgentConfigRepository).singleton(),
+    livekitCallEventRepository: asClass(LivekitCallEventRepository).singleton(),
+    chatDebugLogRepository: asClass(ChatDebugLogRepository).singleton(),
 
     // Services
     jwtService: asFunction(() => {
@@ -236,6 +269,29 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
           region: process.env.AWS_REGION || 'us-east-1',
         },
       }, c.mediaGenerationRepository);
+    }).singleton(),
+
+    // Rate Limiting
+    rateLimitService: asFunction(() => {
+      return new RateLimitService(container.cradle.redis, {
+        freeLimit: parseInt(process.env.RATE_LIMIT_FREE_DAILY || '5', 10),
+      });
+    }).singleton(),
+
+    // LiveKit Voice/Video
+    liveKitService: asFunction(() => {
+      const url = process.env.LIVEKIT_URL;
+      const apiKey = process.env.LIVEKIT_API_KEY;
+      const apiSecret = process.env.LIVEKIT_API_SECRET;
+      if (!url || !apiKey || !apiSecret) {
+        console.warn('[DI] LiveKit not configured — voice/video calls unavailable');
+        return null;
+      }
+      return new LiveKitService({ url, apiKey, apiSecret });
+    }).singleton(),
+
+    callEventService: asFunction(() => {
+      return new CallEventService(container.cradle.livekitCallEventRepository);
     }).singleton(),
 
     // Email Scheduler (stub for dev/testing — replace with real implementation)

@@ -1,34 +1,42 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { parseSSEStream } from '@/lib/sse-parser';
-
-interface Message {
-  id: string;
-  content: string;
-  sender: 'user' | 'assistant';
-  timestamp: Date;
-  isStreaming?: boolean;
-}
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useChat } from '@/hooks/useChat';
+import { useLiveKit } from '@/hooks/useLiveKit';
+import { AgentActivityIndicator } from './chat/AgentActivityIndicator';
+import { MessageBubble } from './chat/MessageBubble';
+import { ConversationList } from './chat/ConversationList';
+import { CallButton } from './call/CallButton';
+import { InCallModal } from './call/InCallModal';
 
 interface ChatInterfaceProps {
   companionName?: string;
   companionPersonality?: string;
   companionPersonaId?: string;
   userId?: string;
+  token?: string;
 }
 
 export function ChatInterface({
   companionName = 'Companion',
   companionPersonaId,
-  userId = 'guest',
+  token,
 }: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const {
+    messages,
+    conversationId,
+    isStreaming,
+    agentActivity,
+    error,
+    sendMessage,
+    abortStream,
+  } = useChat({ companionPersonaId, token });
+
+  const livekit = useLiveKit({ conversationId, token });
+
   const [input, setInput] = useState('');
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [agentStatus, setAgentStatus] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -38,171 +46,106 @@ export function ChatInterface({
 
   const handleSendMessage = useCallback(async () => {
     if (!input.trim() || isStreaming) return;
-
-    const userMessage: Message = {
-      id: `user-${Date.now()}`,
-      content: input,
-      sender: 'user',
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
+    const text = input;
     setInput('');
-    setIsStreaming(true);
-    setAgentStatus('thinking');
-
-    // Create streaming assistant message
-    const assistantId = `assistant-${Date.now()}`;
-    setMessages(prev => [...prev, {
-      id: assistantId,
-      content: '',
-      sender: 'assistant',
-      timestamp: new Date(),
-      isStreaming: true,
-    }]);
-
-    try {
-      abortControllerRef.current = new AbortController();
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
-      const payload = {
-        message: input,
-        userId,
-        companionPersonaId,
-      };
-      console.log('[ChatInterface] Sending to /api/chat/send:', {
-        companionPersonaId: companionPersonaId || '(undefined!)',
-        userId,
-        messageLength: input.length,
-      });
-
-      const response = await fetch(`${apiBase}/api/chat/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: abortControllerRef.current.signal,
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.text().catch(() => '');
-        console.error('[ChatInterface] Chat send failed:', response.status, errorBody);
-        throw new Error(`Chat failed (${response.status})`);
-      }
-
-      for await (const event of parseSSEStream(response)) {
-        switch (event.type) {
-          case 'token':
-            setMessages(prev => prev.map(m =>
-              m.id === assistantId ? { ...m, content: m.content + event.content } : m,
-            ));
-            break;
-          case 'agent_activity':
-            setAgentStatus(event.status);
-            break;
-          case 'done':
-            setMessages(prev => prev.map(m =>
-              m.id === assistantId ? { ...m, isStreaming: false } : m,
-            ));
-            break;
-          case 'error':
-            setMessages(prev => prev.map(m =>
-              m.id === assistantId
-                ? { ...m, content: m.content || `Error: ${event.message}`, isStreaming: false }
-                : m,
-            ));
-            break;
-        }
-      }
-    } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      setMessages(prev => prev.map(m =>
-        m.id === assistantId
-          ? { ...m, content: `Error: ${err instanceof Error ? err.message : 'Unknown error'}`, isStreaming: false }
-          : m,
-      ));
-    } finally {
-      setIsStreaming(false);
-      setAgentStatus(null);
-    }
-  }, [input, isStreaming, userId, companionPersonaId]);
+    await sendMessage(text);
+  }, [input, isStreaming, sendMessage]);
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#1a1a2e' }}>
-      {/* Header */}
-      <div
-        className="p-4"
-        style={{
-          borderBottom: '1px solid rgba(212, 175, 55, 0.2)',
-          background: 'linear-gradient(135deg, rgba(157, 78, 221, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%)',
-        }}
-      >
-        <h1 className="text-xl font-bold" style={{ color: '#d4af37' }}>
-          {companionName}
-        </h1>
-        {agentStatus && (
-          <p className="text-sm mt-1" style={{ color: '#9d4edd', opacity: 0.8 }}>
-            {agentStatus === 'thinking' && 'Thinking...'}
-            {agentStatus === 'responding' && 'Typing...'}
-            {agentStatus === 'tool_call' && 'Using a tool...'}
-            {agentStatus === 'tool_return' && 'Processing result...'}
-          </p>
-        )}
-      </div>
+    <div className="flex h-screen bg-cosmic-purple">
+      {/* Conversation sidebar */}
+      {showSidebar && (
+        <div className="w-64 border-r border-gold/20 shrink-0">
+          <ConversationList token={token} onClose={() => setShowSidebar(false)} />
+        </div>
+      )}
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full" style={{ color: '#9d4edd', opacity: 0.7 }}>
-            Start a conversation with {companionName}!
+      {/* Main chat area */}
+      <div className="flex flex-col flex-1 min-w-0">
+        {/* Header */}
+        <div className="p-4 border-b border-gold/20 bg-gradient-to-br from-[rgba(157,78,221,0.1)] to-[rgba(212,175,55,0.05)]">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="text-gold/60 hover:text-gold transition-colors"
+              aria-label="Toggle conversations"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
+            <h1 className="text-xl font-bold text-gold flex-1">{companionName}</h1>
+            <CallButton
+              onStartVoice={() => livekit.startCall(false)}
+              onStartVideo={() => livekit.startCall(true)}
+              isConnecting={livekit.isConnecting}
+              disabled={!conversationId}
+            />
           </div>
-        ) : (
-          messages.map(msg => (
-            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div
-                className="max-w-[80%] px-4 py-2 rounded-lg whitespace-pre-wrap"
-                style={
-                  msg.sender === 'user'
-                    ? { background: 'linear-gradient(135deg, #9d4edd 0%, #7b2cbf 100%)', color: '#f5f3e7' }
-                    : { background: 'rgba(45, 45, 68, 0.6)', color: '#f5f3e7', border: '1px solid rgba(157, 78, 221, 0.3)' }
-                }
-              >
-                {msg.content}
-                {msg.isStreaming && <span className="inline-block w-2 h-4 ml-1 bg-gold animate-pulse" />}
-              </div>
+          {agentActivity && <AgentActivityIndicator status={agentActivity} />}
+          {(error || livekit.error) && (
+            <p className="text-sm mt-1 text-red-400">{error || livekit.error}</p>
+          )}
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-stardust/70">
+              Start a conversation with {companionName}!
             </div>
-          ))
-        )}
-        <div ref={messagesEndRef} />
+          ) : (
+            messages.map(msg => (
+              <MessageBubble key={msg.id} message={msg} />
+            ))
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <div className="p-4 flex gap-2 border-t border-gold/20">
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+            placeholder="Type your message..."
+            disabled={isStreaming}
+            className="flex-1 rounded px-3 py-2 bg-nebula/80 border border-gold/30 text-cream placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-gold/50"
+          />
+          {isStreaming ? (
+            <button
+              onClick={abortStream}
+              className="px-4 py-2 rounded font-semibold transition-all bg-red-500/80 text-cream hover:bg-red-500"
+            >
+              Stop
+            </button>
+          ) : (
+            <button
+              onClick={handleSendMessage}
+              disabled={!input.trim()}
+              className={`px-4 py-2 rounded font-semibold transition-all text-deep-space ${
+                !input.trim()
+                  ? 'bg-gold/30 cursor-not-allowed'
+                  : 'bg-gradient-to-br from-gold to-gold-light hover:shadow-gold'
+              }`}
+            >
+              Send
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Input */}
-      <div className="p-4 flex gap-2" style={{ borderTop: '1px solid rgba(212, 175, 55, 0.2)' }}>
-        <input
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
-          placeholder="Type your message..."
-          disabled={isStreaming}
-          className="flex-1 rounded px-3 py-2"
-          style={{
-            background: 'rgba(45, 45, 68, 0.8)',
-            border: '1px solid rgba(212, 175, 55, 0.3)',
-            color: '#f5f3e7',
-          }}
+      {/* In-call modal overlay */}
+      {livekit.isInCall && livekit.livekitToken && livekit.wsUrl && (
+        <InCallModal
+          token={livekit.livekitToken}
+          wsUrl={livekit.wsUrl}
+          roomName={livekit.roomName!}
+          companionName={companionName}
+          onDisconnect={livekit.endCall}
         />
-        <button
-          onClick={handleSendMessage}
-          disabled={isStreaming || !input.trim()}
-          className="px-4 py-2 rounded font-semibold transition-all"
-          style={{
-            background: isStreaming ? 'rgba(212, 175, 55, 0.3)' : 'linear-gradient(135deg, #d4af37 0%, #f4e16b 100%)',
-            color: '#1a1a2e',
-          }}
-        >
-          {isStreaming ? '...' : 'Send'}
-        </button>
-      </div>
+      )}
     </div>
   );
 }

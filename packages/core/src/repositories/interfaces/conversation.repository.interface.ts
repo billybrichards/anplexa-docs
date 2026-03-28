@@ -22,6 +22,8 @@ export interface CreateConversationData {
   id: string;
   userId: string;
   title?: string | null;
+  companionPersonaId?: string | null;
+  lettaAgentId?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -20,6 +20,7 @@ import { createAstrologyRoutes } from './routes/astrology/index.js';
 import { createMediaRoutes } from './routes/media/index.js';
 import { createCompanionRoutes } from './routes/companion/index.js';
 import { createChatRoutes } from './routes/chat/index.js';
+import { createVoiceRoutes } from './routes/voice/index.js';
 import { createLogsRoutes } from './routes/logs/index.js';
 import { createActivityLoggerMiddleware } from './middleware/activityLogger.js';
 
@@ -74,6 +75,7 @@ export function createApp(container: Container): Express {
   app.use('/api/media', createMediaRoutes(container));
   app.use('/api/companion', createCompanionRoutes(container));
   app.use('/api/chat', createChatRoutes(container));
+  app.use('/api/voice', createVoiceRoutes(container));
   app.use('/api/docs', createDocsRoutes(container));
   app.use('/api/logs', createLogsRoutes(container));
   app.use('/admin', createAdminRoutes(container));

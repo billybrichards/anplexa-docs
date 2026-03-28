@@ -32,12 +32,14 @@ export interface ChatRequest {
 // ============================================================================
 
 export type MessageRole = 'user' | 'assistant' | 'system';
+export type MessageSource = 'chat' | 'voice_call' | 'video_call';
 
 export interface MessageDTO {
   id: string;
   conversationId: string;
   role: MessageRole;
   content: string;
+  source?: MessageSource;
   createdAt: string;
 }
 
@@ -90,11 +92,20 @@ export interface SSETokenEvent {
   content: string;
 }
 
+export type AgentActivityStatus = 'thinking' | 'tool_call' | 'tool_return' | 'responding';
+
+export interface SSEActivityEvent {
+  type: 'activity';
+  status: AgentActivityStatus;
+  toolName?: string;
+}
+
 export interface SSEDoneEvent {
   type: 'done';
   conversationId: string;
   messageId: string;
   creditsRemaining?: number;
+  chunkCount?: number;
 }
 
 export interface SSEErrorEvent {
@@ -103,7 +114,7 @@ export interface SSEErrorEvent {
   code?: string;
 }
 
-export type SSEEvent = SSEStartEvent | SSETokenEvent | SSEDoneEvent | SSEErrorEvent;
+export type SSEEvent = SSEStartEvent | SSETokenEvent | SSEActivityEvent | SSEDoneEvent | SSEErrorEvent;
 
 // ============================================================================
 // Amplexa Profile Types (used in chat context)
@@ -132,6 +143,13 @@ export interface InsufficientCreditsError extends ChatError {
   code: 'INSUFFICIENT_CREDITS';
   creditsRequired: number;
   creditsAvailable: number;
+}
+
+export interface RateLimitErrorResponse {
+  error: string;
+  code: 'RATE_LIMIT_EXCEEDED';
+  remaining: number;
+  resetAt: string; // ISO datetime when limit resets
 }
 
 // ============================================================================
@@ -163,11 +181,14 @@ export const ChatRequestSchema = z.object({
   newChat: z.boolean().optional(),
 });
 
+export const MessageSourceSchema = z.enum(['chat', 'voice_call', 'video_call']);
+
 export const MessageDTOSchema = z.object({
   id: z.string().uuid(),
   conversationId: z.string().uuid(),
   role: z.enum(['user', 'assistant', 'system']),
   content: z.string(),
+  source: MessageSourceSchema.optional(),
   createdAt: z.string().datetime(),
 });
 
@@ -190,11 +211,18 @@ export const SSETokenEventSchema = z.object({
   content: z.string(),
 });
 
+export const SSEActivityEventSchema = z.object({
+  type: z.literal('activity'),
+  status: z.enum(['thinking', 'tool_call', 'tool_return', 'responding']),
+  toolName: z.string().optional(),
+});
+
 export const SSEDoneEventSchema = z.object({
   type: z.literal('done'),
   conversationId: z.string().uuid(),
   messageId: z.string().uuid(),
   creditsRemaining: z.number().nonnegative().optional(),
+  chunkCount: z.number().nonnegative().optional(),
 });
 
 export const SSEErrorEventSchema = z.object({
@@ -206,6 +234,7 @@ export const SSEErrorEventSchema = z.object({
 export const SSEEventSchema = z.union([
   SSEStartEventSchema,
   SSETokenEventSchema,
+  SSEActivityEventSchema,
   SSEDoneEventSchema,
   SSEErrorEventSchema,
 ]);

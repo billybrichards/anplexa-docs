@@ -54,6 +54,8 @@ export type { IPasswordService, GeneratedApiKey, PasswordStrengthResult } from '
 export type { IJWTService, TokenPayload, TokenPair } from './domain/services/IJWTService.js';
 export type { IStripeService, CheckoutSessionOptions, CheckoutSessionResult, CustomerResult, SubscriptionResult, WebhookEvent } from './domain/services/IStripeService.js';
 export type { IChatGateway, ChatMessage, GenerateOptions } from './domain/services/IChatGateway.js';
+export type { ILiveKitService, LiveKitTokenOptions } from './domain/services/ILiveKitService.js';
+export type { IRateLimitService, RateLimitResult } from './domain/services/IRateLimitService.js';
 
 // ============================================================================
 // Repository Layer Exports
@@ -79,6 +81,11 @@ export {
   MediaGenerationRepository,
   WorkflowRepository,
   ActivityLogRepository,
+  CompanionVoiceRepository,
+  VoiceCallMetadataRepository,
+  LivekitAgentConfigRepository,
+  LivekitCallEventRepository,
+  ChatDebugLogRepository,
 } from './repositories/index.js';
 
 // ============================================================================

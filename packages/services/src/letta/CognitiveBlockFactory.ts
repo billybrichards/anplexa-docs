@@ -10,9 +10,19 @@ export interface MemoryBlockDefinition {
   limit: number;
 }
 
+export interface AstrologyBlockOverrides {
+  /** Pre-built user model block from AstrologyBlockBuilder.buildUserModelBlock() */
+  userModelValue?: string;
+  /** Pre-built human block from AstrologyBlockBuilder.buildHumanBlock() */
+  humanBlockValue?: string;
+}
+
 export class CognitiveBlockFactory {
-  getCognitiveBlockDefinitions(companionName: string): MemoryBlockDefinition[] {
-    return [
+  getCognitiveBlockDefinitions(
+    companionName: string,
+    astrology?: AstrologyBlockOverrides,
+  ): MemoryBlockDefinition[] {
+    const blocks: MemoryBlockDefinition[] = [
       {
         label: 'current_focus',
         value: `Currently waiting for ${companionName}'s first interaction with the user. No conversation focus yet.`,
@@ -20,7 +30,7 @@ export class CognitiveBlockFactory {
       },
       {
         label: 'user_model',
-        value: [
+        value: astrology?.userModelValue || [
           'User Model (update as you learn):',
           '- Name: [unknown]',
           '- Communication style: [observing]',
@@ -44,5 +54,16 @@ export class CognitiveBlockFactory {
         limit: 2000,
       },
     ];
+
+    // If astrology data provides a human block, include it
+    if (astrology?.humanBlockValue) {
+      blocks.push({
+        label: 'human',
+        value: astrology.humanBlockValue,
+        limit: 3000,
+      });
+    }
+
+    return blocks;
   }
 }

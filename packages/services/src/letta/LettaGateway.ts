@@ -399,6 +399,46 @@ export class LettaGateway {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
+  // Agent Inspection & Maintenance
+  // ══════════════════════════════════════════════════════════════════════════
+
+  async getAgentSystemPrompt(agentId: string): Promise<string | null> {
+    try {
+      const response = await this.request(`/v1/agents/${agentId}`);
+      const data = (await response.json()) as LettaAgentResponse;
+      return data.system || null;
+    } catch (error) {
+      console.error(`[LettaGateway] Failed to get system prompt for ${agentId}:`, error);
+      return null;
+    }
+  }
+
+  async getAgentMemoryBlockByLabel(agentId: string, label: string): Promise<MemoryBlock | null> {
+    try {
+      const response = await this.request(`/v1/agents/${agentId}/memory/block/${label}`);
+      const data = (await response.json()) as LettaBlockResponse;
+      return { id: data.id, label: data.label, value: data.value, limit: data.limit };
+    } catch (error) {
+      if (error instanceof LettaApiError && error.statusCode === 404) {
+        return null;
+      }
+      console.error(`[LettaGateway] Failed to get memory block '${label}' for ${agentId}:`, error);
+      return null;
+    }
+  }
+
+  async deleteRecentMessages(agentId: string, count: number): Promise<void> {
+    const messages = await this.getMessages(agentId, count);
+    for (const msg of messages) {
+      try {
+        await this.request(`/v1/agents/${agentId}/messages/${msg.id}`, { method: 'DELETE' });
+      } catch (error) {
+        console.warn(`[LettaGateway] Failed to delete message ${msg.id}:`, error);
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
   // Internal HTTP client
   // ══════════════════════════════════════════════════════════════════════════
 

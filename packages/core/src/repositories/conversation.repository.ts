@@ -149,13 +149,19 @@ export class ConversationRepository implements IConversationRepository {
   async create(conversationData: CreateConversationData): Promise<Conversation> {
     try {
       const now = new Date().toISOString();
-      const newConversation = {
+      const newConversation: Record<string, unknown> = {
         id: conversationData.id,
         userId: conversationData.userId,
         title: conversationData.title || null,
         createdAt: conversationData.createdAt || now,
         updatedAt: conversationData.updatedAt || now,
       };
+      if (conversationData.companionPersonaId) {
+        newConversation.companionPersonaId = conversationData.companionPersonaId;
+      }
+      if (conversationData.lettaAgentId) {
+        newConversation.lettaAgentId = conversationData.lettaAgentId;
+      }
 
       const result = await this.db
         .insert(conversations)
