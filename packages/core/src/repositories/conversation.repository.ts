@@ -114,7 +114,9 @@ export class ConversationRepository implements IConversationRepository {
     try {
       // Search in conversation titles and message content
       // Using a subquery to find conversations with matching messages
-      const searchPattern = `%${searchTerm}%`;
+      // Escape SQL LIKE wildcards to prevent injection
+      const escapedTerm = searchTerm.replace(/[%_\\]/g, '\\$&');
+      const searchPattern = `%${escapedTerm}%`;
 
       const result = await this.db
         .selectDistinct({

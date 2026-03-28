@@ -35,9 +35,9 @@ export class ChatActionStreamFilter {
    * Call this when the stream ends.
    */
   flush(): string {
-    const remaining = this.buffer;
+    const remaining = this.insideThinkBlock ? '' : this.buffer;
     this.buffer = '';
-    // If we have a partial action pattern that never completed, output it
+    this.insideThinkBlock = false;
     return remaining;
   }
 

@@ -40,9 +40,15 @@ describe('ChatActionStreamFilter', () => {
       expect(remaining).toBe('*partial');
     });
 
-    it('should strip multiple actions in one chunk', () => {
+    it('should strip multiple multi-word actions in one chunk', () => {
       const filter = new ChatActionStreamFilter('text');
-      expect(filter.process('*nods* Yes *smiles* indeed')).toBe(' Yes  indeed');
+      // Only multi-word patterns like *nods slowly* are stripped; single-word *nods* is preserved as emphasis
+      expect(filter.process('*nods slowly* Yes *smiles warmly* indeed')).toBe(' Yes  indeed');
+    });
+
+    it('should preserve single-word emphasis in text mode', () => {
+      const filter = new ChatActionStreamFilter('text');
+      expect(filter.process('This is *important* text')).toBe('This is *important* text');
     });
   });
 

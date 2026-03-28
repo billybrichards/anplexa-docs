@@ -55,7 +55,16 @@ export function createChatSendRoutes(container: Container): Router {
 
       // 1. Resolve or create conversation
       let conversationId = body.conversationId;
-      if (!conversationId) {
+      if (conversationId) {
+        // Verify the conversation belongs to this user
+        const existingConv = await conversationRepository.getById(conversationId);
+        if (!existingConv) {
+          return res.status(404).json({ error: 'Conversation not found' });
+        }
+        if (existingConv.userId !== userId) {
+          return res.status(403).json({ error: 'Not authorized to access this conversation' });
+        }
+      } else {
         const conv = await conversationRepository.create({
           id: `conv_${randomUUID()}`,
           userId,

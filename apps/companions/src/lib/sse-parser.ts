@@ -140,6 +140,46 @@ export async function* parseSSEStream(response: Response): AsyncGenerator<SSEEve
         }
       }
     }
+    // Process any remaining buffer content after the stream ends
+    if (buffer.trim()) {
+      let currentEvent = '';
+      let currentData = '';
+      const remainingLines = buffer.split('\n');
+      for (const line of remainingLines) {
+        if (line.startsWith('event: ')) {
+          currentEvent = line.substring(7).trim();
+        } else if (line.startsWith('data: ')) {
+          currentData = line.substring(6);
+        }
+      }
+      if (currentEvent && currentData) {
+        try {
+          const parsed = JSON.parse(currentData);
+          switch (currentEvent) {
+            case 'done':
+              yield {
+                type: 'done',
+                conversationId: parsed.conversationId,
+                messageId: parsed.messageId,
+                creditsRemaining: parsed.creditsRemaining,
+                chunkCount: parsed.chunkCount,
+              };
+              break;
+            case 'error':
+              yield { type: 'error', error: parsed.error || parsed.message };
+              break;
+            case 'token':
+              yield { type: 'token', content: parsed.content };
+              break;
+            case 'activity':
+              yield { type: 'activity', status: parsed.status, toolName: parsed.toolName };
+              break;
+          }
+        } catch {
+          /* skip malformed trailing JSON */
+        }
+      }
+    }
   } finally {
     reader.releaseLock();
   }

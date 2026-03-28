@@ -42,12 +42,12 @@ export function useLiveKit(options: UseLiveKitOptions = {}): UseLiveKitReturn {
   const apiBase = API_BASE_URL;
 
   const startCall = useCallback(async (hasVideo = false) => {
+    setError(null);
     if (!options.conversationId) {
       setError('No active conversation — send a message first');
       return;
     }
     setIsConnecting(true);
-    setError(null);
 
     try {
       const headers: Record<string, string> = {

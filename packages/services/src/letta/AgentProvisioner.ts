@@ -12,6 +12,7 @@
  * Accepts domain objects directly — no intermediate DTOs required from callers.
  */
 
+import { randomUUID } from 'node:crypto';
 import type { NatalChartData } from '@anplexa/core/domain/value-objects/astrology/NatalChartData';
 import type { LettaGateway } from './LettaGateway.js';
 import { CognitiveBlockFactory } from './CognitiveBlockFactory.js';
@@ -157,7 +158,7 @@ export class AgentProvisioner {
     if (this.lettaAgentRepository) {
       try {
         await this.lettaAgentRepository.create({
-          id: `la_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          id: `la_${randomUUID()}`,
           userId: input.userId,
           companionPersonaId: input.companionPersonaId,
           conversationId: input.conversationId,

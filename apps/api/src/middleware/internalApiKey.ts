@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import type { Request, Response, NextFunction } from 'express';
 
 /**
@@ -7,6 +8,7 @@ import type { Request, Response, NextFunction } from 'express';
  * for memory sync, call summaries, and event logging.
  *
  * Expects `Authorization: Bearer <INTERNAL_API_KEY>` header.
+ * Uses timing-safe comparison to prevent timing attacks.
  */
 export function internalApiKeyMiddleware(req: Request, res: Response, next: NextFunction): void {
   const internalKey = process.env.INTERNAL_API_KEY;
@@ -22,7 +24,11 @@ export function internalApiKeyMiddleware(req: Request, res: Response, next: Next
   }
 
   const providedKey = authHeader.slice(7);
-  if (providedKey !== internalKey) {
+
+  // Use timing-safe comparison to prevent timing attacks
+  const expected = Buffer.from(internalKey, 'utf-8');
+  const provided = Buffer.from(providedKey, 'utf-8');
+  if (expected.length !== provided.length || !timingSafeEqual(expected, provided)) {
     res.status(403).json({ error: 'Invalid internal API key' });
     return;
   }

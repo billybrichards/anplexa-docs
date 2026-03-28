@@ -75,7 +75,7 @@ export function createChatConversationRoutes(container: Container): Router {
     try {
       const { id } = req.params;
       const userId = req.user!.sub;
-      const limit = parseInt(req.query.limit as string) || 50;
+      const limit = Math.min(parseInt(req.query.limit as string, 10) || 50, 500);
 
       const { conversationRepository, lettaGateway, lettaAgentRepository, messageRepository } = container.cradle;
 

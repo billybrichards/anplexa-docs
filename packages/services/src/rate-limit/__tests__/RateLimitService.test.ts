@@ -1,19 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { RateLimitService } from '../RateLimitService.js';
 
-// Minimal mock Redis interface matching what we actually call
+// Mock Redis that mirrors the Lua script behavior used by RateLimitService.
+// The real service calls redis.eval() with an atomic Lua script, so we simulate
+// the same check-and-increment logic here.
 function createMockRedis() {
   const store = new Map<string, number>();
   return {
-    incr: vi.fn(async (key: string) => {
-      const val = (store.get(key) ?? 0) + 1;
-      store.set(key, val);
-      return val;
-    }),
-    decr: vi.fn(async (key: string) => {
-      const val = (store.get(key) ?? 0) - 1;
-      store.set(key, val);
-      return val;
+    eval: vi.fn(async (_script: string, _numKeys: number, key: string, limitStr: string, _ttlStr: string) => {
+      const limit = parseInt(limitStr, 10);
+      const current = store.get(key) ?? 0;
+      if (current >= limit) {
+        return -1; // Over limit — reject without incrementing
+      }
+      const newVal = current + 1;
+      store.set(key, newVal);
+      return newVal;
     }),
     get: vi.fn(async (key: string) => {
       const val = store.get(key);
@@ -62,13 +64,12 @@ describe('RateLimitService', () => {
       expect(r4.remaining).toBe(0);
     });
 
-    it('should roll back counter when request is denied', async () => {
+    it('should not increment counter when request is denied', async () => {
       await service.checkAndIncrement('user-1', false);
       await service.checkAndIncrement('user-1', false);
       await service.checkAndIncrement('user-1', false);
-      await service.checkAndIncrement('user-1', false); // denied, rolled back
-      expect(mockRedis.decr).toHaveBeenCalled();
-      // Counter should still be at 3, not 4
+      await service.checkAndIncrement('user-1', false); // denied — Lua script rejects without incrementing
+      // Counter should still be at 3, not 4 (Lua returns -1 without INCR)
       const remaining = await service.getRemaining('user-1', false);
       expect(remaining).toBe(0);
     });
@@ -77,22 +78,23 @@ describe('RateLimitService', () => {
       const result = await service.checkAndIncrement('user-1', true);
       expect(result.allowed).toBe(true);
       expect(result.remaining).toBe(Infinity);
-      expect(mockRedis.incr).not.toHaveBeenCalled();
+      expect(mockRedis.eval).not.toHaveBeenCalled();
     });
 
-    it('should set expiry on first increment', async () => {
+    it('should call eval with correct key and limit args', async () => {
       await service.checkAndIncrement('user-1', false);
-      expect(mockRedis.expire).toHaveBeenCalledTimes(1);
-      // TTL should be a positive number of seconds
-      const ttlArg = mockRedis.expire.mock.calls[0]![1] as number;
-      expect(ttlArg).toBeGreaterThan(0);
-      expect(ttlArg).toBeLessThanOrEqual(86400);
+      expect(mockRedis.eval).toHaveBeenCalledTimes(1);
+      const [, , key, limitStr, ttlStr] = mockRedis.eval.mock.calls[0]!;
+      expect(key).toMatch(/^anplexa:rate:user-1:\d{4}-\d{2}-\d{2}$/);
+      expect(limitStr).toBe('3');
+      expect(Number(ttlStr)).toBeGreaterThan(0);
+      expect(Number(ttlStr)).toBeLessThanOrEqual(86400);
     });
 
-    it('should not set expiry on subsequent increments', async () => {
+    it('should call eval on each request', async () => {
       await service.checkAndIncrement('user-1', false);
       await service.checkAndIncrement('user-1', false);
-      expect(mockRedis.expire).toHaveBeenCalledTimes(1);
+      expect(mockRedis.eval).toHaveBeenCalledTimes(2);
     });
 
     it('should track different users independently', async () => {
@@ -148,7 +150,8 @@ describe('RateLimitService', () => {
         keyPrefix: 'custom:rl',
       });
       await customService.checkAndIncrement('user-1', false);
-      const key = mockRedis.incr.mock.calls[mockRedis.incr.mock.calls.length - 1]![0] as string;
+      // The key is the 3rd argument to eval (index 2): eval(script, numKeys, key, ...)
+      const key = mockRedis.eval.mock.calls[mockRedis.eval.mock.calls.length - 1]![2] as string;
       expect(key).toMatch(/^custom:rl:user-1:\d{4}-\d{2}-\d{2}$/);
     });
   });

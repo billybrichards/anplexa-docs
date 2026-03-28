@@ -97,7 +97,7 @@ export class LettaGateway {
 
   async findAgentByConversation(conversationId: string): Promise<LettaAgent | null> {
     try {
-      const response = await this.request(`/v1/agents/?metadata.conversationId=${conversationId}`);
+      const response = await this.request(`/v1/agents/?metadata.conversationId=${encodeURIComponent(conversationId)}`);
       const agents = (await response.json()) as LettaAgentResponse[];
 
       // Filter to agents actually matching this conversation (Letta metadata query can over-match)
