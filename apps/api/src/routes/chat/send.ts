@@ -53,6 +53,17 @@ export function createChatSendRoutes(container: Container): Router {
         birthChartRepository,
       } = container.cradle;
 
+      // ──────────────────────────────────────────────────────────────────
+      // 0. Validate companionPersonaId is a real DB ID (not preview_*)
+      // ──────────────────────────────────────────────────────────────────
+      if (body.companionPersonaId && body.companionPersonaId.startsWith('preview_')) {
+        console.error('[ChatSend] Received preview ID — frontend must call /api/companion/save first');
+        return res.status(400).json({
+          error: 'Invalid companionPersonaId',
+          message: 'The companionPersonaId is a temporary preview ID. Call POST /api/companion/save first to persist the companion.',
+        });
+      }
+
       // 1. Resolve or create conversation
       let conversationId = body.conversationId;
       if (conversationId) {
@@ -133,7 +144,7 @@ export function createChatSendRoutes(container: Container): Router {
       if (!lettaAgentId) {
         return res.status(400).json({
           error: 'No agent available',
-          message: 'Provide companionPersonaId to auto-provision an agent',
+          message: 'Provide a valid companionPersonaId to auto-provision an agent',
         });
       }
 

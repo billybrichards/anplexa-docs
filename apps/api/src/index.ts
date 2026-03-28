@@ -36,6 +36,30 @@ async function main() {
     console.log('🔧 Initializing dependency injection container...');
     const container = configureContainer();
 
+    // Log service configuration status (Fix 4: environment variable validation)
+    console.log('📋 Service configuration:');
+    console.log(`   Letta:     ${process.env.LETTA_API_URL ? `✅ configured (${process.env.LETTA_API_URL})` : '⚠️  not configured (LETTA_API_URL not set)'}`);
+    console.log(`   Ollama:    ${process.env.OLLAMA_BASE_URL ? `✅ configured (${process.env.OLLAMA_BASE_URL})` : '⚠️  not configured (OLLAMA_BASE_URL not set, using localhost:11434)'}`);
+    console.log(`   ComfyUI:   ${process.env.COMFYUI_API_URL ? `✅ configured (${process.env.COMFYUI_API_URL})` : '⚠️  not configured (COMFYUI_API_URL not set)'}`);
+    console.log(`   Anthropic: ${process.env.ANTHROPIC_API_KEY ? '✅ configured' : '⚠️  not configured (ANTHROPIC_API_KEY not set)'}`);
+    console.log(`   AWS S3:    ${process.env.AWS_ACCESS_KEY_ID ? '✅ configured' : '⚠️  not configured (AWS_ACCESS_KEY_ID not set)'}`);
+
+    // Initialize MediaToolService (registers generate_image/generate_video with Letta)
+    // Wrapped in try/catch so the app still starts if Letta or ComfyUI is unavailable
+    if (process.env.LETTA_API_URL) {
+      try {
+        const { mediaToolService, lettaGateway } = container.cradle;
+        console.log('🎨 Initializing Letta media tools (generate_image, generate_video)...');
+        await mediaToolService.getToolConfig(lettaGateway);
+        console.log('✅ Letta media tools initialized');
+      } catch (mediaErr) {
+        console.warn('⚠️  Media tool initialization failed (non-fatal):', mediaErr instanceof Error ? mediaErr.message : mediaErr);
+        console.warn('   Image/video generation will not be available until Letta and ComfyUI are reachable.');
+      }
+    } else {
+      console.log('⏭️  Skipping media tool initialization (LETTA_API_URL not configured)');
+    }
+
     // Create Express app
     console.log('🚀 Creating Express application...');
     const app = createApp(container);

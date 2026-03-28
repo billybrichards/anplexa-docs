@@ -157,6 +157,9 @@ export class ConversationRepository implements IConversationRepository {
         title: conversationData.title || null,
         createdAt: conversationData.createdAt || now,
         updatedAt: conversationData.updatedAt || now,
+        // Companion and Letta references for direct lookup
+        ...(conversationData.companionPersonaId && { companionPersonaId: conversationData.companionPersonaId }),
+        ...(conversationData.lettaAgentId && { lettaAgentId: conversationData.lettaAgentId }),
       };
       if (conversationData.companionPersonaId) {
         newConversation.companionPersonaId = conversationData.companionPersonaId;

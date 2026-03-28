@@ -130,7 +130,7 @@ export const birthCharts = pgTable('birth_charts', {
 export const companionPersonas = pgTable('companion_personas', {
   id: text('id').primaryKey(),
   userId: text('user_id').references(() => users.id).notNull(),
-  birthChartId: text('birth_chart_id').references(() => birthCharts.id).notNull(),
+  birthChartId: text('birth_chart_id').references(() => birthCharts.id), // Nullable: may not exist during initial onboarding save
 
   // Persona attributes
   name: text('name').notNull(),
@@ -151,6 +151,10 @@ export const companionPersonas = pgTable('companion_personas', {
   profileImageUrl: text('profile_image_url'), // S3 URL of generated profile image
   profileImageGenerationId: text('profile_image_generation_id'), // FK to media_generations
   appearanceDescription: text('appearance_description'), // Physical description for image gen
+
+  // Letta agent mapping (convenience columns — canonical mapping is in lettaAgents table)
+  lettaAgentId: text('letta_agent_id'), // Letta server agent ID for quick lookup
+  lettaConversationId: text('letta_conversation_id'), // Letta conversation/thread ID
 
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
   updatedAt: text('updated_at').default('CURRENT_TIMESTAMP'),
@@ -184,6 +188,10 @@ export const messages = pgTable('messages', {
   tokenCount: integer('token_count'), // Token count for this message
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
 });
+
+// NOTE: chat_messages table was considered but removed — message storage goes through
+// the existing `messages` table via conversation lookup (conversations now have
+// companionPersonaId for direct lookup). This avoids dual write paths.
 
 // Context/Memory summaries (for long conversations)
 export const conversationContext = pgTable('conversation_context', {
@@ -504,6 +512,8 @@ export const messagesRelations = relations(messages, ({ one }) => ({
     references: [conversations.id],
   }),
 }));
+
+// chatMessages relations removed — table not used (see note above)
 
 // System prompts with version control
 export const systemPrompts = pgTable('system_prompts', {

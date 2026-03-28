@@ -39,6 +39,7 @@ import {
   PasswordService,
   OllamaGateway,
   OllamaLLMService,
+  ClaudeLLMService,
   SimplifiedAstrologyService,
   MockTraitAnalysisService,
   ClaudeTraitAnalysisService,
@@ -235,7 +236,19 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
       new ProfileGeneratorAgent(container.cradle.nativeMediaService),
     ).singleton(),
 
+    // FIX: Use ClaudeLLMService when ANTHROPIC_API_KEY is available (required for Railway
+    // where Ollama is not running). Mirrors the traitAnalysisService pattern above.
     llmService: asFunction(() => {
+      const anthropicKey = process.env.ANTHROPIC_API_KEY;
+      if (anthropicKey) {
+        console.log('[DI] Using ClaudeLLMService for companion generation (Anthropic API)');
+        return new ClaudeLLMService({
+          apiKey: anthropicKey,
+          model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5-20250929',
+        });
+      }
+      // Fallback to Ollama for local development
+      console.warn('[DI] No ANTHROPIC_API_KEY — falling back to OllamaLLMService (local dev only)');
       const model = process.env.OLLAMA_LONG_FORM_MODEL || process.env.OLLAMA_GENERAL_MODEL || 'llama2';
       return new OllamaLLMService(container.cradle.ollamaGateway, model);
     }).singleton(),

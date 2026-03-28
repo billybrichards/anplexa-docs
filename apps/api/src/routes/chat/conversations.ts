@@ -6,6 +6,7 @@
  * GET    /api/chat/conversations/:id/messages   — Get messages
  * DELETE /api/chat/conversations/:id            — Delete a conversation
  * GET    /api/chat/conversations/:id/memory     — Get agent memory blocks
+ * GET    /api/chat/messages-by-companion/:companionPersonaId — Get messages by companion persona
  *
  * NOTE: POST /conversations/:id/call-summary has been moved to internal.ts
  * (uses internal API key auth instead of JWT).
@@ -199,6 +200,46 @@ export function createChatConversationRoutes(container: Container): Router {
         }));
 
       return res.json({ agentId: agentRecord.lettaAgentId, blocks: memoryBlocks });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  /**
+   * GET /api/chat/messages-by-companion/:companionPersonaId — Get chat history for a companion
+   *
+   * Looks up the conversation associated with a companionPersonaId and returns messages.
+   * This is the primary endpoint the frontend uses to load chat history.
+   */
+  router.get('/messages-by-companion/:companionPersonaId', async (req, res, next) => {
+    try {
+      const { companionPersonaId } = req.params;
+      const userId = req.user?.sub || (req.query.userId as string) || 'guest';
+      const limit = parseInt(req.query.limit as string) || 100;
+
+      const { conversationRepository, messageRepository } = container.cradle;
+
+      if (!conversationRepository || !messageRepository) {
+        return res.status(501).json({ error: 'Chat persistence not available' });
+      }
+
+      // Find conversation for this companion persona
+      const userConversations = await conversationRepository.getByUserId(userId);
+      const conversation = userConversations.find(
+        (c: { companionPersonaId?: string | null }) => c.companionPersonaId === companionPersonaId
+      );
+
+      if (!conversation) {
+        // No conversation yet — return empty array (first chat)
+        return res.json({ conversationId: null, messages: [] });
+      }
+
+      const messages = await messageRepository.getByConversationId(conversation.id, { limit });
+
+      return res.json({
+        conversationId: conversation.id,
+        messages,
+      });
     } catch (error) {
       next(error);
     }

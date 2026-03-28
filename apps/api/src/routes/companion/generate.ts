@@ -104,6 +104,10 @@ export function createCompanionGenerateRoutes(container: Container): Router {
         compatibility.scores.emotionalResonance * 0.25
       );
 
+      // NOTE: DB persistence is handled by POST /api/companion/save (called by trait-globe).
+      // generate is compute-only — no DB writes here to avoid duplicate records.
+      // Letta agent provisioning also happens in save.ts / chat/send.ts (on first message).
+
       return res.status(200).json({
         persona: {
           name: generatedPersona.name,
