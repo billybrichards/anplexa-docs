@@ -26,6 +26,14 @@
       "types": "./dist/letta/index.d.ts",
       "default": "./dist/letta/index.js"
     },
+    "./livekit": {
+      "types": "./dist/livekit/index.d.ts",
+      "default": "./dist/livekit/index.js"
+    },
+    "./rate-limit": {
+      "types": "./dist/rate-limit/index.d.ts",
+      "default": "./dist/rate-limit/index.js"
+    },
     "./astrology/city-coordinates": {
       "types": "./dist/astrology/city-coordinates.d.ts",
       "default": "./dist/astrology/city-coordinates.js"
@@ -45,7 +53,9 @@
     "@anthropic-ai/sdk": "^0.32.0",
     "bcryptjs": "^2.4.3",
     "celestine": "^0.2.1",
+    "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.0",
+    "livekit-server-sdk": "^2.15.0",
     "posthog-js": "^1.158.0",
     "posthog-node": "^4.2.0",
     "resend": "^3.0.0",
@@ -54,6 +64,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.10.0",
     "@types/stripe": "^8.0.0",

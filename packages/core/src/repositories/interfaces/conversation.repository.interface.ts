@@ -24,6 +24,7 @@ export interface CreateConversationData {
   title?: string | null;
   companionPersonaId?: string | null;
   lettaAgentId?: string | null;
+  voiceAgentId?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }

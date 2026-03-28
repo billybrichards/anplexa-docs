@@ -19,6 +19,7 @@ export interface PaginationOptions {
  * Data required to create a new message
  */
 export interface CreateMessageData {
+  id?: string;
   conversationId: string;
   role: 'user' | 'assistant' | 'system';
   content: string;

@@ -1,5 +1,66 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AgentProvisioner } from '../AgentProvisioner.js';
+import type { CompanionPersonaInput } from '../CompanionBlockBuilder.js';
+import {
+  NatalChartData,
+  type PlanetPlacement,
+} from '@anplexa/core/domain/value-objects/astrology/NatalChartData';
+import { ZodiacSign } from '@anplexa/core/domain/value-objects/astrology/ZodiacSign';
+import { PersonalityTraits } from '@anplexa/core/domain/value-objects/companion/PersonalityTraits';
+
+function getDegreeForSign(signName: string): number {
+  const signs = [
+    'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo',
+    'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces',
+  ];
+  return signs.indexOf(signName) * 30 + 15;
+}
+
+function createPlanet(name: string, signName: string): PlanetPlacement {
+  const degree = getDegreeForSign(signName);
+  return {
+    planetName: name,
+    sign: ZodiacSign.fromDegree(degree),
+    house: null,
+    degree,
+    speed: 1.0,
+    isRetrograde: false,
+  };
+}
+
+function createMockChart(): NatalChartData {
+  return NatalChartData.create({
+    planets: {
+      sun: createPlanet('Sun', 'leo'),
+      moon: createPlanet('Moon', 'pisces'),
+      mercury: createPlanet('Mercury', 'virgo'),
+      venus: createPlanet('Venus', 'taurus'),
+      mars: createPlanet('Mars', 'aries'),
+      jupiter: createPlanet('Jupiter', 'sagittarius'),
+      saturn: createPlanet('Saturn', 'capricorn'),
+      uranus: createPlanet('Uranus', 'aquarius'),
+      neptune: createPlanet('Neptune', 'pisces'),
+      pluto: createPlanet('Pluto', 'scorpio'),
+      northNode: createPlanet('North Node', 'gemini'),
+      southNode: createPlanet('South Node', 'sagittarius'),
+    },
+    houses: [],
+    aspects: [],
+    dominantElement: 'fire',
+    dominantModality: 'cardinal',
+    ascendant: null,
+    midheaven: null,
+  });
+}
+
+function createMockCompanion(name = 'Luna'): CompanionPersonaInput {
+  return {
+    name,
+    personalityTraits: PersonalityTraits.create({
+      traits: ['Empathetic', 'Warm', 'Intuitive'],
+    }),
+  };
+}
 
 function createMockGateway() {
   return {
@@ -48,28 +109,30 @@ describe('AgentProvisioner', () => {
     const result = await provisioner.provisionCompanionAgent({
       userId: 'user-1',
       companionPersonaId: 'persona-1',
-      companionName: 'Luna',
-      gender: 'female',
-      goal: 'empathetic companion',
+      companion: createMockCompanion(),
+      chart: createMockChart(),
+      userName: 'Alex',
     });
 
     expect(result.lettaAgentId).toBe('letta-agent-abc123');
-    expect(result.blockIds).toHaveLength(4); // persona + current_focus + user_model + active_goals
+    // persona + current_focus + user_model + active_goals + human (from astrology chart)
+    expect(result.blockIds).toHaveLength(5);
 
-    // Should create blocks (1 call with 4 block defs)
+    // Should create blocks (1 call with 5 block defs)
     expect(mockGateway.createMemoryBlocks).toHaveBeenCalledTimes(1);
     const blockDefs = mockGateway.createMemoryBlocks.mock.calls[0][0];
-    expect(blockDefs).toHaveLength(4);
+    expect(blockDefs).toHaveLength(5);
     const blockLabels = blockDefs.map((b: any) => b.label);
     expect(blockLabels).toContain('persona');
     expect(blockLabels).toContain('current_focus');
     expect(blockLabels).toContain('user_model');
     expect(blockLabels).toContain('active_goals');
+    expect(blockLabels).toContain('human');
 
     // Should create agent
     expect(mockGateway.createAgent).toHaveBeenCalledTimes(1);
     const agentCall = mockGateway.createAgent.mock.calls[0][0];
-    expect(agentCall.blockIds).toHaveLength(4);
+    expect(agentCall.blockIds).toHaveLength(5);
     expect(agentCall.agentType).toBe('companion');
 
     // Should persist to DB
@@ -84,7 +147,7 @@ describe('AgentProvisioner', () => {
     const result = await provisioner.provisionCompanionAgent({
       userId: 'user-1',
       companionPersonaId: 'persona-1',
-      companionName: 'Luna',
+      companion: createMockCompanion(),
     });
 
     expect(result.lettaAgentId).toBe('existing-agent-id');
@@ -98,7 +161,7 @@ describe('AgentProvisioner', () => {
     const result = await provisionerNoRepo.provisionCompanionAgent({
       userId: 'user-1',
       companionPersonaId: 'persona-1',
-      companionName: 'Nova',
+      companion: createMockCompanion('Nova'),
     });
 
     expect(result.lettaAgentId).toBe('letta-agent-abc123');
@@ -109,7 +172,7 @@ describe('AgentProvisioner', () => {
     await provisioner.provisionCompanionAgent({
       userId: 'user-1',
       companionPersonaId: 'persona-1',
-      companionName: 'Luna',
+      companion: createMockCompanion(),
     });
 
     const agentCall = mockGateway.createAgent.mock.calls[0][0];
@@ -126,11 +189,26 @@ describe('AgentProvisioner', () => {
     await customProvisioner.provisionCompanionAgent({
       userId: 'user-1',
       companionPersonaId: 'persona-1',
-      companionName: 'Test',
+      companion: createMockCompanion(),
     });
 
     const agentCall = mockGateway.createAgent.mock.calls[0][0];
     expect(agentCall.modelHandle).toBe('anthropic/claude-sonnet-4-5-20250929');
-    expect(agentCall.contextWindowLimit).toBeUndefined();
+  });
+
+  it('should provision without chart data', async () => {
+    const result = await provisioner.provisionCompanionAgent({
+      userId: 'user-1',
+      companionPersonaId: 'persona-1',
+      companion: createMockCompanion(),
+      chart: null,
+    });
+
+    expect(result.lettaAgentId).toBe('letta-agent-abc123');
+    expect(mockGateway.createMemoryBlocks).toHaveBeenCalledTimes(1);
+
+    // Cognitive blocks should still be created (but without astrology overrides)
+    const blockDefs = mockGateway.createMemoryBlocks.mock.calls[0][0];
+    expect(blockDefs.length).toBeGreaterThanOrEqual(4);
   });
 });

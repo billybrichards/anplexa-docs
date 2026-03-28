@@ -33,3 +33,8 @@ export { LettaAgentRepository } from './letta-agent.repository.js';
 export { MediaGenerationRepository } from './media-generation.repository.js';
 export { WorkflowRepository } from './workflow.repository.js';
 export { ActivityLogRepository } from './activity-log.repository.js';
+export { CompanionVoiceRepository } from './companion-voice.repository.js';
+export { VoiceCallMetadataRepository } from './voice-call-metadata.repository.js';
+export { LivekitAgentConfigRepository } from './livekit-agent-config.repository.js';
+export { LivekitCallEventRepository } from './livekit-call-event.repository.js';
+export { ChatDebugLogRepository } from './chat-debug-log.repository.js';

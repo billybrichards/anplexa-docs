@@ -102,3 +102,37 @@ export type {
   CreateActivityLogData,
   ActivityLogQuery,
 } from './activity-log.repository.interface.js';
+
+// Companion Voice Repository
+export type {
+  ICompanionVoiceRepository,
+  CompanionVoiceRecord,
+  CreateCompanionVoiceData,
+} from './companion-voice.repository.interface.js';
+
+// Voice Call Metadata Repository
+export type {
+  IVoiceCallMetadataRepository,
+  VoiceCallMetadataRecord,
+  CreateVoiceCallMetadataData,
+} from './voice-call-metadata.repository.interface.js';
+
+// LiveKit Agent Config Repository
+export type {
+  ILivekitAgentConfigRepository,
+  LivekitAgentConfigRecord,
+} from './livekit-agent-config.repository.interface.js';
+
+// LiveKit Call Event Repository
+export type {
+  ILivekitCallEventRepository,
+  LivekitCallEventRecord,
+  CreateLivekitCallEventData,
+} from './livekit-call-event.repository.interface.js';
+
+// Chat Debug Log Repository
+export type {
+  IChatDebugLogRepository,
+  ChatDebugLogRecord,
+  CreateChatDebugLogData,
+} from './chat-debug-log.repository.interface.js';

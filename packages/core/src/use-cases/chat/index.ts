@@ -42,3 +42,27 @@ export type {
   GetConversationHistoryInput,
   GetConversationHistoryOutput,
 } from './GetConversationHistoryUseCase.js';
+
+// Route To Agent Use Case
+export {
+  RouteToAgentUseCase,
+  AgentNotFoundError,
+  ConversationNotFoundError as RouteToAgentConversationNotFoundError,
+} from './RouteToAgentUseCase.js';
+
+export type {
+  RouteToAgentInput,
+  RouteToAgentOutput,
+} from './RouteToAgentUseCase.js';
+
+// Provision Chat Agent Use Case
+export {
+  ProvisionChatAgentUseCase,
+  CompanionPersonaNotFoundError,
+  AgentProvisioningError,
+} from './ProvisionChatAgentUseCase.js';
+
+export type {
+  ProvisionChatAgentInput,
+  ProvisionChatAgentOutput,
+} from './ProvisionChatAgentUseCase.js';

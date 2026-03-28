@@ -1,4 +1,4 @@
-import { pgTable, text, integer, doublePrecision, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, doublePrecision, boolean, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table
@@ -169,6 +169,7 @@ export const conversations = pgTable('conversations', {
   // Letta agent integration (added for companion chat)
   companionPersonaId: text('companion_persona_id').references(() => companionPersonas.id),
   lettaAgentId: text('letta_agent_id'), // Letta server agent ID for this conversation
+  voiceAgentId: text('voice_agent_id'), // Letta voice agent ID (paired with chat agent)
   sharedBlockIds: text('shared_block_ids'), // JSON array of Letta block IDs
 
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
@@ -181,6 +182,10 @@ export const messages = pgTable('messages', {
   conversationId: text('conversation_id').references(() => conversations.id).notNull(),
   role: text('role').notNull(), // 'user' | 'assistant' | 'system'
   content: text('content').notNull(),
+  source: text('source').default('chat'), // 'chat' | 'voice_call' | 'video_call'
+  audioUrl: text('audio_url'), // URL to audio recording (voice/video calls)
+  audioTranscript: text('audio_transcript'), // Transcript of audio content
+  tokenCount: integer('token_count'), // Token count for this message
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
 });
 
@@ -386,6 +391,73 @@ export const activityLogs = pgTable('activity_logs', {
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
 });
 
+// Companion Voices — curated voice pool for companions
+export const companionVoices = pgTable('companion_voices', {
+  id: text('id').primaryKey(),
+  companionPersonaId: text('companion_persona_id').references(() => companionPersonas.id),
+  voiceId: text('voice_id').notNull(), // ElevenLabs voice ID
+  voiceName: text('voice_name').notNull(),
+  gender: text('gender').notNull(), // 'male' | 'female' | 'non-binary'
+  simliFaceId: text('simli_face_id'), // Simli avatar face ID for video calls
+  ttsModel: text('tts_model').default('eleven_turbo_v2'), // TTS model to use
+  enabled: boolean('enabled').default(true),
+  createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+});
+
+// Voice Call Metadata — tracks voice/video call sessions
+export const voiceCallMetadata = pgTable('voice_call_metadata', {
+  id: text('id').primaryKey(),
+  conversationId: text('conversation_id').references(() => conversations.id).notNull(),
+  userId: text('user_id').references(() => users.id).notNull(),
+  roomName: text('room_name').notNull(), // LiveKit room name
+  provider: text('provider').default('livekit'), // 'livekit'
+  callStatus: text('call_status').notNull().default('initiated'), // 'initiated' | 'connected' | 'ended' | 'failed'
+  hasVideo: boolean('has_video').default(false),
+  durationSeconds: integer('duration_seconds'),
+  messageCount: integer('message_count').default(0),
+  memorySynced: boolean('memory_synced').default(false),
+  startedAt: text('started_at'),
+  endedAt: text('ended_at'),
+  createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+});
+
+// LiveKit Agent Config — runtime pipeline configuration (key-value store)
+export const livekitAgentConfig = pgTable('livekit_agent_config', {
+  key: text('key').primaryKey(),
+  value: jsonb('value'), // JSON config value
+  updatedAt: text('updated_at').default('CURRENT_TIMESTAMP'),
+  updatedBy: text('updated_by'),
+});
+
+// LiveKit Call Events — event log for call lifecycle & debugging
+export const livekitCallEvents = pgTable('livekit_call_events', {
+  id: text('id').primaryKey(),
+  roomName: text('room_name').notNull(),
+  roomSid: text('room_sid'),
+  conversationId: text('conversation_id'),
+  userId: text('user_id'),
+  companionId: text('companion_id'),
+  sessionId: text('session_id'),
+  eventType: text('event_type').notNull(), // 'call' | 'agent' | 'error' | 'metric'
+  eventName: text('event_name').notNull(), // e.g. 'room_started', 'agent_connected', 'tts_latency'
+  level: text('level').default('info'), // 'debug' | 'info' | 'warn' | 'error'
+  source: text('source').default('agent'), // 'agent' | 'webhook' | 'api'
+  metadata: text('metadata'), // JSON string
+  latencyMs: integer('latency_ms'),
+  createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+});
+
+// Chat Debug Logs — debugging log for chat pipeline
+export const chatDebugLogs = pgTable('chat_debug_logs', {
+  id: text('id').primaryKey(),
+  category: text('category').notNull(), // 'agent_resolution' | 'stream' | 'filter' | 'memory'
+  event: text('event').notNull(),
+  conversationId: text('conversation_id'),
+  message: text('message'),
+  metadata: text('metadata'), // JSON string
+  createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   conversations: many(conversations),
@@ -545,6 +617,24 @@ export const mediaGenerationsRelations = relations(mediaGenerations, ({ one }) =
   }),
 }));
 
+export const companionVoicesRelations = relations(companionVoices, ({ one }) => ({
+  companionPersona: one(companionPersonas, {
+    fields: [companionVoices.companionPersonaId],
+    references: [companionPersonas.id],
+  }),
+}));
+
+export const voiceCallMetadataRelations = relations(voiceCallMetadata, ({ one }) => ({
+  conversation: one(conversations, {
+    fields: [voiceCallMetadata.conversationId],
+    references: [conversations.id],
+  }),
+  user: one(users, {
+    fields: [voiceCallMetadata.userId],
+    references: [users.id],
+  }),
+}));
+
 // Types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -581,4 +671,13 @@ export type NewComfyuiWorkflow = typeof comfyuiWorkflows.$inferInsert;
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
 
-// ChatMessage types removed — using existing messages table via conversation lookup
+export type CompanionVoice = typeof companionVoices.$inferSelect;
+export type NewCompanionVoice = typeof companionVoices.$inferInsert;
+export type VoiceCallMetadata = typeof voiceCallMetadata.$inferSelect;
+export type NewVoiceCallMetadata = typeof voiceCallMetadata.$inferInsert;
+export type LivekitAgentConfig = typeof livekitAgentConfig.$inferSelect;
+export type NewLivekitAgentConfig = typeof livekitAgentConfig.$inferInsert;
+export type LivekitCallEvent = typeof livekitCallEvents.$inferSelect;
+export type NewLivekitCallEvent = typeof livekitCallEvents.$inferInsert;
+export type ChatDebugLog = typeof chatDebugLogs.$inferSelect;
+export type NewChatDebugLog = typeof chatDebugLogs.$inferInsert;

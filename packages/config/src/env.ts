@@ -82,6 +82,33 @@ const apiSchema = z.object({
   WEBHOOK_SECRET: z.string().optional(),
   FUNNEL_API_SECRET: z.string().optional(),
   ADMIN_EMAIL: z.string().email().optional(),
+  INTERNAL_API_KEY: z.string().optional(),
+  API_BASE_URL: z.string().url().optional(),
+});
+
+/**
+ * LiveKit Voice/Video Configuration
+ */
+const livekitSchema = z.object({
+  LIVEKIT_URL: z.string().optional(),
+  LIVEKIT_API_KEY: z.string().optional(),
+  LIVEKIT_API_SECRET: z.string().optional(),
+});
+
+/**
+ * Redis Configuration
+ */
+const redisSchema = z.object({
+  REDIS_URL: z.string().optional(),
+});
+
+/**
+ * Voice/Video Provider API Keys
+ */
+const voiceProviderSchema = z.object({
+  ELEVENLABS_API_KEY: z.string().optional(),
+  DEEPGRAM_API_KEY: z.string().optional(),
+  SIMLI_API_KEY: z.string().optional(),
 });
 
 /**
@@ -96,6 +123,9 @@ const envSchema = z.object({
   ...emailSchema.shape,
   ...deploymentSchema.shape,
   ...apiSchema.shape,
+  ...livekitSchema.shape,
+  ...redisSchema.shape,
+  ...voiceProviderSchema.shape,
 });
 
 export type Env = z.infer<typeof envSchema>;

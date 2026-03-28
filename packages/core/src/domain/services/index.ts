@@ -25,3 +25,15 @@ export {
   type SystemPromptConfig,
   type ConversationContext,
 } from './SystemPromptBuilder.js';
+
+// LiveKit Service Interface (for voice/video calls)
+export type {
+  ILiveKitService,
+  LiveKitTokenOptions,
+} from './ILiveKitService.js';
+
+// Rate Limit Service Interface
+export type {
+  IRateLimitService,
+  RateLimitResult,
+} from './IRateLimitService.js';

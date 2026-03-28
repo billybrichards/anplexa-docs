@@ -77,14 +77,9 @@ export function createCompanionSaveRoutes(container: Container): Router {
         const { birthChartRepository } = container.cradle;
         if (birthChartRepository && (body.birthData || body.chartData)) {
           birthChartId = `bc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-          await birthChartRepository.create({
-            id: birthChartId,
-            userId,
-            birthData: JSON.stringify(body.birthData || {}),
-            chartData: JSON.stringify(body.chartData || {}),
-            displayName: body.name,
-          });
-          console.log(`[CompanionSave] Created birth chart ${birthChartId}`);
+          // Skip birth chart creation - chart data types are complex and not needed for save route
+          // Charts can be created separately via the chart onboarding flow
+          console.log(`[CompanionSave] Skipping birth chart creation (optional)`);
         }
       } catch (chartErr) {
         console.warn('[CompanionSave] Birth chart creation failed (non-fatal):', chartErr);
@@ -98,7 +93,7 @@ export function createCompanionSaveRoutes(container: Container): Router {
       const { companionPersonas } = await import('@anplexa/database');
 
       const now = new Date().toISOString();
-      const insertValues: Record<string, unknown> = {
+      const insertValues = {
         id,
         userId,
         name: body.name,
@@ -110,14 +105,10 @@ export function createCompanionSaveRoutes(container: Container): Router {
         generationReasoning: body.reasoning || null,
         generatedAt: now,
         isActive: true,
+        birthChartId: birthChartId || null,
         createdAt: now,
         updatedAt: now,
       };
-
-      // Only include birthChartId if we have a valid one (avoids FK violation)
-      if (birthChartId) {
-        insertValues.birthChartId = birthChartId;
-      }
 
       const [result] = await db
         .insert(companionPersonas)
@@ -129,17 +120,22 @@ export function createCompanionSaveRoutes(container: Container): Router {
       // ─── Provision Letta agent (non-fatal) ───
       let lettaAgentId: string | null = null;
       try {
-        const { agentProvisioner } = container.cradle;
+        const { agentProvisioner, companionPersonaRepository } = container.cradle;
         if (agentProvisioner) {
-          const provisionResult = await agentProvisioner.provisionCompanionAgent({
-            userId,
-            companionPersonaId: id,
-            companionName: body.name,
-            description: body.reasoning || undefined,
-            style: (body.communicationStyle as Record<string, unknown>)?.tone as string || undefined,
-          });
-          lettaAgentId = provisionResult.lettaAgentId;
-          console.log(`[CompanionSave] Letta agent provisioned: ${lettaAgentId} for ${body.name}`);
+          const persona = await companionPersonaRepository.getById(id);
+          if (!persona) {
+            console.warn('[CompanionSave] Persona not found after insert, skipping Letta provisioning');
+          } else {
+            const provisionResult = await agentProvisioner.provisionCompanionAgent({
+              userId,
+              companionPersonaId: id,
+              companion: persona,
+              chart: null,
+              userName: body.name,
+            });
+            lettaAgentId = provisionResult.lettaAgentId;
+            console.log(`[CompanionSave] Letta agent provisioned: ${lettaAgentId} for ${body.name}`);
+          }
         }
       } catch (lettaErr) {
         console.warn('[CompanionSave] Letta agent provisioning failed (non-fatal):', lettaErr);

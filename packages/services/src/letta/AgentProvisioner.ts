@@ -2,22 +2,23 @@
  * Agent Provisioner — Orchestrates full Letta agent creation for a companion persona.
  *
  * Flow:
- * 1. Build persona text from CompanionPersona data (PersonaBuilder)
- * 2. Create cognitive memory blocks on Letta (CognitiveBlockFactory)
- * 3. Build system prompt with cognitive instructions (CognitivePromptService)
- * 4. Create agent on Letta server (LettaGateway)
- * 5. Persist mapping to letta_agents table (ILettaAgentRepository)
+ * 1. Build persona block from CompanionPersona (CompanionBlockBuilder)
+ * 2. Build astrology blocks from NatalChartData (AstrologyBlockBuilder)
+ * 3. Create cognitive memory blocks on Letta (CognitiveBlockFactory)
+ * 4. Build system prompt with cognitive instructions (CognitivePromptService)
+ * 5. Create agent on Letta server (LettaGateway)
+ * 6. Persist mapping to letta_agents table (ILettaAgentRepository)
  *
- * Ported from Letta-Lonely's agent provisioning, adapted for:
- * - Single agent per companion (no NSFW/SFW split)
- * - Awilix DI injection
- * - CompanionPersona entity as input (not LL's assistant + profile)
+ * Accepts domain objects directly — no intermediate DTOs required from callers.
  */
 
+import { randomUUID } from 'node:crypto';
+import type { NatalChartData } from '@anplexa/core/domain/value-objects/astrology/NatalChartData';
 import type { LettaGateway } from './LettaGateway.js';
-import { PersonaBuilder, type PersonaInput } from './PersonaBuilder.js';
 import { CognitiveBlockFactory } from './CognitiveBlockFactory.js';
 import { CognitivePromptService } from './CognitivePromptService.js';
+import { AstrologyBlockBuilder } from './AstrologyBlockBuilder.js';
+import { CompanionBlockBuilder, type CompanionPersonaInput } from './CompanionBlockBuilder.js';
 
 export interface LettaAgentRepoLike {
   create(data: {
@@ -38,11 +39,12 @@ export interface LettaAgentRepoLike {
 export interface ProvisionInput {
   userId: string;
   companionPersonaId: string;
-  companionName: string;
-  gender?: 'female' | 'male' | 'non-binary' | null;
-  goal?: string;
-  style?: string;
-  description?: string | null;
+  /** Companion persona data for building persona block */
+  companion: CompanionPersonaInput;
+  /** User's birth chart for astrology blocks (optional) */
+  chart?: NatalChartData | null;
+  /** User display name (used in human/user-model blocks) */
+  userName?: string | null;
   conversationId?: string;
 }
 
@@ -63,9 +65,10 @@ const DEFAULT_CONFIG: AgentProvisionerConfig = {
 };
 
 export class AgentProvisioner {
-  private personaBuilder = new PersonaBuilder();
   private blockFactory = new CognitiveBlockFactory();
   private promptService = new CognitivePromptService();
+  private astrologyBlockBuilder = new AstrologyBlockBuilder();
+  private companionBlockBuilder = new CompanionBlockBuilder();
 
   constructor(
     private lettaGateway: LettaGateway,
@@ -76,8 +79,12 @@ export class AgentProvisioner {
   /**
    * Provision a Letta agent for a companion persona.
    * If an agent already exists for this persona, returns the existing one.
+   *
+   * Handles all block building internally from domain objects.
    */
   async provisionCompanionAgent(input: ProvisionInput): Promise<ProvisionResult> {
+    const companionName = input.companion.name;
+
     // Check if agent already exists
     if (this.lettaAgentRepository) {
       const existing = await this.lettaAgentRepository.findByCompanionPersona(input.companionPersonaId);
@@ -85,26 +92,33 @@ export class AgentProvisioner {
         console.log(`[AgentProvisioner] Agent already exists for persona ${input.companionPersonaId}`);
         return {
           lettaAgentId: existing.lettaAgentId,
-          agentName: `companion_${input.companionName}`,
+          agentName: `companion_${companionName}`,
           blockIds: [],
         };
       }
     }
 
-    console.log(`[AgentProvisioner] Provisioning agent for ${input.companionName}`);
+    console.log(`[AgentProvisioner] Provisioning agent for ${companionName}`);
 
-    // 1. Build persona text
-    const personaInput: PersonaInput = {
-      name: input.companionName,
-      gender: input.gender,
-      goal: input.goal,
-      style: input.style,
-      description: input.description,
-    };
-    const personaText = this.personaBuilder.buildPersona(personaInput);
+    // 1. Build persona block from domain objects
+    const personaText = this.companionBlockBuilder.buildPersonaBlock(
+      input.companion,
+      input.chart,
+    );
 
-    // 2. Create persona + cognitive blocks on Letta
-    const cognitiveBlockDefs = this.blockFactory.getCognitiveBlockDefinitions(input.companionName);
+    // 2. Build astrology overrides from NatalChartData
+    const astrology = input.chart
+      ? {
+          humanBlockValue: this.astrologyBlockBuilder.buildHumanBlock(input.chart, input.userName),
+          userModelValue: this.astrologyBlockBuilder.buildUserModelBlock(input.chart, input.userName),
+        }
+      : undefined;
+
+    // 3. Create persona + cognitive blocks on Letta
+    const cognitiveBlockDefs = this.blockFactory.getCognitiveBlockDefinitions(
+      companionName,
+      astrology,
+    );
     const allBlockDefs = [
       { label: 'persona', value: personaText, limit: 4000 },
       ...cognitiveBlockDefs,
@@ -114,7 +128,7 @@ export class AgentProvisioner {
     // 4. Build system prompt with cognitive instructions
     const cognitiveInstructions = this.promptService.getCognitiveInstructions();
     const systemPrompt = [
-      `You are ${input.companionName}, a companion created to connect with the user.`,
+      `You are ${companionName}, a companion created to connect with the user.`,
       cognitiveInstructions,
     ].join('\n\n');
 
@@ -122,7 +136,7 @@ export class AgentProvisioner {
     const allBlockIds = allBlocks.map((b) => b.id);
 
     // 6. Create agent on Letta server
-    const agentName = `companion_${input.companionName.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`;
+    const agentName = `companion_${companionName.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`;
 
     const agent = await this.lettaGateway.createAgent({
       name: agentName,
@@ -144,7 +158,7 @@ export class AgentProvisioner {
     if (this.lettaAgentRepository) {
       try {
         await this.lettaAgentRepository.create({
-          id: `la_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          id: `la_${randomUUID()}`,
           userId: input.userId,
           companionPersonaId: input.companionPersonaId,
           conversationId: input.conversationId,

@@ -114,7 +114,9 @@ export class ConversationRepository implements IConversationRepository {
     try {
       // Search in conversation titles and message content
       // Using a subquery to find conversations with matching messages
-      const searchPattern = `%${searchTerm}%`;
+      // Escape SQL LIKE wildcards to prevent injection
+      const escapedTerm = searchTerm.replace(/[%_\\]/g, '\\$&');
+      const searchPattern = `%${escapedTerm}%`;
 
       const result = await this.db
         .selectDistinct({
@@ -149,7 +151,7 @@ export class ConversationRepository implements IConversationRepository {
   async create(conversationData: CreateConversationData): Promise<Conversation> {
     try {
       const now = new Date().toISOString();
-      const newConversation = {
+      const newConversation: Record<string, unknown> = {
         id: conversationData.id,
         userId: conversationData.userId,
         title: conversationData.title || null,
@@ -159,6 +161,12 @@ export class ConversationRepository implements IConversationRepository {
         ...(conversationData.companionPersonaId && { companionPersonaId: conversationData.companionPersonaId }),
         ...(conversationData.lettaAgentId && { lettaAgentId: conversationData.lettaAgentId }),
       };
+      if (conversationData.companionPersonaId) {
+        newConversation.companionPersonaId = conversationData.companionPersonaId;
+      }
+      if (conversationData.lettaAgentId) {
+        newConversation.lettaAgentId = conversationData.lettaAgentId;
+      }
 
       const result = await this.db
         .insert(conversations)

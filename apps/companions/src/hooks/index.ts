@@ -16,5 +16,11 @@ export type {
   UseGuestChatReturn,
 } from './useGuestChat';
 
+export { useChat } from './useChat';
+export type { UseChatOptions } from './useChat';
+
+export { useLiveKit } from './useLiveKit';
+export type { UseLiveKitOptions, UseLiveKitReturn } from './useLiveKit';
+
 // Re-export domain entities from @anplexa/core for convenience
 export type { Message, Conversation } from '@anplexa/core/domain/entities';

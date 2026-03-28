@@ -107,27 +107,33 @@ export type {
   ChatPreferences,
   ChatRequest,
   MessageRole,
+  MessageSource,
   MessageDTO,
   ConversationDTO,
   ConversationWithMessagesDTO,
   ChatConfigResponse,
+  AgentActivityStatus,
   SSEStartEvent,
   SSETokenEvent,
+  SSEActivityEvent,
   SSEDoneEvent,
   SSEErrorEvent,
   SSEEvent,
   AmplexaProfile,
   ChatError,
   InsufficientCreditsError,
+  RateLimitErrorResponse,
 } from './chat';
 
 export {
   ChatPreferencesSchema,
   ChatRequestSchema,
+  MessageSourceSchema,
   MessageDTOSchema,
   ConversationDTOSchema,
   SSEStartEventSchema,
   SSETokenEventSchema,
+  SSEActivityEventSchema,
   SSEDoneEventSchema,
   SSEErrorEventSchema,
   SSEEventSchema,
@@ -142,6 +148,32 @@ export type {
   ValidatedSSEEvent,
   ValidatedAmplexaProfile,
 } from './chat';
+
+// ============================================================================
+// Voice/Video Contracts & Schemas
+// ============================================================================
+
+export type {
+  LiveKitTokenRequest,
+  LiveKitTokenResponse,
+  LiveKitConfigResponse,
+  CallEventDTO,
+  CallSummaryRequest,
+  CompanionVoiceDTO,
+} from './voice';
+
+export {
+  LiveKitTokenRequestSchema,
+  CallEventDTOSchema,
+  CallEventsRequestSchema,
+  CallSummaryRequestSchema,
+} from './voice';
+
+export type {
+  ValidatedLiveKitTokenRequest,
+  ValidatedCallEventDTO,
+  ValidatedCallSummaryRequest,
+} from './voice';
 
 // ============================================================================
 // User Contracts & Schemas

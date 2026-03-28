@@ -37,6 +37,7 @@ export interface ILettaAgentRepository {
   create(data: CreateLettaAgentData): Promise<LettaAgentRecord>;
   findByLettaAgentId(lettaAgentId: string): Promise<LettaAgentRecord | null>;
   findByCompanionPersona(companionPersonaId: string): Promise<LettaAgentRecord | null>;
+  findByCompanionPersonaId(companionPersonaId: string): Promise<LettaAgentRecord[]>;
   findByConversation(conversationId: string): Promise<LettaAgentRecord | null>;
   findActiveByUserId(userId: string): Promise<LettaAgentRecord[]>;
   deactivate(id: string): Promise<void>;
