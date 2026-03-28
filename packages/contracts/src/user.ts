@@ -7,7 +7,7 @@
  */
 
 import { z } from 'zod';
-import type { PersonalityMode } from './auth';
+import type { PersonalityMode } from './auth.js';
 
 // ============================================================================
 // User Profile Types
