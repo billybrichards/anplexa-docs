@@ -10,6 +10,7 @@
  */
 
 import { Router, type Request, type Response } from 'express';
+import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import type { Container } from '../../container.js';
 import { createAuthMiddleware } from '../../middleware/auth.js';
@@ -30,7 +31,7 @@ export function createVoiceRoutes(container: Container): Router {
       const body = LiveKitTokenRequestSchema.parse(req.body);
       const userId = req.user!.sub;
 
-      const { liveKitService, lettaAgentRepository, conversationRepository } = container.cradle;
+      const { liveKitService, lettaAgentRepository, conversationRepository, voiceCallMetadataRepository } = container.cradle;
 
       if (!liveKitService) {
         return res.status(503).json({ error: 'Voice/video calls not configured' });
@@ -84,6 +85,19 @@ export function createVoiceRoutes(container: Container): Router {
         roomName,
         { userId, conversationId: body.conversationId },
       );
+
+      // Persist call metadata so /status/:roomName can verify ownership
+      voiceCallMetadataRepository.create({
+        id: `vcm_${randomUUID()}`,
+        conversationId: body.conversationId,
+        userId,
+        roomName,
+        provider: 'livekit',
+        callStatus: 'initiated',
+        hasVideo,
+      }).catch((err: unknown) => {
+        console.error('[Voice] Failed to persist call metadata:', err);
+      });
 
       // Dispatch agent (fire-and-forget — it connects asynchronously)
       liveKitService.dispatchAgent(roomName, agentName, roomMetadata).catch((err: unknown) => {
@@ -238,7 +252,7 @@ export function createVoiceRoutes(container: Container): Router {
       }
 
       // Use the raw body stashed by express.json's verify callback for accurate signature verification
-      const rawBodyBuf = (req as any).rawBody as Buffer | undefined;
+      const rawBodyBuf = req.rawBody;
       const rawBody = rawBodyBuf ? rawBodyBuf.toString('utf-8') : JSON.stringify(req.body);
       const authHeader = req.headers.authorization || '';
 
@@ -256,10 +270,25 @@ export function createVoiceRoutes(container: Container): Router {
       const room = webhookEvent.room as Record<string, unknown> | undefined;
       const roomName = (room?.name as string) || '';
 
-      // Log the webhook event
+      // Extract conversationId/userId from room metadata (set during room creation)
+      let conversationId: string | undefined;
+      let webhookUserId: string | undefined;
+      if (room?.metadata && typeof room.metadata === 'string') {
+        try {
+          const meta = JSON.parse(room.metadata as string) as Record<string, unknown>;
+          conversationId = typeof meta.conversationId === 'string' ? meta.conversationId : undefined;
+          webhookUserId = typeof meta.userId === 'string' ? meta.userId : undefined;
+        } catch {
+          // Ignore malformed metadata
+        }
+      }
+
+      // Log the webhook event with conversation context
       callEventService.logEvents([{
         roomName,
         roomSid: (room?.sid as string) || undefined,
+        conversationId,
+        userId: webhookUserId,
         eventType: 'call',
         eventName: `webhook:${eventType}`,
         level: 'info',

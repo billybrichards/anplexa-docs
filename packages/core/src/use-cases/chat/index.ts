@@ -48,6 +48,7 @@ export {
   RouteToAgentUseCase,
   AgentNotFoundError,
   ConversationNotFoundError as RouteToAgentConversationNotFoundError,
+  UnauthorizedConversationError as RouteToAgentUnauthorizedError,
 } from './RouteToAgentUseCase.js';
 
 export type {
@@ -55,14 +56,3 @@ export type {
   RouteToAgentOutput,
 } from './RouteToAgentUseCase.js';
 
-// Provision Chat Agent Use Case
-export {
-  ProvisionChatAgentUseCase,
-  CompanionPersonaNotFoundError,
-  AgentProvisioningError,
-} from './ProvisionChatAgentUseCase.js';
-
-export type {
-  ProvisionChatAgentInput,
-  ProvisionChatAgentOutput,
-} from './ProvisionChatAgentUseCase.js';

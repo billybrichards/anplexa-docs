@@ -52,7 +52,7 @@ export function createApp(container: Container): Express {
     limit: '10mb',
     verify: (req, _res, buf) => {
       // Store raw body buffer on request for routes that need it (e.g. LiveKit webhooks)
-      (req as any).rawBody = buf;
+      (req as Express.Request).rawBody = buf;
     },
   }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));

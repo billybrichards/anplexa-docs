@@ -14,27 +14,12 @@
 
 import { randomUUID } from 'node:crypto';
 import type { NatalChartData } from '@anplexa/core/domain/value-objects/astrology/NatalChartData';
+import type { ILettaAgentRepository } from '@anplexa/core';
 import type { LettaGateway } from './LettaGateway.js';
 import { CognitiveBlockFactory } from './CognitiveBlockFactory.js';
 import { CognitivePromptService } from './CognitivePromptService.js';
 import { AstrologyBlockBuilder } from './AstrologyBlockBuilder.js';
 import { CompanionBlockBuilder, type CompanionPersonaInput } from './CompanionBlockBuilder.js';
-
-export interface LettaAgentRepoLike {
-  create(data: {
-    id: string;
-    userId: string;
-    companionPersonaId: string;
-    conversationId?: string;
-    lettaAgentId: string;
-    agentType: 'companion' | 'prompt_enhancer';
-    agentName: string;
-    modelHandle?: string;
-    blockIds?: string[];
-    contextWindowLimit?: number;
-  }): Promise<unknown>;
-  findByCompanionPersona(companionPersonaId: string): Promise<{ lettaAgentId: string } | null>;
-}
 
 export interface ProvisionInput {
   userId: string;
@@ -72,7 +57,7 @@ export class AgentProvisioner {
 
   constructor(
     private lettaGateway: LettaGateway,
-    private lettaAgentRepository?: LettaAgentRepoLike,
+    private lettaAgentRepository?: ILettaAgentRepository,
     private config: AgentProvisionerConfig = DEFAULT_CONFIG,
   ) {}
 

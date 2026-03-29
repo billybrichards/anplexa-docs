@@ -53,7 +53,7 @@ export function createCompanionProvisionRoutes(container: Container): Router {
       // 3. Create conversation first (so conversationId is available for agent record)
       let conversationId: string | undefined;
       if (body.createConversation) {
-        conversationId = `conv_${randomUUID()}`;
+        conversationId = randomUUID();
         await conversationRepository.create({
           id: conversationId,
           userId,

@@ -51,6 +51,8 @@ export function createChatSendRoutes(container: Container): Router {
         nativeMediaService,
         companionPersonaRepository,
         birthChartRepository,
+        rateLimitService,
+        userRepository,
       } = container.cradle;
 
       // ──────────────────────────────────────────────────────────────────
@@ -77,7 +79,7 @@ export function createChatSendRoutes(container: Container): Router {
         }
       } else {
         const conv = await conversationRepository.create({
-          id: `conv_${randomUUID()}`,
+          id: randomUUID(),
           userId,
           title: body.message.substring(0, 60),
         });
@@ -269,12 +271,22 @@ export function createChatSendRoutes(container: Container): Router {
           });
         }
 
-        // 10. Emit done event
+        // 10. Emit done event with remaining credits
+        let creditsRemaining: number | undefined;
+        try {
+          const user = await userRepository.getById(userId);
+          const isSubscribed = user?.subscriptionStatus === 'active';
+          creditsRemaining = await rateLimitService.getRemaining(userId, isSubscribed);
+        } catch {
+          // Non-critical — omit creditsRemaining if lookup fails
+        }
+
         sendSSE('done', {
           type: 'done',
           conversationId,
           messageId: assistantMessageId,
           chunkCount,
+          creditsRemaining,
         } satisfies SSEDoneEvent);
       } catch (err) {
         console.error(`[ChatSend] Stream error for agent ${lettaAgentId}:`, err);

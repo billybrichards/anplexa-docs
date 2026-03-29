@@ -25,8 +25,11 @@ export function createChatRoutes(container: Container): Router {
   router.use(authMiddleware);
 
   // Rate limit the send endpoint (5 msgs/day for free users, unlimited for subscribers)
-  const { rateLimitService } = container.cradle;
-  router.post('/send', rateLimitMiddleware(rateLimitService));
+  const { rateLimitService, userRepository } = container.cradle;
+  router.post('/send', rateLimitMiddleware(rateLimitService, async (userId) => {
+    const user = await userRepository.getById(userId);
+    return user?.subscriptionStatus === 'active';
+  }));
 
   // Mount sub-routers
   router.use('/', createChatSendRoutes(container));
