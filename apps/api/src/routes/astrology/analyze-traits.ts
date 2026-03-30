@@ -26,7 +26,7 @@ export function createAnalyzeTraitsRoutes(container: Container): Router {
    * Takes serialized natal chart data, reconstructs it, then extracts
    * personality traits via TraitExtractionService + AI enrichment.
    */
-  router.post('/analyze-traits', async (req, res, next) => {
+  router.post('/analyze-traits', async (req, res) => {
     try {
       const body = analyzeTraitsSchema.parse(req.body);
 
