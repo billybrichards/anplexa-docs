@@ -8,7 +8,8 @@
 import { create } from 'zustand';
 import { parseSSEStream, type SSEEvent } from '@/lib/sse-parser';
 import { API_BASE_URL } from '@/lib/config';
-import type { AgentActivityStatus } from '@anplexa/contracts';
+// Local type — mirrors @anplexa/contracts AgentActivityStatus to avoid cross-package resolution issues
+type AgentActivityStatus = 'thinking' | 'tool_call' | 'tool_return' | 'responding';
 
 // ============================================================================
 // Types

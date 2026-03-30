@@ -38,7 +38,6 @@ export function ChatInterface({
   const [showSidebar, setShowSidebar] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

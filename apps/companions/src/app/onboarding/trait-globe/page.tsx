@@ -266,7 +266,7 @@ function TraitGlobeContent() {
         try {
           // Include birth data so save endpoint can create the birth chart record (FK requirement)
           const storedBirthData = StorageService.getSessionItem(STORAGE_KEYS.BIRTH_DATA);
-          const storedChartResult = StorageService.getSessionItem(STORAGE_KEYS.CHART_RESULT);
+          const storedChartResult = StorageService.getSessionItem<{ chartData?: unknown }>(STORAGE_KEYS.CHART_RESULT);
 
           const saveResponse = await fetch(`${apiBase2}/api/companion/save`, {
             method: 'POST',

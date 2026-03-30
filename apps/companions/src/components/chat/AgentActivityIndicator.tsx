@@ -1,6 +1,7 @@
 'use client';
 
-import type { AgentActivityStatus } from '@anplexa/contracts';
+// Local type — mirrors @anplexa/contracts AgentActivityStatus to avoid cross-package resolution issues
+type AgentActivityStatus = 'thinking' | 'tool_call' | 'tool_return' | 'responding';
 
 interface AgentActivityIndicatorProps {
   status: AgentActivityStatus;
