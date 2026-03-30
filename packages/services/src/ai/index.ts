@@ -31,6 +31,7 @@ export {
 // Trait Analysis
 export { MockTraitAnalysisService } from './MockTraitAnalysisService.js';
 export { ClaudeTraitAnalysisService } from './ClaudeTraitAnalysisService.js';
+export { OllamaTraitAnalysisService } from './OllamaTraitAnalysisService.js';
 
 // Prompt builder utilities
 export {

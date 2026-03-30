@@ -43,6 +43,7 @@ import {
   SimplifiedAstrologyService,
   MockTraitAnalysisService,
   ClaudeTraitAnalysisService,
+  OllamaTraitAnalysisService,
   LettaGateway,
   MediaToolService,
   ComfyUIGateway,
@@ -207,14 +208,21 @@ export function configureContainer(): ReturnType<typeof createContainer<AppConta
 
     traitAnalysisService: asFunction(() => {
       const anthropicKey = process.env.ANTHROPIC_API_KEY;
+      const ollamaUrl = process.env.OLLAMA_TRAIT_URL;
+      const ollamaModel = process.env.OLLAMA_TRAIT_MODEL || 'qwen3.5-nsfw:27b';
+
       if (anthropicKey) {
         console.log('[DI] Using ClaudeTraitAnalysisService (Anthropic API)');
         return new ClaudeTraitAnalysisService(anthropicKey);
       }
-      if (process.env.NODE_ENV === 'production') {
-        throw new Error('ANTHROPIC_API_KEY is required in production for trait analysis');
+      if (ollamaUrl) {
+        console.log(`[DI] Using OllamaTraitAnalysisService (${ollamaModel} @ ${ollamaUrl})`);
+        return new OllamaTraitAnalysisService(ollamaUrl, ollamaModel);
       }
-      console.warn('[DI] WARNING: No ANTHROPIC_API_KEY — using MockTraitAnalysisService (dev only)');
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('ANTHROPIC_API_KEY or OLLAMA_TRAIT_URL is required in production for trait analysis');
+      }
+      console.warn('[DI] WARNING: No AI provider configured — using MockTraitAnalysisService (dev only)');
       return new MockTraitAnalysisService();
     }).singleton(),
 
