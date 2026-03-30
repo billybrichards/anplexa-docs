@@ -57,11 +57,10 @@ export function createVerifyEmailRoutes(container: Container): Router {
         expiresAt,
       });
 
-      // Send email
+      // Send email (don't expose delivery failures to prevent email enumeration)
       const result = await sendTemplateEmail(email, emailVerificationCodeEmail(code));
-
       if (!result.success) {
-        return res.status(500).json({ error: 'Failed to send verification email' });
+        console.error('[verify-email] Failed to send verification email to:', email);
       }
 
       res.json({ message: 'Verification code sent' });

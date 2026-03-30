@@ -254,7 +254,6 @@ export default function SignupPage() {
               className="w-full"
             >
               {step === 'signup' ? 'Create Account' : 'Verify & Start Chatting'}
-              <span className="ml-2">{step === 'signup' ? '' : ''}</span>
             </CosmicButton>
           </CosmicCardFooter>
         </CosmicCard>
