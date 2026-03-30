@@ -45,7 +45,7 @@ export class ClaudeTraitAnalysisService implements ITraitAnalysisService {
     const prompt = this.buildTraitEnrichmentPrompt(chartData, baseTraits);
 
     const response = await this.client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [
         {
@@ -84,7 +84,7 @@ export class ClaudeTraitAnalysisService implements ITraitAnalysisService {
     const prompt = this.buildPersonalitySummaryPrompt(chartData, traits);
 
     const response = await this.client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       messages: [
         {
@@ -121,7 +121,7 @@ export class ClaudeTraitAnalysisService implements ITraitAnalysisService {
     const prompt = this.buildCompatibilityNarrativePrompt(userChart, companionChart, scores);
 
     const response = await this.client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       messages: [
         {
