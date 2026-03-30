@@ -72,17 +72,21 @@ export function createCompanionSaveRoutes(container: Container): Router {
         `You are ${body.name}, a compassionate AI companion. Be empathetic, understanding, and non-judgmental.`;
 
       // ─── Create birth chart record first (required FK) ───
+      // Look up existing birth chart for this user (if one was created during onboarding)
       let birthChartId: string | null = null;
       try {
         const { birthChartRepository } = container.cradle;
-        if (birthChartRepository && (body.birthData || body.chartData)) {
-          birthChartId = `bc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-          // Skip birth chart creation - chart data types are complex and not needed for save route
-          // Charts can be created separately via the chart onboarding flow
-          console.log(`[CompanionSave] Skipping birth chart creation (optional)`);
+        if (birthChartRepository) {
+          const activeChart = await birthChartRepository.getActiveByUserId(userId);
+          if (activeChart) {
+            birthChartId = activeChart.id;
+            console.log(`[CompanionSave] Found existing birth chart: ${birthChartId}`);
+          } else {
+            console.log(`[CompanionSave] No birth chart found for user ${userId}, creating persona without chart link`);
+          }
         }
       } catch (chartErr) {
-        console.warn('[CompanionSave] Birth chart creation failed (non-fatal):', chartErr);
+        console.warn('[CompanionSave] Birth chart lookup failed (non-fatal):', chartErr);
         birthChartId = null;
       }
 
