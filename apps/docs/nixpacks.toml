@@ -1,0 +1,13 @@
+# Railway nixpacks configuration for @anplexa/docs
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "pnpm"]
+
+[phases.install]
+cmds = ["pnpm install --frozen-lockfile"]
+
+[phases.build]
+cmds = ["pnpm build --filter=@anplexa/docs"]
+
+[start]
+cmd = "cd apps/docs && pnpm start --port ${PORT:-3000} --host 0.0.0.0"

@@ -6,7 +6,11 @@
     "nixpacksConfigPath": "apps/companions/nixpacks.toml",
     "watchPatterns": [
       "apps/companions/**",
-      "packages/ui/**"
+      "packages/core/**",
+      "packages/contracts/**",
+      "packages/database/**",
+      "packages/ui/**",
+      "pnpm-lock.yaml"
     ]
   },
   "deploy": {

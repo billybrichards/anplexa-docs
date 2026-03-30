@@ -6,9 +6,11 @@
     "watchPatterns": [
       "apps/api/**",
       "packages/core/**",
+      "packages/contracts/**",
       "packages/database/**",
       "packages/services/**",
-      "packages/contracts/**"
+      "packages/config/**",
+      "pnpm-lock.yaml"
     ]
   },
   "deploy": {

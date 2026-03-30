@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Starfield } from '@/components/Starfield';
 import { CosmicButton } from '@/components/CosmicButton';
@@ -149,7 +149,12 @@ export default function SignupPage() {
     }
   };
 
-  const companion = StorageService.getSessionItem<{ name: string }>(STORAGE_KEYS.COMPANION);
+  const [companion, setCompanion] = useState<{ name: string } | null>(null);
+
+  // Read companion from sessionStorage only in the browser (not during SSR/prerender)
+  useEffect(() => {
+    setCompanion(StorageService.getSessionItem<{ name: string }>(STORAGE_KEYS.COMPANION));
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-deep-space text-cream overflow-hidden px-6 py-12">

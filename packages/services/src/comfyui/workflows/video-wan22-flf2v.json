@@ -1,0 +1,186 @@
+{
+  "name": "wan22-flf2v-14B",
+  "description": "WAN 2.2 14B First-Last-Frame to Video (FLF2V) — generates video interpolation between a start and end image",
+  "type": "video",
+  "version": "1.0.0",
+  "notes": "Uses the native WanFirstLastFrameToVideo node from comfy_extras/nodes_wan.py. Same I2V dual-model architecture (high+low noise experts). clip_vision inputs are optional — images alone work fine.",
+  "prompt_node_id": "6",
+  "output_node_id": "15",
+  "seed_node_id": "57",
+  "start_image_node_id": "30",
+  "end_image_node_id": "31",
+  "workflow": {
+    "1": {
+      "inputs": {
+        "unet_name": "wan2.2_i2v_high_noise_14B_fp16.safetensors",
+        "weight_dtype": "default"
+      },
+      "class_type": "UNETLoader",
+      "_meta": {"title": "UNET High Noise (I2V)"}
+    },
+    "2": {
+      "inputs": {
+        "unet_name": "wan2.2_i2v_low_noise_14B_fp16.safetensors",
+        "weight_dtype": "default"
+      },
+      "class_type": "UNETLoader",
+      "_meta": {"title": "UNET Low Noise (I2V)"}
+    },
+    "3": {
+      "inputs": {
+        "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "type": "wan",
+        "device": "default"
+      },
+      "class_type": "CLIPLoader",
+      "_meta": {"title": "CLIP Text Encoder"}
+    },
+    "4": {
+      "inputs": {
+        "vae_name": "wan_2.1_vae.safetensors"
+      },
+      "class_type": "VAELoader",
+      "_meta": {"title": "VAE Loader"}
+    },
+    "5": {
+      "inputs": {
+        "shift": 8.0,
+        "model": ["1", 0]
+      },
+      "class_type": "ModelSamplingSD3",
+      "_meta": {"title": "Shift High Noise"}
+    },
+    "6_shift_low": {
+      "inputs": {
+        "shift": 8.0,
+        "model": ["2", 0]
+      },
+      "class_type": "ModelSamplingSD3",
+      "_meta": {"title": "Shift Low Noise"}
+    },
+    "6": {
+      "inputs": {
+        "text": "{{PROMPT}}",
+        "clip": ["3", 0]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {"title": "Positive Prompt"}
+    },
+    "7": {
+      "inputs": {
+        "text": "Vibrant colors, overexposed, static, blurry details, subtitles, worst quality, low quality, ugly, deformed, disfigured, extra fingers, poorly drawn hands, poorly drawn face, distorted limbs, censored",
+        "clip": ["3", 0]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {"title": "Negative Prompt"}
+    },
+    "30": {
+      "inputs": {
+        "image": "{{START_IMAGE}}",
+        "upload": "image"
+      },
+      "class_type": "LoadImage",
+      "_meta": {"title": "Load Start Frame"}
+    },
+    "31": {
+      "inputs": {
+        "image": "{{END_IMAGE}}",
+        "upload": "image"
+      },
+      "class_type": "LoadImage",
+      "_meta": {"title": "Load End Frame"}
+    },
+    "40": {
+      "inputs": {
+        "positive": ["6", 0],
+        "negative": ["7", 0],
+        "vae": ["4", 0],
+        "width": "{{WIDTH}}",
+        "height": "{{HEIGHT}}",
+        "length": "{{LENGTH}}",
+        "batch_size": 1,
+        "start_image": ["30", 0],
+        "end_image": ["31", 0]
+      },
+      "class_type": "WanFirstLastFrameToVideo",
+      "_meta": {"title": "First-Last Frame to Video"}
+    },
+    "57": {
+      "inputs": {
+        "seed": "{{SEED}}",
+        "noise_seed": "{{SEED}}"
+      },
+      "class_type": "Seed Generator",
+      "_meta": {"title": "Seed"}
+    },
+    "10": {
+      "inputs": {
+        "add_noise": "enable",
+        "noise_seed": ["57", 0],
+        "steps": "{{STEPS}}",
+        "cfg": "{{CFG}}",
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": 0,
+        "end_at_step": "{{SPLIT_STEP}}",
+        "return_with_leftover_noise": "enable",
+        "model": ["5", 0],
+        "positive": ["40", 0],
+        "negative": ["40", 1],
+        "latent_image": ["40", 2]
+      },
+      "class_type": "KSamplerAdvanced",
+      "_meta": {"title": "KSampler High Noise"}
+    },
+    "11": {
+      "inputs": {
+        "add_noise": "disable",
+        "noise_seed": ["57", 0],
+        "steps": "{{STEPS}}",
+        "cfg": "{{CFG}}",
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": "{{SPLIT_STEP}}",
+        "end_at_step": "{{STEPS}}",
+        "return_with_leftover_noise": "disable",
+        "model": ["6_shift_low", 0],
+        "positive": ["40", 0],
+        "negative": ["40", 1],
+        "latent_image": ["10", 0]
+      },
+      "class_type": "KSamplerAdvanced",
+      "_meta": {"title": "KSampler Low Noise"}
+    },
+    "13": {
+      "inputs": {
+        "samples": ["11", 0],
+        "vae": ["4", 0]
+      },
+      "class_type": "VAEDecode",
+      "_meta": {"title": "VAE Decode"}
+    },
+    "14": {
+      "inputs": {
+        "frame_rate": "{{FPS}}",
+        "loop_count": 0,
+        "filename_prefix": "{{OUTPUT_PREFIX}}",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 19,
+        "save_metadata": true,
+        "pingpong": false,
+        "images": ["13", 0]
+      },
+      "class_type": "VHS_VideoCombine",
+      "_meta": {"title": "Video Combine (MP4)"}
+    },
+    "15": {
+      "inputs": {
+        "filename_prefix": "{{OUTPUT_PREFIX}}",
+        "images": ["13", 0]
+      },
+      "class_type": "SaveImage",
+      "_meta": {"title": "Save Preview Frame"}
+    }
+  }
+}

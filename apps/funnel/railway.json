@@ -5,7 +5,9 @@
     "buildCommand": "pnpm install --frozen-lockfile && pnpm build --filter=@anplexa/funnel",
     "nixpacksConfigPath": "apps/funnel/nixpacks.toml",
     "watchPatterns": [
-      "apps/funnel/**"
+      "apps/funnel/**",
+      "packages/ui/**",
+      "pnpm-lock.yaml"
     ]
   },
   "deploy": {
