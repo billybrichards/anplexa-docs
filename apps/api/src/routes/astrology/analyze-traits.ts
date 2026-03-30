@@ -48,7 +48,12 @@ export function createAnalyzeTraitsRoutes(container: Container): Router {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Validation error', details: error.errors });
       }
-      next(error);
+      console.error('[analyze-traits] Error:', error instanceof Error ? error.message : error);
+      console.error('[analyze-traits] Stack:', error instanceof Error ? error.stack : 'N/A');
+      return res.status(500).json({
+        error: 'Analysis failed',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   });
 
