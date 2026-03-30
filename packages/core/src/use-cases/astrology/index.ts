@@ -1,11 +1,11 @@
-export { AnalyzeChartPersonalityUseCase } from './AnalyzeChartPersonalityUseCase';
+export { AnalyzeChartPersonalityUseCase } from './AnalyzeChartPersonalityUseCase.js';
 export type {
   AnalyzeChartPersonalityInput,
   AnalyzeChartPersonalityOutput,
-} from './AnalyzeChartPersonalityUseCase';
+} from './AnalyzeChartPersonalityUseCase.js';
 
-export { CalculateCompatibilityUseCase } from './CalculateCompatibilityUseCase';
+export { CalculateCompatibilityUseCase } from './CalculateCompatibilityUseCase.js';
 export type {
   CalculateCompatibilityInput,
   CalculateCompatibilityOutput,
-} from './CalculateCompatibilityUseCase';
+} from './CalculateCompatibilityUseCase.js';

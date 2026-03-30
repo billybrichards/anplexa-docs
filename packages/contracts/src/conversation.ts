@@ -7,7 +7,7 @@
  */
 
 import { z } from 'zod';
-import type { MessageDTO } from './chat';
+import type { MessageDTO } from './chat.js';
 
 // ============================================================================
 // Request Types

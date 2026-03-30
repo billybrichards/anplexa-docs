@@ -37,7 +37,7 @@ export function createChatConversationRoutes(container: Container): Router {
 
       const { conversationRepository } = container.cradle;
 
-      const id = `conv_${randomUUID()}`;
+      const id = randomUUID();
       const conversation = await conversationRepository.create({
         id,
         userId,

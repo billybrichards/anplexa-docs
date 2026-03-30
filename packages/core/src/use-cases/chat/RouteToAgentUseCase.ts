@@ -35,6 +35,13 @@ export class ConversationNotFoundError extends Error {
   }
 }
 
+export class UnauthorizedConversationError extends Error {
+  constructor(conversationId: string) {
+    super(`Not authorized to access conversation: ${conversationId}`);
+    this.name = 'UnauthorizedConversationError';
+  }
+}
+
 export class RouteToAgentUseCase {
   constructor(
     private readonly conversationRepository: IConversationRepository,
@@ -46,6 +53,11 @@ export class RouteToAgentUseCase {
     const conversation = await this.conversationRepository.getById(input.conversationId);
     if (!conversation) {
       throw new ConversationNotFoundError(input.conversationId);
+    }
+
+    // Enforce ownership — prevent cross-user agent access
+    if (conversation.userId !== input.userId) {
+      throw new UnauthorizedConversationError(input.conversationId);
     }
 
     if (conversation.lettaAgentId) {

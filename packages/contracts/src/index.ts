@@ -42,7 +42,7 @@ export type {
   AuthError,
   ValidationError,
   PersonalityMode,
-} from './auth';
+} from './auth.js';
 
 export {
   RegisterRequestSchema,
@@ -57,7 +57,7 @@ export {
   UpdatePersonalityRequestSchema,
   UpdateChatNameRequestSchema,
   UserDTOSchema,
-} from './auth';
+} from './auth.js';
 
 export type {
   ValidatedRegisterRequest,
@@ -67,7 +67,7 @@ export type {
   ValidatedMagicLinkRequest,
   ValidatedUpdatePersonalityRequest,
   ValidatedUpdateChatNameRequest,
-} from './auth';
+} from './auth.js';
 
 // ============================================================================
 // Stripe/Payment Contracts & Schemas
@@ -83,7 +83,7 @@ export type {
   SubscriptionWebhookPayload,
   CreditsWebhookPayload,
   StripeWebhookEvent,
-} from './stripe';
+} from './stripe.js';
 
 export {
   CreateCheckoutRequestSchema,
@@ -91,13 +91,13 @@ export {
   ProductDTOSchema,
   SubscriptionWebhookPayloadSchema,
   CreditsWebhookPayloadSchema,
-} from './stripe';
+} from './stripe.js';
 
 export type {
   ValidatedCreateCheckoutRequest,
   ValidatedSubscriptionWebhookPayload,
   ValidatedCreditsWebhookPayload,
-} from './stripe';
+} from './stripe.js';
 
 // ============================================================================
 // Chat Contracts & Schemas
@@ -123,7 +123,7 @@ export type {
   ChatError,
   InsufficientCreditsError,
   RateLimitErrorResponse,
-} from './chat';
+} from './chat.js';
 
 export {
   ChatPreferencesSchema,
@@ -138,7 +138,7 @@ export {
   SSEErrorEventSchema,
   SSEEventSchema,
   AmplexaProfileSchema,
-} from './chat';
+} from './chat.js';
 
 export type {
   ValidatedChatRequest,
@@ -147,7 +147,7 @@ export type {
   ValidatedConversationDTO,
   ValidatedSSEEvent,
   ValidatedAmplexaProfile,
-} from './chat';
+} from './chat.js';
 
 // ============================================================================
 // Voice/Video Contracts & Schemas
@@ -160,20 +160,20 @@ export type {
   CallEventDTO,
   CallSummaryRequest,
   CompanionVoiceDTO,
-} from './voice';
+} from './voice.js';
 
 export {
   LiveKitTokenRequestSchema,
   CallEventDTOSchema,
   CallEventsRequestSchema,
   CallSummaryRequestSchema,
-} from './voice';
+} from './voice.js';
 
 export type {
   ValidatedLiveKitTokenRequest,
   ValidatedCallEventDTO,
   ValidatedCallSummaryRequest,
-} from './voice';
+} from './voice.js';
 
 // ============================================================================
 // User Contracts & Schemas
@@ -194,7 +194,7 @@ export type {
   CreditsBalanceResponse,
   CreditsHistoryResponse,
   UpdateProfileResponse,
-} from './user';
+} from './user.js';
 
 export {
   UserPreferencesSchema,
@@ -205,7 +205,7 @@ export {
   UpdateUserPreferencesRequestSchema,
   PurchaseCreditsRequestSchema,
   UserProfileSchema,
-} from './user';
+} from './user.js';
 
 export type {
   ValidatedUserPreferences,
@@ -216,7 +216,7 @@ export type {
   ValidatedUpdateUserPreferencesRequest,
   ValidatedPurchaseCreditsRequest,
   ValidatedUserProfile,
-} from './user';
+} from './user.js';
 
 // ============================================================================
 // Conversation Contracts & Schemas
@@ -234,7 +234,7 @@ export type {
   ConversationMessagesResponse,
   DeleteConversationResponse,
   GroupedConversations,
-} from './conversation';
+} from './conversation.js';
 
 export {
   CreateConversationRequestSchema,
@@ -248,7 +248,7 @@ export {
   ConversationMessagesResponseSchema,
   DeleteConversationResponseSchema,
   GroupedConversationsSchema,
-} from './conversation';
+} from './conversation.js';
 
 export type {
   ValidatedCreateConversationRequest,
@@ -261,7 +261,7 @@ export type {
   ValidatedConversationDetailResponse,
   ValidatedConversationMessagesResponse,
   ValidatedGroupedConversations,
-} from './conversation';
+} from './conversation.js';
 
 // ============================================================================
 // Re-export Zod for convenience

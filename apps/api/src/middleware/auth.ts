@@ -20,13 +20,15 @@ export interface TokenPayload {
 }
 
 /**
- * Extend Express Request type to include user
+ * Extend Express Request type to include user and rawBody
  */
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       user?: TokenPayload;
+      /** Raw request body Buffer stashed by express.json verify callback (used for webhook signature verification) */
+      rawBody?: Buffer;
     }
   }
 }
