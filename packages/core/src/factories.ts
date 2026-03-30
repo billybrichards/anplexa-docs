@@ -486,7 +486,7 @@ export function createAllUseCases(container: DIContainer) {
   }
 
   // Add analyzeChartPersonality use case if dependencies are provided
-  if (container.birthChartRepository && container.traitAnalysisService) {
+  if (container.traitAnalysisService) {
     const traitExtractionService = new TraitExtractionService();
     useCases.analyzeChartPersonality = createAnalyzeChartPersonalityUseCase(
       traitExtractionService,
