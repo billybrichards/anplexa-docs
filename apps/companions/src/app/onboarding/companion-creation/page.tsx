@@ -106,9 +106,9 @@ export default function CompanionCreation() {
 
   const handleGetStarted = () => {
     // Ensure companion data is in session storage (may already be there from trait-globe)
-    console.log('[CompanionCreation] Navigating to chat with companion:', companion.name, 'id:', companion.id);
+    console.log('[CompanionCreation] Navigating to signup with companion:', companion.name, 'id:', companion.id);
     StorageService.setSessionItem(STORAGE_KEYS.COMPANION, companion);
-    router.push('/chat');
+    router.push('/onboarding/signup');
   };
 
   return (

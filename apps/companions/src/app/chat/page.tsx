@@ -37,6 +37,14 @@ export default function ChatPage() {
       return;
     }
 
+    // Check for auth token
+    const storedToken = StorageService.getSessionItem<string>(STORAGE_KEYS.AUTH_TOKEN);
+    if (!storedToken) {
+      console.warn('[ChatPage] No auth token, redirecting to signup');
+      router.push('/onboarding/signup');
+      return;
+    }
+
     console.log('[ChatPage] Loaded companion:', companionData.name, 'id:', companionData.id);
     setCompanion(companionData);
     setIsLoading(false);
@@ -57,12 +65,14 @@ export default function ChatPage() {
     return null; // Will redirect via useEffect
   }
 
+  const token = StorageService.getSessionItem<string>(STORAGE_KEYS.AUTH_TOKEN);
+
   return (
     <div className="min-h-screen bg-deep-space">
       <ChatInterface
         companionName={companion.name}
         companionPersonaId={companion.id}
-        userId="guest"
+        token={token || undefined}
       />
     </div>
   );

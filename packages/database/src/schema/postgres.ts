@@ -12,6 +12,7 @@ export const users = pgTable('users', {
   preferredGender: text('preferred_gender').default('female'), // 'male' | 'female' | 'non-binary' | 'custom'
   customGender: text('custom_gender'), // Custom gender text if preferredGender is 'custom'
   storagePreference: text('storage_preference').default('cloud'), // 'local' | 'cloud'
+  isVerified: boolean('is_verified').default(false),
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
   updatedAt: text('updated_at').default('CURRENT_TIMESTAMP'),
   isAdmin: boolean('is_admin').default(false),
@@ -226,6 +227,16 @@ export const magicLinkTokens = pgTable('magic_link_tokens', {
   id: text('id').primaryKey(),
   email: text('email').notNull(),
   tokenHash: text('token_hash').notNull(),
+  expiresAt: text('expires_at').notNull(),
+  usedAt: text('used_at'),
+  createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
+});
+
+// Email verification tokens
+export const emailVerificationTokens = pgTable('email_verification_tokens', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').references(() => users.id).notNull(),
+  codeHash: text('code_hash').notNull(),
   expiresAt: text('expires_at').notNull(),
   usedAt: text('used_at'),
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),

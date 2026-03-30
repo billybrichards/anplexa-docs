@@ -11,6 +11,7 @@ import { createLoginRoutes } from './login.js';
 import { createRefreshRoutes } from './refresh.js';
 import { createPasswordRoutes } from './password.js';
 import { createProfileRoutes } from './profile.js';
+import { createVerifyEmailRoutes } from './verify-email.js';
 
 /**
  * Create and configure the auth router
@@ -24,6 +25,7 @@ export function createAuthRoutes(container: Container): Router {
   router.use(createRefreshRoutes(container));
   router.use(createPasswordRoutes(container));
   router.use(createProfileRoutes(container));
+  router.use(createVerifyEmailRoutes(container));
 
   return router;
 }
@@ -34,3 +36,4 @@ export { createLoginRoutes } from './login.js';
 export { createRefreshRoutes } from './refresh.js';
 export { createPasswordRoutes } from './password.js';
 export { createProfileRoutes } from './profile.js';
+export { createVerifyEmailRoutes } from './verify-email.js';

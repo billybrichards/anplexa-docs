@@ -219,6 +219,23 @@ export function emailVerificationEmail(verificationLink: string): EmailTemplate 
 }
 
 /**
+ * Email verification code email (6-digit code for inline verification)
+ */
+export function emailVerificationCodeEmail(code: string): EmailTemplate {
+  return {
+    subject: `${code} is your Anplexa verification code`,
+    html: wrapEmail(`
+      <h1>Your verification code</h1>
+      <p>Enter this code to verify your email and start chatting with your cosmic companion.</p>
+      <div class="highlight" style="text-align: center; font-size: 32px; letter-spacing: 8px; font-weight: 700; padding: 20px;">
+        ${code}
+      </div>
+      <p class="muted">This code expires in 15 minutes. If you didn't sign up for Anplexa, you can safely ignore this email.</p>
+    `),
+  };
+}
+
+/**
  * Refund confirmation email
  */
 export function refundConfirmationEmail(): EmailTemplate {

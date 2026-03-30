@@ -204,4 +204,6 @@ export const STORAGE_KEYS = {
   COMPANION: 'companion',
   USER_PREFERENCES: 'userPreferences',
   ONBOARDING_PROGRESS: 'onboardingProgress',
+  AUTH_TOKEN: 'authToken',
+  AUTH_USER: 'authUser',
 } as const;
