@@ -72,14 +72,19 @@ export default function SignupPage() {
       };
       setAuthData(auth);
 
-      // Store auth tokens and go straight to chat (email verification skipped for now)
-      StorageService.setSessionItem(STORAGE_KEYS.AUTH_TOKEN, auth.accessToken);
-      StorageService.setSessionItem(STORAGE_KEYS.AUTH_USER, {
-        id: auth.userId,
-        email: auth.email,
+      // Send verification code
+      const verifyRes = await fetch(`${API_BASE_URL}/api/auth/send-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: auth.userId, email }),
       });
 
-      router.push('/chat');
+      if (!verifyRes.ok) {
+        // Registration succeeded but verification email failed — still move to verify step
+        console.warn('[Signup] Failed to send verification email');
+      }
+
+      setStep('verify');
     } catch (err) {
       setError('Network error. Please try again.');
     } finally {
@@ -160,17 +165,30 @@ export default function SignupPage() {
           <SectionLabel className="animate-fade-in">Final Step</SectionLabel>
 
           <h1 className="font-serif text-3xl md:text-4xl font-normal leading-tight">
-            Create Your{' '}
-            <span className="text-gold">Account</span>
+            {step === 'signup' ? (
+              <>
+                Create Your{' '}
+                <span className="text-gold">Account</span>
+              </>
+            ) : (
+              <>
+                Verify Your{' '}
+                <span className="text-gold">Email</span>
+              </>
+            )}
           </h1>
 
           <p className="text-lg text-text-muted max-w-xl mx-auto">
-            Sign up to start chatting with {companion?.name || 'your companion'}
+            {step === 'signup'
+              ? `Sign up to start chatting with ${companion?.name || 'your companion'}`
+              : `We sent a 6-digit code to ${email}`}
           </p>
         </div>
 
         <CosmicCard variant="elevated" className="animate-fade-up" style={{ animationDelay: '0.1s' }}>
           <CosmicCardBody className="p-8 space-y-6">
+            {step === 'signup' ? (
+              <>
                 <CosmicInput
                   label="Email"
                   type="email"
@@ -200,6 +218,36 @@ export default function SignupPage() {
                 {error && !error.toLowerCase().includes('email') && !error.toLowerCase().includes('password') && (
                   <p className="text-sm text-red-400">{error}</p>
                 )}
+              </>
+            ) : (
+              <>
+                <CosmicInput
+                  label="Verification Code"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="Enter 6-digit code"
+                  value={verificationCode}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    setVerificationCode(val);
+                  }}
+                  className="text-center text-2xl tracking-widest"
+                />
+
+                {error && (
+                  <p className="text-sm text-red-400">{error}</p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleResendCode}
+                  disabled={isLoading}
+                  className="text-sm text-gold/70 hover:text-gold transition-colors underline"
+                >
+                  Resend code
+                </button>
+              </>
+            )}
           </CosmicCardBody>
 
           <CosmicCardFooter className="p-8 pt-0">
@@ -207,10 +255,10 @@ export default function SignupPage() {
               variant="primary"
               size="lg"
               loading={isLoading}
-              onClick={handleSignup}
+              onClick={step === 'signup' ? handleSignup : handleVerify}
               className="w-full"
             >
-              Create Account & Start Chatting
+              {step === 'signup' ? 'Create Account' : 'Verify & Start Chatting'}
             </CosmicButton>
           </CosmicCardFooter>
         </CosmicCard>

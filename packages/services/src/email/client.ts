@@ -55,7 +55,7 @@ async function getCredentials(): Promise<{ apiKey: string; fromEmail: string }> 
 
   cachedCredentials = {
     apiKey: connectionSettings.settings.api_key,
-    fromEmail: connectionSettings.settings.from_email || 'noreply@anplexa.com',
+    fromEmail: connectionSettings.settings.from_email || 'noreply@info.anplexa.com',
   };
 
   return cachedCredentials;
