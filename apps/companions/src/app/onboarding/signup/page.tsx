@@ -250,7 +250,7 @@ export default function SignupPage() {
             )}
           </CosmicCardBody>
 
-          <CosmicCardFooter className="p-8 pt-0">
+          <CosmicCardFooter className="p-8 pt-0 space-y-3">
             <CosmicButton
               variant="primary"
               size="lg"
@@ -260,6 +260,22 @@ export default function SignupPage() {
             >
               {step === 'signup' ? 'Create Account' : 'Verify & Start Chatting'}
             </CosmicButton>
+            {step === 'verify' && authData && (
+              <button
+                type="button"
+                onClick={() => {
+                  StorageService.setSessionItem(STORAGE_KEYS.AUTH_TOKEN, authData.accessToken);
+                  StorageService.setSessionItem(STORAGE_KEYS.AUTH_USER, {
+                    id: authData.userId,
+                    email: authData.email,
+                  });
+                  router.push('/chat');
+                }}
+                className="w-full text-sm text-text-muted hover:text-cream transition-colors py-2"
+              >
+                Skip for now →
+              </button>
+            )}
           </CosmicCardFooter>
         </CosmicCard>
 
