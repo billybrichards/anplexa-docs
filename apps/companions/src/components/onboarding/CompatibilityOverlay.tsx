@@ -51,11 +51,19 @@ export function CompatibilityOverlay({
               ))}
             </div>
 
-            {/* Narrative */}
-            <div className="bg-cosmic-purple/30 border border-gold/20 rounded-lg p-5">
-              <p className="text-sm text-cream/90 leading-relaxed">
-                {compatibilityResult.narrative}
-              </p>
+            {/* Synastry Highlights */}
+            <div className="bg-cosmic-purple/30 border border-gold/20 rounded-lg p-5 space-y-3">
+              <h4 className="text-sm font-semibold text-gold uppercase tracking-wide">
+                Cosmic Connection
+              </h4>
+              <div className="space-y-2">
+                {compatibilityResult.synastryHighlights.map((highlight, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="text-gold text-sm mt-0.5">✦</span>
+                    <p className="text-sm text-cream/90 leading-relaxed">{highlight}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Action Button */}
