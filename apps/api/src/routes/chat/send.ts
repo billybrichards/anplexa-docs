@@ -39,6 +39,7 @@ export function createChatSendRoutes(container: Container): Router {
 
   router.post('/send', async (req, res) => {
     try {
+      console.log('[ChatSend] Request body:', JSON.stringify(req.body));
       const body = sendSchema.parse(req.body);
       const userId = req.user!.sub;
 
