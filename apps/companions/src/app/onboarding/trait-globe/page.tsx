@@ -294,13 +294,38 @@ function TraitGlobeContent() {
           console.warn('[TraitGlobe] Could not persist companion:', saveErr);
         }
 
+        // Extract clean personality traits from the structured response
+        const traits = data.persona.personalityTraits;
+        const personalityList: string[] = [];
+        if (traits?.traits && Array.isArray(traits.traits)) {
+          personalityList.push(...traits.traits.slice(0, 4));
+        } else if (traits) {
+          // Fallback: pull string values from the traits object
+          Object.values(traits).forEach((v) => {
+            if (typeof v === 'string' && personalityList.length < 4) personalityList.push(v);
+          });
+        }
+
+        // Build a user-facing communication style summary from the structured data
+        const commStyle = data.persona.communicationStyle;
+        let communicationSummary = data.preview?.description || '';
+        if (commStyle && typeof commStyle === 'object') {
+          const parts: string[] = [];
+          if (commStyle.tone) parts.push(`${commStyle.tone} tone`);
+          if (commStyle.directness) parts.push(`${commStyle.directness} directness`);
+          if (commStyle.pacing) parts.push(`${commStyle.pacing} pacing`);
+          if (commStyle.usesMetaphors) parts.push('uses metaphors');
+          if (commStyle.usesHumor) parts.push('uses humor');
+          communicationSummary = parts.length > 0
+            ? parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('. ') + '.'
+            : communicationSummary;
+        }
+
         StorageService.setSessionItem(STORAGE_KEYS.COMPANION, {
           id: companionPersonaId,
           name: data.persona.name || data.preview?.name || 'Companion',
-          personality: data.persona.personalityTraits
-            ? Object.values(data.persona.personalityTraits).filter((v): v is string => typeof v === 'string').slice(0, 4)
-            : [],
-          communicationStyle: data.persona.reasoning || data.preview?.description || '',
+          personality: personalityList,
+          communicationStyle: communicationSummary,
           specializations: [
             'Emotional support and validation',
             'Creative brainstorming',
