@@ -28,26 +28,56 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load companion from storage
-    const companionData = StorageService.getSessionItem<CompanionData>(STORAGE_KEYS.COMPANION);
+    const loadCompanion = async () => {
+      // Check for auth token first
+      const storedToken = StorageService.getSessionItem<string>(STORAGE_KEYS.AUTH_TOKEN);
+      if (!storedToken) {
+        console.warn('[ChatPage] No auth token, redirecting to signup');
+        router.push('/onboarding/signup');
+        return;
+      }
 
-    if (!companionData) {
-      console.warn('[ChatPage] No companion in session storage, redirecting to onboarding');
+      // Try loading companion from session storage (onboarding flow)
+      const companionData = StorageService.getSessionItem<CompanionData>(STORAGE_KEYS.COMPANION);
+      if (companionData) {
+        console.log('[ChatPage] Loaded companion from storage:', companionData.name, 'id:', companionData.id);
+        setCompanion(companionData);
+        setIsLoading(false);
+        return;
+      }
+
+      // No companion in storage — returning user. Fetch from API.
+      console.log('[ChatPage] No companion in storage, fetching active companion from API...');
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+        const res = await fetch(`${apiBase}/api/companion/active`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const fetchedCompanion: CompanionData = {
+            id: data.id,
+            name: data.name,
+            personality: data.personality || [],
+            communicationStyle: data.communicationStyle || '',
+            specializations: [],
+          };
+          StorageService.setSessionItem(STORAGE_KEYS.COMPANION, fetchedCompanion);
+          console.log('[ChatPage] Fetched active companion from API:', fetchedCompanion.name);
+          setCompanion(fetchedCompanion);
+          setIsLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('[ChatPage] Failed to fetch active companion:', err);
+      }
+
+      // No companion anywhere — redirect to onboarding
+      console.warn('[ChatPage] No companion found, redirecting to onboarding');
       router.push('/onboarding');
-      return;
-    }
+    };
 
-    // Check for auth token
-    const storedToken = StorageService.getSessionItem<string>(STORAGE_KEYS.AUTH_TOKEN);
-    if (!storedToken) {
-      console.warn('[ChatPage] No auth token, redirecting to signup');
-      router.push('/onboarding/signup');
-      return;
-    }
-
-    console.log('[ChatPage] Loaded companion:', companionData.name, 'id:', companionData.id);
-    setCompanion(companionData);
-    setIsLoading(false);
+    loadCompanion();
   }, [router]);
 
   if (isLoading) {
