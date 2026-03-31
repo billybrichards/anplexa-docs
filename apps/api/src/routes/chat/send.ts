@@ -29,9 +29,9 @@ import type {
 } from '@anplexa/contracts';
 
 const sendSchema = z.object({
-  conversationId: z.string().optional(),
+  conversationId: z.string().nullable().optional(),
   message: z.string().min(1).max(10000),
-  companionPersonaId: z.string().optional(),
+  companionPersonaId: z.string().nullable().optional(),
 });
 
 export function createChatSendRoutes(container: Container): Router {
@@ -39,7 +39,6 @@ export function createChatSendRoutes(container: Container): Router {
 
   router.post('/send', async (req, res) => {
     try {
-      console.log('[ChatSend] Request body:', JSON.stringify(req.body));
       const body = sendSchema.parse(req.body);
       const userId = req.user!.sub;
 
@@ -56,19 +55,20 @@ export function createChatSendRoutes(container: Container): Router {
         userRepository,
       } = container.cradle;
 
+      // Coerce null → undefined (frontend sends null for empty values)
+      const companionPersonaId = body.companionPersonaId || undefined;
+      let conversationId = body.conversationId || undefined;
+
       // ──────────────────────────────────────────────────────────────────
       // 0. Validate companionPersonaId is a real DB ID (not preview_*)
       // ──────────────────────────────────────────────────────────────────
-      if (body.companionPersonaId && body.companionPersonaId.startsWith('preview_')) {
+      if (companionPersonaId && companionPersonaId.startsWith('preview_')) {
         console.error('[ChatSend] Received preview ID — frontend must call /api/companion/save first');
         return res.status(400).json({
           error: 'Invalid companionPersonaId',
           message: 'The companionPersonaId is a temporary preview ID. Call POST /api/companion/save first to persist the companion.',
         });
       }
-
-      // 1. Resolve or create conversation
-      let conversationId = body.conversationId;
       if (conversationId) {
         // Verify the conversation belongs to this user
         const existingConv = await conversationRepository.getById(conversationId);
@@ -98,15 +98,15 @@ export function createChatSendRoutes(container: Container): Router {
         const routeResult = await routeToAgent.execute({
           conversationId,
           userId,
-          companionPersonaId: body.companionPersonaId,
+          companionPersonaId: companionPersonaId,
         });
         lettaAgentId = routeResult.lettaAgentId;
       } catch (err) {
         if (err instanceof AgentNotFoundError) {
           // 3. Auto-provision if no agent found
-          if (body.companionPersonaId && agentProvisioner) {
+          if (companionPersonaId && agentProvisioner) {
             try {
-              const persona = await companionPersonaRepository.getById(body.companionPersonaId);
+              const persona = await companionPersonaRepository.getById(companionPersonaId);
               if (!persona) {
                 return res.status(404).json({ error: 'Companion persona not found' });
               }
@@ -118,7 +118,7 @@ export function createChatSendRoutes(container: Container): Router {
 
               const provisioned = await agentProvisioner.provisionCompanionAgent({
                 userId,
-                companionPersonaId: body.companionPersonaId,
+                companionPersonaId: companionPersonaId,
                 companion: persona,
                 chart: birthChart?.chartData ?? null,
                 userName: birthChart?.displayName,
@@ -129,7 +129,7 @@ export function createChatSendRoutes(container: Container): Router {
               // Link agent to conversation for future fast-path
               await conversationRepository.update(conversationId, {
                 lettaAgentId: provisioned.lettaAgentId,
-                companionPersonaId: body.companionPersonaId,
+                companionPersonaId: companionPersonaId,
               });
             } catch (provisionErr) {
               console.error('[ChatSend] Agent provisioning failed:', provisionErr);
@@ -237,7 +237,7 @@ export function createChatSendRoutes(container: Container): Router {
                   enhancedPrompt: prompt,
                   userId,
                   conversationId,
-                  companionId: body.companionPersonaId,
+                  companionId: companionPersonaId,
                 });
 
                 sendSSE('media_started', {
