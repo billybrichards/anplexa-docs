@@ -16,7 +16,7 @@ export const users = pgTable('users', {
   createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
   updatedAt: text('updated_at').default('CURRENT_TIMESTAMP'),
   isAdmin: boolean('is_admin').default(false),
-  subscriptionStatus: text('subscription_status').default('not_subscribed'), // 'subscribed' | 'not_subscribed'
+  subscriptionStatus: text('subscription_status').default('active'), // 'active' | 'not_subscribed' — default active until Stripe is wired up
   manualSubscriptionOverride: boolean('manual_subscription_override').default(false), // When true, Stripe webhooks won't change subscription status
   credits: integer('credits').default(5), // Daily message credits for free users (max 5)
   lastCreditRefresh: text('last_credit_refresh'), // ISO date string of last daily credit refresh
