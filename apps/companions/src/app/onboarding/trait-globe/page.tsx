@@ -352,16 +352,7 @@ function TraitGlobeContent() {
     }
   }, []);
 
-  // Auto-redirect once compatibility result is received
-  useEffect(() => {
-    if (phase !== 'compatibility' || !compatibilityResult) return;
-
-    const redirectTimer = setTimeout(() => {
-      router.push('/onboarding/companion-creation');
-    }, 5000);
-
-    return () => clearTimeout(redirectTimer);
-  }, [phase, compatibilityResult, router]);
+  // No auto-redirect — user clicks "Meet Your Companion" to proceed
 
   // ---------------------------------------------------------------------------
   // Render: Loading Skeleton

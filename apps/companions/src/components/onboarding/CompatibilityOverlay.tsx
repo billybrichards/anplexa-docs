@@ -18,7 +18,7 @@ export function CompatibilityOverlay({
   const scoreDistribution = compatibilityResult.getScoreDistribution();
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-md animate-fade-in overflow-y-auto py-8">
       <div className="max-w-2xl w-full mx-6 animate-fade-up">
         <CosmicCard variant="elevated">
           <CosmicCardBody className="p-10 space-y-8">
