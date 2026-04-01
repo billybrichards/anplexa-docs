@@ -13,7 +13,10 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "clean": "turbo run clean",
-    "start": "cd apps/api && node dist/index.js"
+    "start": "cd apps/api && node dist/index.js",
+    "typecheck": "turbo run typecheck",
+    "test:e2e": "playwright test",
+    "test:e2e:ci": "playwright test --project=mobile-portrait --reporter=list"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

@@ -11,6 +11,10 @@
     "lint": {
       "cache": true
     },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "cache": true
+    },
     "test": {
       "cache": true,
       "outputs": ["coverage/**", "test-results/**", ".vitest/**"]

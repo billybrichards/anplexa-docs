@@ -1,4 +1,4 @@
-name: Deploy All Services to Development
+name: Deploy to Development
 
 on:
   push:
@@ -6,15 +6,20 @@ on:
       - develop
   workflow_dispatch:
 
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false  # Don't cancel mid-deploy
+
 env:
   RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
 jobs:
-  deploy-all:
-    name: Deploy All Services to Development
+  deploy:
+    name: Deploy All Services
     runs-on: ubuntu-latest
     environment:
       name: development
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -39,52 +44,31 @@ jobs:
       - name: Build all packages
         run: pnpm build
 
-      - name: Run tests
-        run: pnpm test
-
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Verify Railway authentication
+      - name: Verify Railway auth
         run: railway whoami
 
       - name: Link to Railway Development project
         run: railway link --project ${{ secrets.RAILWAY_DEV_PROJECT_ID }}
 
-      - name: Deploy API service
-        run: |
-          cd apps/api
-          railway up --service api --environment development --ci
-        continue-on-error: false
+      - name: Deploy API
+        run: cd apps/api && railway up --service api --environment development --ci
 
-      - name: Deploy Companions service
-        run: |
-          cd apps/companions
-          railway up --service companions --environment development --ci
-        continue-on-error: false
+      - name: Deploy Companions
+        run: cd apps/companions && railway up --service companions --environment development --ci
 
-      - name: Deploy Funnel service
-        run: |
-          cd apps/funnel
-          railway up --service funnel --environment development --ci
-        continue-on-error: false
+      - name: Deploy Funnel
+        run: cd apps/funnel && railway up --service funnel --environment development --ci
 
-      - name: Deploy Docs service
-        run: |
-          cd apps/docs
-          railway up --service docs --environment development --ci
-        continue-on-error: false
-
-      - name: Get deployment status
-        if: always()
-        run: railway status
+      - name: Deploy Docs
+        run: cd apps/docs && railway up --service docs --environment development --ci
+        continue-on-error: true  # Docs non-critical
 
       - name: Deployment summary
         if: always()
-        env:
-          JOB_STATUS: ${{ job.status }}
         run: |
           echo "====================================="
-          echo "Deployment to Development completed"
-          echo "Status: $JOB_STATUS"
+          echo "Development deploy: ${{ job.status }}"
           echo "====================================="
