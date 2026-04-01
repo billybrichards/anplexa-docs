@@ -497,7 +497,7 @@ function TraitGlobeContent() {
     if (!traitProfile) return renderLoadingSkeleton();
 
     return (
-      <div className="relative h-screen bg-deep-space text-cream overflow-hidden flex flex-col md:flex-row">
+      <div className="relative h-screen bg-deep-space text-cream overflow-hidden flex flex-col md:flex-row" style={{ minHeight: '-webkit-fill-available' }}>
         <Starfield />
 
         {/* Mobile: Collapsed sidebar toggle */}
@@ -516,7 +516,7 @@ function TraitGlobeContent() {
         {/* Sidebar */}
         <div
           className={`
-            relative z-10 h-full flex flex-col border-r border-gold/20 transition-all duration-300
+            relative z-20 h-full flex flex-col border-r border-gold/20 transition-all duration-300
             ${isMobile
               ? sidebarCollapsed
                 ? 'fixed -left-full w-[85%]'
@@ -563,8 +563,8 @@ function TraitGlobeContent() {
           </div>
         </div>
 
-        {/* Globe or Fallback */}
-        <div className="relative z-10 flex-1 h-full">
+        {/* Globe or Fallback — absolute fill ensures R3F Canvas gets concrete dimensions */}
+        <div className="absolute inset-0 z-10 md:relative md:flex-1 md:h-full">
           {use3D ? (
             <>
               <AstrologicalTraitGlobe
